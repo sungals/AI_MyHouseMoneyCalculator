@@ -6,5 +6,6 @@ import 'app.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
+  await Hive.openBox('app_settings');
   runApp(const ProviderScope(child: App()));
 }

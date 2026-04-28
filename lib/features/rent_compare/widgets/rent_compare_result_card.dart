@@ -1,3 +1,4 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import '../../../core/extensions/number_format_extension.dart';
 import '../../../core/theme/app_colors.dart';
@@ -41,11 +42,35 @@ class RentCompareResultCard extends StatelessWidget {
                 style: AppTextStyles.heading3.copyWith(color: diffColor),
               ),
               const SizedBox(height: 20),
+              _CostBarChart(
+                jeonse: result.jeonseMonthlyCost,
+                adjustedRent: result.adjustedRentMonthlyCost,
+              ),
+              const SizedBox(height: 20),
               const Divider(),
               const SizedBox(height: 16),
-              _Row(label: '전세 월 비용', value: result.jeonseMonthlyCost.wonFormat),
+              _Row(
+                label: '전세 월 비용',
+                value: result.jeonseMonthlyCost.wonFormat,
+              ),
               const SizedBox(height: 10),
-              _Row(label: '월세 월 비용', value: result.rentMonthlyCost.wonFormat),
+              _Row(
+                label: '월세 + 관리비',
+                value: result.rentMonthlyCost.wonFormat,
+              ),
+              if (result.opportunityCostMonthly != 0) ...[
+                const SizedBox(height: 10),
+                _Row(
+                  label: '기회비용 공제',
+                  value: '- ${result.opportunityCostMonthly.wonFormat}',
+                  valueColor: AppColors.positive,
+                ),
+              ],
+              const SizedBox(height: 10),
+              _Row(
+                label: '실질 월세 월 비용',
+                value: result.adjustedRentMonthlyCost.wonFormat,
+              ),
               const SizedBox(height: 10),
               _Row(
                 label: '월 차이',
@@ -73,8 +98,8 @@ class RentCompareResultCard extends StatelessWidget {
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: onShare,
-                    icon: const Icon(Icons.share_outlined, size: 18),
-                    label: const Text('공유'),
+                    icon: const Icon(Icons.image_outlined, size: 18),
+                    label: const Text('이미지 공유'),
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size(0, 48),
                     ),
@@ -96,6 +121,86 @@ class RentCompareResultCard extends StatelessWidget {
           ),
         ],
       ],
+    );
+  }
+}
+
+class _CostBarChart extends StatelessWidget {
+  final int jeonse;
+  final int adjustedRent;
+
+  const _CostBarChart({required this.jeonse, required this.adjustedRent});
+
+  @override
+  Widget build(BuildContext context) {
+    final jeonseY = jeonse.toDouble();
+    final rentY = adjustedRent.clamp(0, double.maxFinite).toDouble();
+    final maxY = (jeonseY > rentY ? jeonseY : rentY) * 1.25;
+
+    return SizedBox(
+      height: 180,
+      child: BarChart(
+        BarChartData(
+          maxY: maxY,
+          barGroups: [
+            BarChartGroupData(
+              x: 0,
+              barRods: [
+                BarChartRodData(
+                  toY: jeonseY,
+                  color: AppColors.primary,
+                  width: 40,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(6),
+                  ),
+                ),
+              ],
+            ),
+            BarChartGroupData(
+              x: 1,
+              barRods: [
+                BarChartRodData(
+                  toY: rentY,
+                  color: AppColors.warning,
+                  width: 40,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(6),
+                  ),
+                ),
+              ],
+            ),
+          ],
+          titlesData: FlTitlesData(
+            bottomTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: true,
+                getTitlesWidget: (value, meta) {
+                  const labels = ['전세', '실질 월세'];
+                  final idx = value.toInt();
+                  if (idx < 0 || idx >= labels.length) {
+                    return const SizedBox.shrink();
+                  }
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Text(labels[idx], style: AppTextStyles.caption),
+                  );
+                },
+              ),
+            ),
+            leftTitles: const AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
+            ),
+            topTitles: const AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
+            ),
+            rightTitles: const AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
+            ),
+          ),
+          gridData: const FlGridData(show: false),
+          borderData: FlBorderData(show: false),
+        ),
+      ),
     );
   }
 }

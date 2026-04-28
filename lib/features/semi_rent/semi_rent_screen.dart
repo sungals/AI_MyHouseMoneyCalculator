@@ -9,6 +9,7 @@ import '../../data/local/calculation_history_store.dart';
 import '../../data/models/calculation_history.dart';
 import '../../domain/entities/semi_rent_input.dart';
 import '../../shared/widgets/disclaimer_box.dart';
+import '../../shared/widgets/help_icon.dart';
 import '../../shared/widgets/money_input_field.dart';
 import '../../shared/widgets/percent_input_field.dart';
 import '../../shared/widgets/primary_button.dart';
@@ -133,23 +134,52 @@ ${result.summaryText}
             Form(
               key: _formKey,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const _SectionTitle(
+                    '보증금 조건',
+                    helpTitle: '반전세 보증금이란?',
+                    helpBody:
+                        '반전세는 전세보증금 일부를 줄이는 대신 월세를 내는 방식입니다.\n\n'
+                        '• 기준 전세 보증금: 순수 전세일 때의 보증금 (예: 3억)\n'
+                        '• 전환 후 보증금: 반전세 계약 시 실제 납부 보증금 (예: 1억)\n\n'
+                        '두 금액의 차이(예: 2억)가 월세로 전환됩니다.\n'
+                        '전환율에 따라 적정 월세가 계산됩니다.',
+                  ),
+                  const SizedBox(height: 12),
                   MoneyInputField(
                     label: '기준 전세 보증금',
                     controller: _baseDeposit,
                     validator: Validators.requiredAmount,
+                    sliderMax: 2000000000,
+                    sliderDivisions: 200,
                   ),
                   const SizedBox(height: 12),
                   MoneyInputField(
                     label: '전환 후 보증금',
                     controller: _convertedDeposit,
                     validator: Validators.requiredAmount,
+                    sliderMax: 2000000000,
+                    sliderDivisions: 200,
+                  ),
+                  const SizedBox(height: 24),
+                  const _SectionTitle(
+                    '월세 및 관리비',
+                    helpTitle: '전월세 전환율이란?',
+                    helpBody:
+                        '보증금을 월세로 환산할 때 사용하는 연간 비율입니다.\n\n'
+                        '법정 상한: 기준금리 + 2% (현재 통상 5~6%)\n\n'
+                        '예시) 전환 보증금 차이 2억 × 전환율 5% ÷ 12\n'
+                        '→ 적정 월세 = 약 833,000원\n\n'
+                        '실제 월세가 이 금액보다 높으면 불리한 조건입니다.',
                   ),
                   const SizedBox(height: 12),
                   MoneyInputField(
                     label: '월세',
                     controller: _monthlyRent,
                     validator: Validators.requiredAmount,
+                    sliderMax: 3000000,
+                    sliderDivisions: 60,
                   ),
                   const SizedBox(height: 12),
                   PercentInputField(
@@ -162,6 +192,18 @@ ${result.summaryText}
                     label: '관리비',
                     controller: _maintenance,
                     validator: Validators.requiredAmount,
+                    sliderMax: 1000000,
+                    sliderDivisions: 100,
+                  ),
+                  const SizedBox(height: 24),
+                  const _SectionTitle(
+                    '거주 기간',
+                    helpTitle: '거주 기간이란?',
+                    helpBody:
+                        '비교할 실제 거주 예정 기간(개월)을 입력합니다.\n\n'
+                        '거주 기간이 길수록 월세 차이에 따른 총 손익이\n'
+                        '크게 벌어집니다.\n\n'
+                        '예: 2년 계약 → 24개월',
                   ),
                   const SizedBox(height: 12),
                   TextFormField(
@@ -191,6 +233,34 @@ ${result.summaryText}
           ],
         ),
       ),
+    );
+  }
+}
+
+class _SectionTitle extends StatelessWidget {
+  final String text;
+  final String? helpTitle;
+  final String? helpBody;
+
+  const _SectionTitle(this.text, {this.helpTitle, this.helpBody});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Text(
+          text,
+          style: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textSecondary,
+          ),
+        ),
+        if (helpTitle != null) ...[
+          const SizedBox(width: 4),
+          HelpIcon(title: helpTitle!, body: helpBody!),
+        ],
+      ],
     );
   }
 }

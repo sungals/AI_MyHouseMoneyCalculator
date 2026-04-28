@@ -9,6 +9,7 @@ import '../../data/local/calculation_history_store.dart';
 import '../../data/models/calculation_history.dart';
 import '../../domain/entities/loan_interest_input.dart';
 import '../../shared/widgets/disclaimer_box.dart';
+import '../../shared/widgets/help_icon.dart';
 import '../../shared/widgets/money_input_field.dart';
 import '../../shared/widgets/percent_input_field.dart';
 import '../../shared/widgets/primary_button.dart';
@@ -106,16 +107,34 @@ ${result.months}개월 총 이자: ${MoneyFormatter.formatWithWon(result.totalIn
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppConstants.horizontalPadding),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 8),
             Form(
               key: _formKey,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const _SectionTitle(
+                    '대출 조건',
+                    helpTitle: '대출이자 계산이란?',
+                    helpBody:
+                        '단리(이자만 납부) 방식으로 월 이자와 총 이자를 계산합니다.\n\n'
+                        '• 대출금: 은행에서 빌리는 원금\n'
+                        '• 연이율: 연간 적용 이자율 (예: 4.5%)\n'
+                        '• 대출 기간: 이자를 납부할 기간 (개월)\n\n'
+                        '월 이자 = 대출금 × 연이율 ÷ 12\n'
+                        '총 이자 = 월 이자 × 대출 기간\n\n'
+                        '원리금 균등 상환(원금도 함께 갚는 방식)과는\n'
+                        '계산 방법이 다릅니다.',
+                  ),
+                  const SizedBox(height: 12),
                   MoneyInputField(
                     label: '대출금',
                     controller: _loanAmount,
                     validator: Validators.requiredAmount,
+                    sliderMax: 2000000000,
+                    sliderDivisions: 200,
                   ),
                   const SizedBox(height: 12),
                   PercentInputField(
@@ -209,6 +228,34 @@ ${result.months}개월 총 이자: ${MoneyFormatter.formatWithWon(result.totalIn
           ],
         ),
       ),
+    );
+  }
+}
+
+class _SectionTitle extends StatelessWidget {
+  final String text;
+  final String? helpTitle;
+  final String? helpBody;
+
+  const _SectionTitle(this.text, {this.helpTitle, this.helpBody});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Text(
+          text,
+          style: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textSecondary,
+          ),
+        ),
+        if (helpTitle != null) ...[
+          const SizedBox(width: 4),
+          HelpIcon(title: helpTitle!, body: helpBody!),
+        ],
+      ],
     );
   }
 }

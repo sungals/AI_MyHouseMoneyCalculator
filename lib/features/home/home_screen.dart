@@ -62,6 +62,14 @@ class HomeScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               _MenuCard(
+                title: '연말정산 세액공제',
+                description: '월세 공제와 전세대출 절세 혜택을 계산해요',
+                icon: Icons.receipt_outlined,
+                color: const Color(0xFF0891B2),
+                onTap: () => context.push('/tax-deduction'),
+              ),
+              const SizedBox(height: 12),
+              _MenuCard(
                 title: '저장한 계산 보기',
                 description: '이전에 저장한 계산 결과를 확인해요',
                 icon: Icons.bookmark_outlined,

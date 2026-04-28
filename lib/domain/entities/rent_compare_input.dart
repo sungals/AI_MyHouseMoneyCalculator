@@ -6,6 +6,7 @@ class RentCompareInput {
   final int monthlyRent;
   final int maintenanceFee;
   final int months;
+  final double depositInterestRate;
 
   const RentCompareInput({
     required this.jeonseDeposit,
@@ -15,5 +16,6 @@ class RentCompareInput {
     required this.monthlyRent,
     required this.maintenanceFee,
     required this.months,
+    this.depositInterestRate = 3.5,
   });
 }

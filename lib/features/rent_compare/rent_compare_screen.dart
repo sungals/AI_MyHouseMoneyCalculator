@@ -1,5 +1,10 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
@@ -9,9 +14,11 @@ import '../../data/local/calculation_history_store.dart';
 import '../../data/models/calculation_history.dart';
 import '../../domain/entities/rent_compare_input.dart';
 import '../../shared/widgets/disclaimer_box.dart';
+import '../../shared/widgets/help_icon.dart';
 import '../../shared/widgets/money_input_field.dart';
 import '../../shared/widgets/percent_input_field.dart';
 import '../../shared/widgets/primary_button.dart';
+import '../../shared/widgets/slider_rate_field.dart';
 import 'rent_compare_controller.dart';
 import 'widgets/rent_compare_result_card.dart';
 
@@ -24,6 +31,7 @@ class RentCompareScreen extends ConsumerStatefulWidget {
 
 class _RentCompareScreenState extends ConsumerState<RentCompareScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _screenshotController = ScreenshotController();
 
   final _jeonseDeposit = TextEditingController();
   final _jeonseLoan = TextEditingController();
@@ -41,11 +49,18 @@ class _RentCompareScreenState extends ConsumerState<RentCompareScreen> {
   final _fn6 = FocusNode();
   final _fn7 = FocusNode();
 
+  double _depositInterestRate = 3.5;
+
   @override
   void dispose() {
     for (final c in [
-      _jeonseDeposit, _jeonseLoan, _interestRate, _rentDeposit,
-      _monthlyRent, _maintenance, _months,
+      _jeonseDeposit,
+      _jeonseLoan,
+      _interestRate,
+      _rentDeposit,
+      _monthlyRent,
+      _maintenance,
+      _months,
     ]) {
       c.dispose();
     }
@@ -77,6 +92,7 @@ class _RentCompareScreenState extends ConsumerState<RentCompareScreen> {
       monthlyRent: MoneyFormatter.parse(_monthlyRent.text),
       maintenanceFee: MoneyFormatter.parse(_maintenance.text),
       months: int.parse(_months.text),
+      depositInterestRate: _depositInterestRate,
     );
 
     ref.read(rentCompareControllerProvider.notifier).calculate(input);
@@ -121,22 +137,19 @@ class _RentCompareScreenState extends ConsumerState<RentCompareScreen> {
     }
   }
 
-  void _share() {
-    final result = ref.read(rentCompareControllerProvider);
-    if (result == null) return;
+  Future<void> _shareImage() async {
+    final Uint8List? imageBytes =
+        await _screenshotController.capture(pixelRatio: 2.0);
+    if (imageBytes == null) return;
 
-    final text = '''[집돈계산기] 전세 vs 월세 비교 결과
+    final dir = await getTemporaryDirectory();
+    final file = File('${dir.path}/rent_compare_result.png');
+    await file.writeAsBytes(imageBytes);
 
-${result.recommendationText}
-
-전세 월 비용: ${MoneyFormatter.formatWithWon(result.jeonseMonthlyCost)}
-월세 월 비용: ${MoneyFormatter.formatWithWon(result.rentMonthlyCost)}
-월 차이: ${MoneyFormatter.formatWithWon(result.monthlyDifference.abs())}
-${_months.text}개월 총 차이: ${MoneyFormatter.formatWithWon(result.totalDifference.abs())}
-
-※ 본 계산 결과는 참고용입니다. 실제 계약 전 전문가에게 확인하세요.''';
-
-    Share.share(text);
+    await Share.shareXFiles(
+      [XFile(file.path)],
+      text: '전세 vs 월세 비교 결과',
+    );
   }
 
   @override
@@ -157,7 +170,16 @@ ${_months.text}개월 총 차이: ${MoneyFormatter.formatWithWon(result.totalDif
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const _SectionTitle('전세 조건'),
+                  const _SectionTitle(
+                    '전세 조건',
+                    helpTitle: '전세란?',
+                    helpBody:
+                        '전세는 보증금을 집주인에게 맡기고 월세 없이 거주하는 방식입니다.\n\n'
+                        '• 전세 보증금: 집주인에게 맡기는 총 금액 (계약 만료 시 반환)\n'
+                        '• 전세대출 금액: 보증금 중 은행에서 빌린 금액\n'
+                        '• 전세대출 연이율: 대출에 적용되는 연간 이자율\n\n'
+                        '실제 월 비용 = 대출 이자 + 자기 자본의 기회비용(예금이율)으로 계산됩니다.',
+                  ),
                   const SizedBox(height: 12),
                   MoneyInputField(
                     label: '전세 보증금',
@@ -165,6 +187,9 @@ ${_months.text}개월 총 차이: ${MoneyFormatter.formatWithWon(result.totalDif
                     focusNode: _fn1,
                     nextFocusNode: _fn2,
                     validator: Validators.requiredAmount,
+                    showQuickButtons: true,
+                    sliderMax: 2000000000,
+                    sliderDivisions: 200,
                   ),
                   const SizedBox(height: 12),
                   MoneyInputField(
@@ -173,6 +198,9 @@ ${_months.text}개월 총 차이: ${MoneyFormatter.formatWithWon(result.totalDif
                     focusNode: _fn2,
                     nextFocusNode: _fn3,
                     validator: Validators.requiredAmount,
+                    showQuickButtons: true,
+                    sliderMax: 2000000000,
+                    sliderDivisions: 200,
                   ),
                   const SizedBox(height: 12),
                   PercentInputField(
@@ -182,8 +210,26 @@ ${_months.text}개월 총 차이: ${MoneyFormatter.formatWithWon(result.totalDif
                     nextFocusNode: _fn4,
                     validator: Validators.interestRate,
                   ),
+                  const SizedBox(height: 20),
+                  SliderRateField(
+                    label: '기회비용 예금이율',
+                    value: _depositInterestRate,
+                    min: 1.0,
+                    max: 6.0,
+                    divisions: 50,
+                    onChanged: (v) => setState(() => _depositInterestRate = v),
+                  ),
                   const SizedBox(height: 24),
-                  const _SectionTitle('월세 조건'),
+                  const _SectionTitle(
+                    '월세 조건',
+                    helpTitle: '월세란?',
+                    helpBody:
+                        '월세는 보증금을 일부 맡기고 매월 임대료를 납부하는 방식입니다.\n\n'
+                        '• 월세 보증금: 계약 시 집주인에게 맡기는 금액\n'
+                        '• 월세: 매달 납부하는 임대료\n'
+                        '• 관리비: 건물 유지·공용 시설 이용 월 비용\n\n'
+                        '실제 월 비용 = 월세 + 관리비 + 보증금의 기회비용으로 계산됩니다.',
+                  ),
                   const SizedBox(height: 12),
                   MoneyInputField(
                     label: '월세 보증금',
@@ -191,6 +237,9 @@ ${_months.text}개월 총 차이: ${MoneyFormatter.formatWithWon(result.totalDif
                     focusNode: _fn4,
                     nextFocusNode: _fn5,
                     validator: Validators.requiredAmount,
+                    showQuickButtons: true,
+                    sliderMax: 500000000,
+                    sliderDivisions: 100,
                   ),
                   const SizedBox(height: 12),
                   MoneyInputField(
@@ -199,6 +248,9 @@ ${_months.text}개월 총 차이: ${MoneyFormatter.formatWithWon(result.totalDif
                     focusNode: _fn5,
                     nextFocusNode: _fn6,
                     validator: Validators.requiredAmount,
+                    showQuickButtons: true,
+                    sliderMax: 3000000,
+                    sliderDivisions: 60,
                   ),
                   const SizedBox(height: 12),
                   MoneyInputField(
@@ -207,9 +259,19 @@ ${_months.text}개월 총 차이: ${MoneyFormatter.formatWithWon(result.totalDif
                     focusNode: _fn6,
                     nextFocusNode: _fn7,
                     validator: Validators.requiredAmount,
+                    sliderMax: 1000000,
+                    sliderDivisions: 100,
                   ),
                   const SizedBox(height: 24),
-                  const _SectionTitle('거주 기간'),
+                  const _SectionTitle(
+                    '거주 기간',
+                    helpTitle: '거주 기간이란?',
+                    helpBody:
+                        '비교할 실제 거주 예정 기간(개월)을 입력합니다.\n\n'
+                        '거주 기간에 따라 총 비용 차이가 달라지므로,\n'
+                        '실제 계약 기간과 동일하게 입력하세요.\n\n'
+                        '예: 2년 계약 → 24개월',
+                  ),
                   const SizedBox(height: 12),
                   TextFormField(
                     controller: _months,
@@ -230,10 +292,13 @@ ${_months.text}개월 총 차이: ${MoneyFormatter.formatWithWon(result.totalDif
             PrimaryButton(label: '계산하기', onPressed: _calculate),
             if (result != null) ...[
               const SizedBox(height: 24),
-              RentCompareResultCard(
-                result: result,
-                onSave: _save,
-                onShare: _share,
+              Screenshot(
+                controller: _screenshotController,
+                child: RentCompareResultCard(
+                  result: result,
+                  onSave: _save,
+                  onShare: _shareImage,
+                ),
               ),
             ] else ...[
               const SizedBox(height: 24),
@@ -249,17 +314,28 @@ ${_months.text}개월 총 차이: ${MoneyFormatter.formatWithWon(result.totalDif
 
 class _SectionTitle extends StatelessWidget {
   final String text;
-  const _SectionTitle(this.text);
+  final String? helpTitle;
+  final String? helpBody;
+
+  const _SectionTitle(this.text, {this.helpTitle, this.helpBody});
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: const TextStyle(
-        fontSize: 15,
-        fontWeight: FontWeight.w600,
-        color: AppColors.textSecondary,
-      ),
+    return Row(
+      children: [
+        Text(
+          text,
+          style: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textSecondary,
+          ),
+        ),
+        if (helpTitle != null) ...[
+          const SizedBox(width: 4),
+          HelpIcon(title: helpTitle!, body: helpBody!),
+        ],
+      ],
     );
   }
 }

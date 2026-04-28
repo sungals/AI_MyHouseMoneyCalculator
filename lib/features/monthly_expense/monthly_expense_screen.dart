@@ -8,6 +8,7 @@ import '../../data/local/calculation_history_store.dart';
 import '../../data/models/calculation_history.dart';
 import '../../domain/entities/monthly_expense_input.dart';
 import '../../shared/widgets/disclaimer_box.dart';
+import '../../shared/widgets/help_icon.dart';
 import '../../shared/widgets/money_input_field.dart';
 import '../../shared/widgets/primary_button.dart';
 import 'monthly_expense_controller.dart';
@@ -121,21 +122,40 @@ $breakdown
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppConstants.horizontalPadding),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 8),
+            const _SectionTitle(
+              '월 고정 지출',
+              helpTitle: '월 고정비란?',
+              helpBody:
+                  '매달 일정하게 나가는 생활 고정 지출 항목입니다.\n\n'
+                  '• 주거비: 월세 또는 전세 대출 월 이자\n'
+                  '• 관리비: 건물 관리·공용 시설 이용 비용\n'
+                  '• 통신비: 핸드폰·인터넷 요금\n'
+                  '• 교통비: 교통카드·주유비 등\n'
+                  '• 보험료: 생명보험·실손보험 등 월 납부 보험\n'
+                  '• 구독료: 넷플릭스·스포티파이 등 구독 서비스\n'
+                  '• 식비: 외식비·식재료비\n'
+                  '• 기타: 그 외 고정 지출\n\n'
+                  '0원인 항목은 결과에서 제외됩니다.',
+            ),
+            const SizedBox(height: 12),
             Column(
               children: [
-                _ExpenseField(label: '주거비 (월세/이자)', controller: _housing),
-                _ExpenseField(label: '관리비', controller: _maintenance),
-                _ExpenseField(label: '통신비', controller: _communication),
-                _ExpenseField(label: '교통비', controller: _transportation),
-                _ExpenseField(label: '보험료', controller: _insurance),
-                _ExpenseField(label: '구독료', controller: _subscription),
-                _ExpenseField(label: '식비', controller: _food),
+                _ExpenseField(label: '주거비 (월세/이자)', controller: _housing, sliderMax: 3000000, sliderDivisions: 60),
+                _ExpenseField(label: '관리비', controller: _maintenance, sliderMax: 500000, sliderDivisions: 50),
+                _ExpenseField(label: '통신비', controller: _communication, sliderMax: 300000, sliderDivisions: 60),
+                _ExpenseField(label: '교통비', controller: _transportation, sliderMax: 500000, sliderDivisions: 50),
+                _ExpenseField(label: '보험료', controller: _insurance, sliderMax: 1000000, sliderDivisions: 100),
+                _ExpenseField(label: '구독료', controller: _subscription, sliderMax: 200000, sliderDivisions: 40),
+                _ExpenseField(label: '식비', controller: _food, sliderMax: 2000000, sliderDivisions: 40),
                 _ExpenseField(
                   label: '기타',
                   controller: _other,
                   textInputAction: TextInputAction.done,
+                  sliderMax: 1000000,
+                  sliderDivisions: 100,
                 ),
               ],
             ),
@@ -253,16 +273,50 @@ $breakdown
   }
 }
 
+class _SectionTitle extends StatelessWidget {
+  final String text;
+  final String? helpTitle;
+  final String? helpBody;
+
+  const _SectionTitle(this.text, {this.helpTitle, this.helpBody});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Text(
+          text,
+          style: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textSecondary,
+          ),
+        ),
+        if (helpTitle != null) ...[
+          const SizedBox(width: 4),
+          HelpIcon(title: helpTitle!, body: helpBody!),
+        ],
+      ],
+    );
+  }
+}
+
 class _ExpenseField extends StatelessWidget {
   final String label;
   final TextEditingController controller;
   final TextInputAction textInputAction;
+  final double? sliderMax;
+  final int sliderDivisions;
 
   const _ExpenseField({
     required this.label,
     required this.controller,
     this.textInputAction = TextInputAction.next,
+    this.sliderMax,
+    this.sliderDivisions = 100,
   });
+
+  static const _quickAmounts = [1000000, 100000, 10000];
 
   @override
   Widget build(BuildContext context) {
@@ -272,6 +326,9 @@ class _ExpenseField extends StatelessWidget {
         label: label,
         controller: controller,
         textInputAction: textInputAction,
+        quickButtonAmounts: _quickAmounts,
+        sliderMax: sliderMax,
+        sliderDivisions: sliderDivisions,
       ),
     );
   }

@@ -5,10 +5,17 @@ class RentCompareCalculator {
   RentCompareResult calculate(RentCompareInput input) {
     final monthlyInterest =
         (input.jeonseLoan * (input.interestRate / 100) / 12).round();
-
     final jeonseMonthlyCost = monthlyInterest + input.maintenanceFee;
+
     final rentMonthlyCost = input.monthlyRent + input.maintenanceFee;
-    final monthlyDifference = rentMonthlyCost - jeonseMonthlyCost;
+
+    final depositDiff = input.jeonseDeposit - input.monthlyRentDeposit;
+    final opportunityCostMonthly =
+        (depositDiff * (input.depositInterestRate / 100) / 12).round();
+
+    final adjustedRentMonthlyCost = rentMonthlyCost - opportunityCostMonthly;
+
+    final monthlyDifference = adjustedRentMonthlyCost - jeonseMonthlyCost;
     final totalDifference = monthlyDifference * input.months;
     final isJeonseAdvantageous = monthlyDifference >= 0;
 
@@ -21,6 +28,8 @@ class RentCompareCalculator {
     return RentCompareResult(
       jeonseMonthlyCost: jeonseMonthlyCost,
       rentMonthlyCost: rentMonthlyCost,
+      opportunityCostMonthly: opportunityCostMonthly,
+      adjustedRentMonthlyCost: adjustedRentMonthlyCost,
       monthlyDifference: monthlyDifference,
       totalDifference: totalDifference,
       recommendationText: recommendationText,
