@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../features/home/home_screen.dart';
 import '../features/onboarding/onboarding_screen.dart';
 import '../features/rent_compare/rent_compare_screen.dart';
@@ -20,9 +21,20 @@ class AppRouter {
     redirect: (context, state) {
       final box = Hive.box('app_settings');
       final done = box.get('onboarding_done', defaultValue: false) as bool;
+
       if (!done && state.matchedLocation != '/onboarding') {
         return '/onboarding';
       }
+
+      if (done) {
+        final loginSkipped = box.get('login_skipped', defaultValue: false) as bool;
+        final hasSession = Supabase.instance.client.auth.currentSession != null;
+        final loc = state.matchedLocation;
+        if (!hasSession && !loginSkipped && loc != '/login' && loc != '/onboarding') {
+          return '/login';
+        }
+      }
+
       return null;
     },
     routes: [
