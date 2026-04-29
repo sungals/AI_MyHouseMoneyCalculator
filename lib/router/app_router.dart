@@ -10,6 +10,7 @@ import '../features/history/history_screen.dart';
 import '../features/history/history_detail_screen.dart';
 import '../features/settings/settings_screen.dart';
 import '../features/tax_deduction/tax_deduction_screen.dart';
+import '../features/auth/login_screen.dart';
 
 class AppRouter {
   AppRouter._();
@@ -66,6 +67,10 @@ class AppRouter {
       GoRoute(
         path: '/settings',
         builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: '/login',
+        builder: (context, state) => const LoginScreen(),
       ),
     ],
   );
