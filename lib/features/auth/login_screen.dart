@@ -7,6 +7,8 @@ import '../../core/theme/app_colors.dart';
 import '../../shared/widgets/primary_button.dart';
 import 'auth_notifier.dart';
 import 'auth_state.dart';
+import 'pin/pin_notifier.dart';
+import 'pin/pin_state.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -68,7 +70,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       authNotifierProvider,
       (previous, next) {
         if (next is AppAuthAuthenticated) {
-          _navigateToHome(context);
+          final pinState = ref.read(pinNotifierProvider);
+          if (pinState is PinDisabled) {
+            context.go('/pin-setup');
+          } else {
+            _navigateToHome(context);
+          }
         }
       },
     );

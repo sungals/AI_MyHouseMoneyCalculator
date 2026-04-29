@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -12,6 +13,10 @@ import '../features/history/history_detail_screen.dart';
 import '../features/settings/settings_screen.dart';
 import '../features/tax_deduction/tax_deduction_screen.dart';
 import '../features/auth/login_screen.dart';
+import '../features/auth/pin/pin_login_screen.dart';
+import '../features/auth/pin/pin_notifier.dart';
+import '../features/auth/pin/pin_setup_screen.dart';
+import '../features/auth/pin/pin_state.dart';
 
 class AppRouter {
   AppRouter._();
@@ -30,8 +35,18 @@ class AppRouter {
         final loginSkipped = box.get('login_skipped', defaultValue: false) as bool;
         final hasSession = Supabase.instance.client.auth.currentSession != null;
         final loc = state.matchedLocation;
+
         if (!hasSession && !loginSkipped && loc != '/login' && loc != '/onboarding') {
           return '/login';
+        }
+
+        if (hasSession) {
+          final container = ProviderScope.containerOf(context);
+          final pinState = container.read(pinNotifierProvider);
+          final pinRoutes = {'/pin-login', '/pin-setup', '/login', '/onboarding'};
+          if (pinState is PinEnabled && !pinState.isUnlocked && !pinRoutes.contains(loc)) {
+            return '/pin-login';
+          }
         }
       }
 
@@ -83,6 +98,14 @@ class AppRouter {
       GoRoute(
         path: '/login',
         builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: '/pin-login',
+        builder: (context, state) => const PinLoginScreen(),
+      ),
+      GoRoute(
+        path: '/pin-setup',
+        builder: (context, state) => const PinSetupScreen(),
       ),
     ],
   );

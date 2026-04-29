@@ -7,6 +7,8 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../auth/auth_notifier.dart';
 import '../auth/auth_state.dart';
+import '../auth/pin/pin_notifier.dart';
+import '../auth/pin/pin_state.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -14,6 +16,7 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authNotifierProvider);
+    final pinState = ref.watch(pinNotifierProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -25,6 +28,11 @@ class SettingsScreen extends ConsumerWidget {
           children: [
             const SizedBox(height: 8),
             _AccountSection(authState: authState, ref: ref),
+            if (authState is AppAuthAuthenticated) ...[
+              const SizedBox(height: 24),
+              const _SectionHeader('간편로그인'),
+              _PinTile(pinState: pinState, ref: ref),
+            ],
             const SizedBox(height: 24),
             const _SectionHeader('앱 정보'),
             const _InfoTile(label: '앱 이름', value: AppConstants.appName),
@@ -42,6 +50,48 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _PinTile extends StatelessWidget {
+  final PinState pinState;
+  final WidgetRef ref;
+
+  const _PinTile({required this.pinState, required this.ref});
+
+  @override
+  Widget build(BuildContext context) {
+    final hasPIN = pinState is PinEnabled;
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.cardBorder),
+      ),
+      child: ListTile(
+        leading: Icon(
+          hasPIN ? Icons.lock : Icons.lock_open,
+          color: hasPIN ? AppColors.primary : AppColors.textSecondary,
+        ),
+        title: Text(hasPIN ? '간편로그인 사용 중' : '간편로그인 설정'),
+        subtitle: Text(
+          hasPIN ? 'PIN 번호로 앱을 잠금 해제합니다' : 'PIN 번호를 설정하면 빠르게 로그인할 수 있습니다',
+          style: const TextStyle(fontSize: 12),
+        ),
+        trailing: hasPIN
+            ? TextButton(
+                onPressed: () async {
+                  await ref.read(pinNotifierProvider.notifier).disablePin();
+                },
+                child: const Text(
+                  '해제',
+                  style: TextStyle(color: AppColors.danger),
+                ),
+              )
+            : const Icon(Icons.chevron_right),
+        onTap: hasPIN ? null : () => context.push('/pin-setup'),
       ),
     );
   }

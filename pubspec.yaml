@@ -12,6 +12,7 @@ dependencies:
     sdk: flutter
 
   connectivity_plus: ^6.0.3
+  crypto: ^3.0.0
   cupertino_icons: ^1.0.8
   fl_chart: ^0.69.0
   flutter_riverpod: ^2.5.1
