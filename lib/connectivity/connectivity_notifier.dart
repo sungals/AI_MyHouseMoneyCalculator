@@ -5,36 +5,37 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ConnectivityNotifier extends StateNotifier<bool> {
   final Connectivity _connectivity = Connectivity();
-  late StreamSubscription<List<ConnectivityResult>> _subscription;
+  StreamSubscription<List<ConnectivityResult>>? _subscription;
 
   ConnectivityNotifier() : super(true) {
     _initializeConnectivity();
   }
 
   Future<void> _initializeConnectivity() async {
-    // Check initial connectivity
-    final result = await _connectivity.checkConnectivity();
-    state = _isConnected(result);
+    try {
+      // Check initial connectivity
+      final results = await _connectivity.checkConnectivity();
+      state = _isConnected(results);
 
-    // Listen to connectivity changes
-    _subscription = _connectivity.onConnectivityChanged.listen(
-      (result) {
-        state = _isConnected(result);
-      },
-    );
+      // Listen to connectivity changes
+      _subscription = _connectivity.onConnectivityChanged.listen(
+        (List<ConnectivityResult> results) {
+          state = _isConnected(results);
+        },
+      );
+    } catch (_) {
+      // Assume online if we can't check connectivity
+      state = true;
+    }
   }
 
-  bool _isConnected(dynamic result) {
-    // Handle both single ConnectivityResult and List<ConnectivityResult>
-    if (result is List<ConnectivityResult>) {
-      return !result.contains(ConnectivityResult.none);
-    }
-    return result != ConnectivityResult.none;
+  bool _isConnected(List<ConnectivityResult> results) {
+    return results.isNotEmpty && !results.contains(ConnectivityResult.none);
   }
 
   @override
   void dispose() {
-    _subscription.cancel();
+    _subscription?.cancel();
     super.dispose();
   }
 }
