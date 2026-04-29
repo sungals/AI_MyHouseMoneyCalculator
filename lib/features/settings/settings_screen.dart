@@ -59,11 +59,10 @@ class _AccountSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (authState is AppAuthAuthenticated) {
-      final userId = (authState as AppAuthAuthenticated).userId;
       return ListTile(
         leading: const Icon(Icons.account_circle),
         title: const Text('로그인됨'),
-        subtitle: Text(userId),
+        subtitle: const Text('계정으로 데이터가 동기화됩니다'),
         trailing: TextButton(
           onPressed: () {
             ref.read(authNotifierProvider.notifier).signOut();

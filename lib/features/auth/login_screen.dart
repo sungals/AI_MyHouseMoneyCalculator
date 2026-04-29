@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../shared/widgets/primary_button.dart';
@@ -34,6 +35,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     super.dispose();
   }
 
+  void _navigateToHome(BuildContext ctx) {
+    if (Navigator.of(ctx).canPop()) {
+      Navigator.of(ctx).pop();
+    } else {
+      ctx.go('/');
+    }
+  }
+
   void _submit() {
     if (!_formKey.currentState!.validate()) {
       return;
@@ -55,7 +64,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       authNotifierProvider,
       (previous, next) {
         if (next is AppAuthAuthenticated) {
-          Navigator.of(context).pop();
+          _navigateToHome(context);
         }
       },
     );
@@ -206,7 +215,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 child: OutlinedButton.icon(
                   icon: const Icon(Icons.arrow_forward),
                   label: const Text('로그인 없이 계속하기'),
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () => _navigateToHome(context),
                 ),
               ),
               const SizedBox(height: 40),
