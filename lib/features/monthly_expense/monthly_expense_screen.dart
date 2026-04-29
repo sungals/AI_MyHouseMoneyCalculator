@@ -4,7 +4,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/money_formatter.dart';
-import '../../data/local/calculation_history_store.dart';
+import '../../providers/calculation_history_provider.dart';
 import '../../data/models/calculation_history.dart';
 import '../../domain/entities/monthly_expense_input.dart';
 import '../../shared/widgets/disclaimer_box.dart';
@@ -64,8 +64,8 @@ class _MonthlyExpenseScreenState extends ConsumerState<MonthlyExpenseScreen> {
     final result = ref.read(monthlyExpenseControllerProvider);
     if (result == null) return;
 
-    final store = CalculationHistoryStore();
-    await store.init();
+    final repo = ref.read(calculationHistoryRepositoryProvider);
+    await repo.init();
 
     final history = CalculationHistory(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -82,7 +82,7 @@ class _MonthlyExpenseScreenState extends ConsumerState<MonthlyExpenseScreen> {
       createdAt: DateTime.now(),
     );
 
-    await store.save(history);
+    await repo.save(history);
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
