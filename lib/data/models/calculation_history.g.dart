@@ -24,13 +24,14 @@ class CalculationHistoryAdapter extends TypeAdapter<CalculationHistory> {
       input: (fields[4] as Map).cast<String, dynamic>(),
       result: (fields[5] as Map).cast<String, dynamic>(),
       createdAt: fields[6] as DateTime,
+      syncedAt: fields[7] as DateTime?,
     );
   }
 
   @override
   void write(BinaryWriter writer, CalculationHistory obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -44,7 +45,9 @@ class CalculationHistoryAdapter extends TypeAdapter<CalculationHistory> {
       ..writeByte(5)
       ..write(obj.result)
       ..writeByte(6)
-      ..write(obj.createdAt);
+      ..write(obj.createdAt)
+      ..writeByte(7)
+      ..write(obj.syncedAt);
   }
 
   @override
