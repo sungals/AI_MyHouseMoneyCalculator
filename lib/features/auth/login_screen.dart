@@ -110,8 +110,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                 ),
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
+                  if (value == null || value.trim().isEmpty) {
                     return '이메일을 입력해주세요';
+                  }
+                  if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value.trim())) {
+                    return '올바른 이메일 형식이 아닙니다';
                   }
                   return null;
                 },
