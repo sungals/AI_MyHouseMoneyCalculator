@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
-import '../../data/local/calculation_history_store.dart';
 import '../../data/models/calculation_history.dart';
+import '../../providers/calculation_history_provider.dart';
 
-class HistoryScreen extends StatefulWidget {
+class HistoryScreen extends ConsumerStatefulWidget {
   const HistoryScreen({super.key});
 
   @override
-  State<HistoryScreen> createState() => _HistoryScreenState();
+  ConsumerState<HistoryScreen> createState() => _HistoryScreenState();
 }
 
-class _HistoryScreenState extends State<HistoryScreen> {
-  final _store = CalculationHistoryStore();
+class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   List<CalculationHistory> _items = [];
   bool _isLoading = true;
 
@@ -25,16 +25,23 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   Future<void> _load() async {
-    await _store.init();
-    setState(() {
-      _items = _store.getAll();
-      _isLoading = false;
-    });
+    final repo = ref.read(calculationHistoryRepositoryProvider);
+    await repo.init();
+    if (mounted) {
+      setState(() {
+        _items = repo.getAll();
+        _isLoading = false;
+      });
+    }
   }
 
   Future<void> _delete(String id) async {
-    await _store.delete(id);
-    setState(() => _items = _store.getAll());
+    final repo = ref.read(calculationHistoryRepositoryProvider);
+    await repo.init();
+    await repo.delete(id);
+    if (mounted) {
+      setState(() => _items = repo.getAll());
+    }
   }
 
   @override

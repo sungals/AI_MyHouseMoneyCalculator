@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/utils/money_formatter.dart';
-import '../../data/local/calculation_history_store.dart';
 import '../../data/models/calculation_history.dart';
+import '../../providers/calculation_history_provider.dart';
 
-class HistoryDetailScreen extends StatefulWidget {
+class HistoryDetailScreen extends ConsumerStatefulWidget {
   final String id;
 
   const HistoryDetailScreen({super.key, required this.id});
 
   @override
-  State<HistoryDetailScreen> createState() => _HistoryDetailScreenState();
+  ConsumerState<HistoryDetailScreen> createState() => _HistoryDetailScreenState();
 }
 
-class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
-  final _store = CalculationHistoryStore();
+class _HistoryDetailScreenState extends ConsumerState<HistoryDetailScreen> {
   CalculationHistory? _item;
 
   @override
@@ -27,8 +27,11 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
   }
 
   Future<void> _load() async {
-    await _store.init();
-    setState(() => _item = _store.getById(widget.id));
+    final repo = ref.read(calculationHistoryRepositoryProvider);
+    await repo.init();
+    if (mounted) {
+      setState(() => _item = repo.getById(widget.id));
+    }
   }
 
   void _share() {
