@@ -26,8 +26,10 @@ class CalculationHistoryRemoteStore {
     final userId = _client.auth.currentUser?.id;
     if (userId == null) return;
 
-    final json = history.toSupabaseJson();
-    json['user_id'] = userId;
+    final json = {
+      ...history.toSupabaseJson(),
+      'user_id': userId,
+    };
 
     await _client.from(_table).upsert(json);
   }
@@ -37,10 +39,9 @@ class CalculationHistoryRemoteStore {
     if (userId == null) return;
     if (items.isEmpty) return;
 
-    final rows = items.map((h) {
-      final json = h.toSupabaseJson();
-      json['user_id'] = userId;
-      return json;
+    final rows = items.map((h) => {
+      ...h.toSupabaseJson(),
+      'user_id': userId,
     }).toList();
 
     await _client.from(_table).upsert(rows);
