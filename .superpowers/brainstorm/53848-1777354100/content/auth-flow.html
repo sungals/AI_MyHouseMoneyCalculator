@@ -1,0 +1,122 @@
+<h2>섹션 3: 인증 흐름</h2>
+<p class="subtitle">앱 실행부터 로그인까지, 그리고 기존 데이터 이전까지의 전체 흐름이에요.</p>
+
+<div style="margin-top:24px;display:flex;flex-direction:column;gap:0;">
+
+  <!-- App Launch -->
+  <div style="display:flex;justify-content:center;margin-bottom:8px;">
+    <div style="background:#6366f1;color:white;border-radius:12px;padding:14px 28px;font-weight:700;font-size:15px;text-align:center;">
+      📱 앱 실행
+    </div>
+  </div>
+
+  <div style="display:flex;justify-content:center;margin-bottom:8px;">
+    <div style="width:2px;height:20px;background:#6366f120;"></div>
+  </div>
+
+  <!-- Choice split -->
+  <div style="display:flex;gap:16px;margin-bottom:8px;">
+
+    <!-- Left: Anonymous -->
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;">
+      <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;padding:12px 16px;text-align:center;width:100%;box-sizing:border-box;">
+        <div style="color:#94a3b8;font-size:12px;margin-bottom:4px;">옵션 A</div>
+        <div style="color:#e2e8f0;font-weight:600;">👤 로그인 없이 시작</div>
+      </div>
+      <div style="width:2px;height:16px;background:#33415530;"></div>
+      <div style="background:#0f172a;border:1px solid #334155;border-radius:8px;padding:10px 14px;width:100%;box-sizing:border-box;">
+        <div style="font-size:12px;color:#64748b;margin-bottom:6px;">비회원 모드</div>
+        <div style="font-size:13px;color:#94a3b8;">• Hive 로컬에만 저장</div>
+        <div style="font-size:13px;color:#94a3b8;">• 모든 기능 사용 가능</div>
+        <div style="font-size:13px;color:#94a3b8;">• 데이터는 기기에만 존재</div>
+      </div>
+      <div style="width:2px;height:16px;background:#33415530;"></div>
+      <div style="background:#0f172a;border:1px dashed #6366f150;border-radius:8px;padding:10px 14px;width:100%;box-sizing:border-box;">
+        <div style="font-size:12px;color:#6366f1;margin-bottom:4px;">나중에 계정 연결 시</div>
+        <div style="font-size:13px;color:#94a3b8;">Hive 데이터 자동 Supabase 이전 ✓</div>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div style="display:flex;align-items:center;color:#334155;font-size:20px;">또는</div>
+
+    <!-- Right: Email signup -->
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;">
+      <div style="background:#1e293b;border:1px solid #3ECF8E50;border-radius:10px;padding:12px 16px;text-align:center;width:100%;box-sizing:border-box;">
+        <div style="color:#3ECF8E80;font-size:12px;margin-bottom:4px;">옵션 B</div>
+        <div style="color:#e2e8f0;font-weight:600;">📧 이메일로 계정 만들기</div>
+      </div>
+      <div style="width:2px;height:16px;background:#3ECF8E20;"></div>
+
+      <!-- Step 1 -->
+      <div style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:10px 14px;width:100%;box-sizing:border-box;position:relative;">
+        <span style="position:absolute;top:-10px;left:12px;background:#3ECF8E;color:#0f172a;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;">Step 1</span>
+        <div style="font-size:13px;color:#94a3b8;margin-top:2px;">이메일 + 비밀번호 입력</div>
+      </div>
+      <div style="width:2px;height:12px;background:#3ECF8E20;"></div>
+
+      <!-- Step 2 -->
+      <div style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:10px 14px;width:100%;box-sizing:border-box;position:relative;">
+        <span style="position:absolute;top:-10px;left:12px;background:#0891b2;color:white;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;">Step 2</span>
+        <div style="font-size:13px;color:#94a3b8;margin-top:2px;">인증 이메일 발송 (Supabase 자동)</div>
+      </div>
+      <div style="width:2px;height:12px;background:#3ECF8E20;"></div>
+
+      <!-- Step 3 -->
+      <div style="background:#0f172a;border:1px solid #1e293b;border-radius:8px;padding:10px 14px;width:100%;box-sizing:border-box;position:relative;">
+        <span style="position:absolute;top:-10px;left:12px;background:#7c3aed;color:white;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;">Step 3</span>
+        <div style="font-size:13px;color:#94a3b8;margin-top:2px;">링크 클릭 → 로그인 완료</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Merge point: first login data migration -->
+  <div style="display:flex;justify-content:center;margin:4px 0;">
+    <div style="width:2px;height:20px;background:#f59e0b30;"></div>
+  </div>
+
+  <div style="background:#0f172a;border:2px solid #f59e0b50;border-radius:12px;padding:16px;margin-bottom:8px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+      <span style="font-size:18px;">🔄</span>
+      <strong style="color:#fcd34d;">최초 로그인 시: 로컬 데이터 자동 이전</strong>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:13px;flex-wrap:wrap;">
+      <span style="background:#1e293b;color:#94a3b8;padding:6px 12px;border-radius:6px;">Hive 로컬 데이터</span>
+      <span style="color:#f59e0b;font-size:18px;">→</span>
+      <span style="background:#1e293b;color:#94a3b8;padding:6px 12px;border-radius:6px;">Supabase Cloud</span>
+      <span style="color:#64748b;font-size:12px;margin-left:4px;">(일괄 업로드)</span>
+    </div>
+  </div>
+
+  <div style="display:flex;justify-content:center;margin:4px 0;">
+    <div style="width:2px;height:20px;background:#22c55e30;"></div>
+  </div>
+
+  <!-- After login: dual storage -->
+  <div style="background:#0f172a;border:2px solid #22c55e40;border-radius:12px;padding:16px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+      <span style="font-size:18px;">✅</span>
+      <strong style="color:#86efac;">로그인 이후: 이중 저장 구조</strong>
+    </div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+      <div style="flex:1;min-width:120px;background:#1e293b;border-radius:8px;padding:12px;">
+        <div style="color:#64748b;font-size:11px;margin-bottom:6px;">로컬 (Hive)</div>
+        <div style="font-size:12px;color:#94a3b8;">• 오프라인 즉시 읽기</div>
+        <div style="font-size:12px;color:#94a3b8;">• 빠른 UI 응답</div>
+        <div style="font-size:12px;color:#94a3b8;">• 오프라인 신규 입력 가능</div>
+      </div>
+      <div style="display:flex;align-items:center;font-size:22px;color:#334155;">⇄</div>
+      <div style="flex:1;min-width:120px;background:#1e293b;border-radius:8px;padding:12px;">
+        <div style="color:#3ECF8E80;font-size:11px;margin-bottom:6px;">클라우드 (Supabase)</div>
+        <div style="font-size:12px;color:#94a3b8;">• 온라인 시 자동 동기화</div>
+        <div style="font-size:12px;color:#94a3b8;">• 다기기 접근</div>
+        <div style="font-size:12px;color:#94a3b8;">• 데이터 영구 보관</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div style="margin-top:20px;text-align:center;">
+  <p style="color:#64748b;font-size:13px;">이 흐름이 맞나요? 다음은 섹션 4: 오류 처리 방식이에요.</p>
+</div>

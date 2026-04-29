@@ -105,11 +105,30 @@ class _MoneyInputFieldState extends State<MoneyInputField> {
     final current =
         int.tryParse(widget.controller.text.replaceAll(',', '')) ?? 0;
     final next = (current + amount).clamp(0, 9999999999);
+    final formatted = _formatter.format(next);
     widget.controller.value = TextEditingValue(
-      text: _formatter.format(next),
-      selection: TextSelection.collapsed(
-          offset: _formatter.format(next).length),
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
     );
+  }
+
+  void _deleteLastZero() {
+    final current =
+        int.tryParse(widget.controller.text.replaceAll(',', '')) ?? 0;
+    if (current == 0) return;
+    final next = current ~/ 10;
+    if (next == 0) {
+      widget.controller.value = const TextEditingValue(
+        text: '',
+        selection: TextSelection.collapsed(offset: 0),
+      );
+    } else {
+      final formatted = _formatter.format(next);
+      widget.controller.value = TextEditingValue(
+        text: formatted,
+        selection: TextSelection.collapsed(offset: formatted.length),
+      );
+    }
   }
 
   void _reset() {
@@ -169,7 +188,8 @@ class _MoneyInputFieldState extends State<MoneyInputField> {
         if (widget.showQuickButtons) ...[
           const SizedBox(height: 8),
           _QuickButtons(
-            onAdjust: _addAmount,
+            onAdd: _addAmount,
+            onDelete: _deleteLastZero,
             onReset: _reset,
             amounts: widget.quickButtonAmounts,
           ),
@@ -180,12 +200,14 @@ class _MoneyInputFieldState extends State<MoneyInputField> {
 }
 
 class _QuickButtons extends StatelessWidget {
-  final void Function(int) onAdjust;
+  final void Function(int) onAdd;
+  final VoidCallback onDelete;
   final VoidCallback onReset;
   final List<int>? amounts;
 
   const _QuickButtons({
-    required this.onAdjust,
+    required this.onAdd,
+    required this.onDelete,
     required this.onReset,
     this.amounts,
   });
@@ -207,10 +229,9 @@ class _QuickButtons extends StatelessWidget {
       spacing: 6,
       runSpacing: 6,
       children: [
-        for (final a in list) ...[
-          _Chip(label: '+${_label(a)}', onTap: () => onAdjust(a),  isPlus: true),
-          _Chip(label: '-${_label(a)}', onTap: () => onAdjust(-a), isPlus: false),
-        ],
+        for (final a in list)
+          _Chip(label: '+${_label(a)}', onTap: () => onAdd(a), isPlus: true),
+        _Chip(label: '⌫', onTap: onDelete, isDelete: true),
         _Chip(label: '초기화', onTap: onReset, isReset: true),
       ],
     );
@@ -221,12 +242,14 @@ class _Chip extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
   final bool isPlus;
+  final bool isDelete;
   final bool isReset;
 
   const _Chip({
     required this.label,
     required this.onTap,
-    this.isPlus = true,
+    this.isPlus = false,
+    this.isDelete = false,
     this.isReset = false,
   });
 
@@ -240,14 +263,14 @@ class _Chip extends StatelessWidget {
       bg     = AppColors.background;
       border = AppColors.divider;
       text   = AppColors.textSecondary;
-    } else if (isPlus) {
+    } else if (isDelete) {
+      bg     = const Color(0xFFFFF7ED);
+      border = const Color(0xFFFDBA74);
+      text   = const Color(0xFFEA580C);
+    } else {
       bg     = AppColors.primary.withOpacity(0.08);
       border = AppColors.primary.withOpacity(0.3);
       text   = AppColors.primary;
-    } else {
-      bg     = const Color(0xFFFEF2F2);
-      border = const Color(0xFFFCA5A5);
-      text   = AppColors.danger;
     }
 
     return GestureDetector(

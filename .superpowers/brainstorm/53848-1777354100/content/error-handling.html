@@ -1,0 +1,103 @@
+<h2>섹션 4: 오류 처리</h2>
+<p class="subtitle">서버와 연동하면 네트워크 오류, 인증 오류 등이 생길 수 있어요. 각 상황별로 어떻게 대응할지 정의해요.</p>
+
+<div style="margin-top:24px;display:flex;flex-direction:column;gap:12px;">
+
+  <!-- Scenario 1: Offline -->
+  <div style="background:#1e1e2e;border:1px solid #334155;border-radius:12px;overflow:hidden;">
+    <div style="background:#0f172a;padding:10px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #334155;">
+      <span style="font-size:18px;">📡</span>
+      <strong style="color:#e2e8f0;">오프라인 / 네트워크 없음</strong>
+      <span style="margin-left:auto;background:#22c55e20;color:#86efac;font-size:11px;padding:2px 8px;border-radius:4px;">투명하게 처리</span>
+    </div>
+    <div style="padding:14px 16px;display:flex;gap:16px;flex-wrap:wrap;">
+      <div style="flex:1;min-width:140px;">
+        <div style="color:#64748b;font-size:11px;margin-bottom:6px;">상황</div>
+        <div style="font-size:13px;color:#94a3b8;">인터넷 연결 없이 앱 사용 시도</div>
+      </div>
+      <div style="flex:2;min-width:200px;">
+        <div style="color:#64748b;font-size:11px;margin-bottom:6px;">처리 방식</div>
+        <div style="font-size:13px;color:#94a3b8;">• Hive 로컬 데이터로 정상 작동</div>
+        <div style="font-size:13px;color:#94a3b8;">• 상단에 <span style="background:#f59e0b20;color:#fcd34d;padding:1px 6px;border-radius:4px;font-size:12px;">오프라인 모드</span> 배지 표시</div>
+        <div style="font-size:13px;color:#94a3b8;">• 온라인 복귀 시 자동 동기화</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scenario 2: Sync conflict -->
+  <div style="background:#1e1e2e;border:1px solid #334155;border-radius:12px;overflow:hidden;">
+    <div style="background:#0f172a;padding:10px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #334155;">
+      <span style="font-size:18px;">⚡</span>
+      <strong style="color:#e2e8f0;">동기화 충돌</strong>
+      <span style="margin-left:auto;background:#fbbf2420;color:#fde68a;font-size:11px;padding:2px 8px;border-radius:4px;">서버 우선 전략</span>
+    </div>
+    <div style="padding:14px 16px;display:flex;gap:16px;flex-wrap:wrap;">
+      <div style="flex:1;min-width:140px;">
+        <div style="color:#64748b;font-size:11px;margin-bottom:6px;">상황</div>
+        <div style="font-size:13px;color:#94a3b8;">오프라인 중 수정한 데이터와 서버 데이터가 다를 때</div>
+      </div>
+      <div style="flex:2;min-width:200px;">
+        <div style="color:#64748b;font-size:11px;margin-bottom:6px;">처리 방식 (1단계)</div>
+        <div style="font-size:13px;color:#94a3b8;">• <strong style="color:#fcd34d;">서버 데이터 우선</strong> (가장 단순한 전략)</div>
+        <div style="font-size:13px;color:#94a3b8;">• created_at 타임스탬프로 최신 항목 유지</div>
+        <div style="font-size:13px;color:#64748b;margin-top:4px;font-style:italic;">복잡한 머지 로직은 2단계 이후에 고려</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scenario 3: Auth error -->
+  <div style="background:#1e1e2e;border:1px solid #334155;border-radius:12px;overflow:hidden;">
+    <div style="background:#0f172a;padding:10px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #334155;">
+      <span style="font-size:18px;">🔐</span>
+      <strong style="color:#e2e8f0;">인증 오류 (세션 만료)</strong>
+      <span style="margin-left:auto;background:#ef444420;color:#fca5a5;font-size:11px;padding:2px 8px;border-radius:4px;">재로그인 유도</span>
+    </div>
+    <div style="padding:14px 16px;display:flex;gap:16px;flex-wrap:wrap;">
+      <div style="flex:1;min-width:140px;">
+        <div style="color:#64748b;font-size:11px;margin-bottom:6px;">상황</div>
+        <div style="font-size:13px;color:#94a3b8;">JWT 토큰 만료 또는 비정상 세션</div>
+      </div>
+      <div style="flex:2;min-width:200px;">
+        <div style="color:#64748b;font-size:11px;margin-bottom:6px;">처리 방식</div>
+        <div style="font-size:13px;color:#94a3b8;">• Supabase SDK가 자동 토큰 갱신 시도</div>
+        <div style="font-size:13px;color:#94a3b8;">• 갱신 실패 시 로그인 화면으로 이동</div>
+        <div style="font-size:13px;color:#94a3b8;">• 로컬 데이터는 그대로 유지 (데이터 손실 없음)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scenario 4: API / Server error -->
+  <div style="background:#1e1e2e;border:1px solid #334155;border-radius:12px;overflow:hidden;">
+    <div style="background:#0f172a;padding:10px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #334155;">
+      <span style="font-size:18px;">🌐</span>
+      <strong style="color:#e2e8f0;">서버 오류 (5xx)</strong>
+      <span style="margin-left:auto;background:#ef444420;color:#fca5a5;font-size:11px;padding:2px 8px;border-radius:4px;">사용자 친화 메시지</span>
+    </div>
+    <div style="padding:14px 16px;display:flex;gap:16px;flex-wrap:wrap;">
+      <div style="flex:1;min-width:140px;">
+        <div style="color:#64748b;font-size:11px;margin-bottom:6px;">상황</div>
+        <div style="font-size:13px;color:#94a3b8;">Supabase 또는 Edge Function 오류</div>
+      </div>
+      <div style="flex:2;min-width:200px;">
+        <div style="color:#64748b;font-size:11px;margin-bottom:6px;">처리 방식</div>
+        <div style="font-size:13px;color:#94a3b8;">• 토스트 메시지: <span style="color:#fca5a5;">"잠시 후 다시 시도해주세요"</span></div>
+        <div style="font-size:13px;color:#94a3b8;">• 로컬 작업은 계속 가능</div>
+        <div style="font-size:13px;color:#94a3b8;">• 개발 중엔 콘솔에 상세 오류 로그</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Core principle -->
+<div style="margin-top:20px;background:#0f172a;border:1px solid #6366f1;border-radius:12px;padding:16px;">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+    <span style="font-size:16px;">💡</span>
+    <strong style="color:#a5b4fc;">핵심 원칙: 오류가 나도 앱이 멈추면 안 돼요</strong>
+  </div>
+  <p style="margin:0;color:#94a3b8;font-size:13px;">서버 연동 코드는 항상 <code style="background:#1e293b;padding:1px 6px;border-radius:4px;color:#67e8f9;">try/catch</code>로 감싸고, 실패해도 로컬 기능은 유지되도록 설계합니다. 사용자는 "서버가 잠깐 느릴 수 있다" 정도만 알면 충분해요.</p>
+</div>
+
+<div style="margin-top:16px;text-align:center;">
+  <p style="color:#64748b;font-size:13px;">이 방식이 맞나요? 마지막 섹션 5: 테스트 전략으로 넘어갈게요.</p>
+</div>

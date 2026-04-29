@@ -1,0 +1,99 @@
+<h2>섹션 5: 테스트 전략</h2>
+<p class="subtitle">서버 초보자라면 처음부터 모든 걸 자동화할 필요 없어요. 단계별로 검증 방식을 늘려가요.</p>
+
+<div style="margin-top:24px;display:flex;flex-direction:column;gap:12px;">
+
+  <!-- Phase 1 Testing -->
+  <div style="background:#1e1e2e;border:2px solid #6366f1;border-radius:12px;overflow:hidden;">
+    <div style="background:#6366f110;padding:10px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #6366f130;">
+      <span style="background:#6366f1;color:white;font-size:11px;font-weight:700;padding:2px 10px;border-radius:20px;">먼저</span>
+      <strong style="color:#a5b4fc;">수동 테스트 체크리스트</strong>
+      <span style="margin-left:auto;color:#64748b;font-size:12px;">코드 짠 뒤 직접 확인</span>
+    </div>
+    <div style="padding:14px 16px;">
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="width:16px;height:16px;border:1.5px solid #334155;border-radius:3px;flex-shrink:0;display:inline-block;"></span>
+          <span style="font-size:13px;color:#94a3b8;">이메일 회원가입 → 인증 메일 수신 → 로그인 성공</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="width:16px;height:16px;border:1.5px solid #334155;border-radius:3px;flex-shrink:0;display:inline-block;"></span>
+          <span style="font-size:13px;color:#94a3b8;">비회원으로 계산 저장 → 계정 연결 → Supabase에 데이터 이전 확인</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="width:16px;height:16px;border:1.5px solid #334155;border-radius:3px;flex-shrink:0;display:inline-block;"></span>
+          <span style="font-size:13px;color:#94a3b8;">비행기 모드 → 계산 입력 → 와이파이 켜기 → 자동 동기화 확인</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="width:16px;height:16px;border:1.5px solid #334155;border-radius:3px;flex-shrink:0;display:inline-block;"></span>
+          <span style="font-size:13px;color:#94a3b8;">로그아웃 → 재로그인 → 히스토리 복원 확인</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="width:16px;height:16px;border:1.5px solid #334155;border-radius:3px;flex-shrink:0;display:inline-block;"></span>
+          <span style="font-size:13px;color:#94a3b8;">Supabase 대시보드에서 저장된 데이터 직접 눈으로 확인</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Unit Tests -->
+  <div style="background:#1e1e2e;border:1px solid #334155;border-radius:12px;overflow:hidden;">
+    <div style="background:#0f172a;padding:10px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #334155;">
+      <span style="font-size:18px;">🧪</span>
+      <strong style="color:#e2e8f0;">단위 테스트 (Unit Test)</strong>
+      <span style="margin-left:auto;background:#22c55e20;color:#86efac;font-size:11px;padding:2px 8px;border-radius:4px;">기존 테스트 유지</span>
+    </div>
+    <div style="padding:14px 16px;">
+      <p style="font-size:13px;color:#94a3b8;margin-bottom:8px;">전월세 전환, 대출 이자 등 계산 로직은 서버와 무관하게 계속 테스트.</p>
+      <div style="background:#0f172a;border-radius:6px;padding:10px;font-family:monospace;font-size:12px;color:#67e8f9;">
+        test('전세 → 월세 전환 계산', () {<br>
+        &nbsp;&nbsp;expect(convertToMonthly(100000000, 5.0), equals(416666));<br>
+        });
+      </div>
+    </div>
+  </div>
+
+  <!-- Integration Tests -->
+  <div style="background:#1e1e2e;border:1px solid #334155;border-radius:12px;overflow:hidden;">
+    <div style="background:#0f172a;padding:10px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #334155;">
+      <span style="font-size:18px;">🔗</span>
+      <strong style="color:#e2e8f0;">통합 테스트 (Integration Test)</strong>
+      <span style="margin-left:auto;background:#fbbf2420;color:#fde68a;font-size:11px;padding:2px 8px;border-radius:4px;">1단계 완성 후 추가</span>
+    </div>
+    <div style="padding:14px 16px;display:flex;flex-direction:column;gap:6px;">
+      <div style="display:flex;align-items:flex-start;gap:8px;">
+        <span style="color:#0891b2;margin-top:2px;">▸</span>
+        <span style="font-size:13px;color:#94a3b8;">Supabase 테스트 프로젝트 별도 생성 (무료 플랜으로 추가 가능)</span>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:8px;">
+        <span style="color:#0891b2;margin-top:2px;">▸</span>
+        <span style="font-size:13px;color:#94a3b8;">로그인 플로우, 데이터 저장/불러오기 자동화</span>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:8px;">
+        <span style="color:#0891b2;margin-top:2px;">▸</span>
+        <span style="font-size:13px;color:#94a3b8;">Flutter <code style="background:#1e293b;padding:1px 5px;border-radius:3px;">integration_test</code> 패키지 활용</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Summary -->
+<div style="margin-top:20px;background:#0f172a;border:1px solid #334155;border-radius:12px;padding:16px;">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+    <span style="font-size:16px;">📋</span>
+    <strong style="color:#e2e8f0;">초보자 권장 순서</strong>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+    <span style="background:#6366f120;color:#a5b4fc;padding:6px 12px;border-radius:8px;font-size:13px;">① 수동 체크리스트</span>
+    <span style="color:#334155;">→</span>
+    <span style="background:#0891b220;color:#67e8f9;padding:6px 12px;border-radius:8px;font-size:13px;">② 기존 단위 테스트 유지</span>
+    <span style="color:#334155;">→</span>
+    <span style="background:#7c3aed20;color:#c4b5fd;padding:6px 12px;border-radius:8px;font-size:13px;">③ 통합 테스트 추가</span>
+  </div>
+  <p style="margin-top:10px;margin-bottom:0;color:#64748b;font-size:13px;">처음엔 수동 검증으로 충분해요. 기능이 안정되면 자동화를 추가하는 게 훨씬 효율적이에요.</p>
+</div>
+
+<div style="margin-top:16px;text-align:center;">
+  <p style="color:#64748b;font-size:13px;">5개 섹션 모두 완료! 이 방향으로 디자인 문서를 작성할까요?</p>
+</div>

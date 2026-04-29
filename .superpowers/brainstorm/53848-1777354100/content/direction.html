@@ -1,0 +1,36 @@
+<h2>서버 연동, 어떤 방향이 목표인가요?</h2>
+<p class="subtitle">가장 끌리는 방향을 선택해주세요 (복수 선택 가능)</p>
+
+<div class="options" data-multiselect>
+  <div class="option" data-choice="sync" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>☁️ 클라우드 동기화</h3>
+      <p>계산 히스토리를 서버에 저장하여 여러 기기에서 접근. 기기 교체해도 데이터 유지.</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="realtime" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>📊 실시간 금융 데이터</h3>
+      <p>최신 대출 금리, 전월세 전환율 등을 서버에서 자동 업데이트. 항상 최신 기준으로 계산.</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="community" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>👥 커뮤니티 / 공유</h3>
+      <p>계산 결과를 링크로 공유하거나, 지역별 평균 임대료 데이터를 다른 사용자들과 공유.</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="ai" onclick="toggleSelect(this)">
+    <div class="letter">D</div>
+    <div class="content">
+      <h3>🤖 AI 분석 / 조언</h3>
+      <p>입력 데이터를 바탕으로 "이 금액이 적정한가요?" 같은 AI 기반 조언 제공.</p>
+    </div>
+  </div>
+</div>

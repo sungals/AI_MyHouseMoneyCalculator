@@ -1,0 +1,58 @@
+<h2>로그인 방식을 어떻게 할까요?</h2>
+<p class="subtitle">사용자가 앱에서 어떻게 계정을 만들고 로그인할지 결정해요. 복수 선택 가능.</p>
+
+<div class="options" data-multiselect style="margin-top:24px;">
+
+  <div class="option" data-choice="email" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>📧 이메일 + 비밀번호</h3>
+      <p>가장 기본적인 방식. 이메일 입력 → 비밀번호 설정 → 이메일 인증. 구현이 가장 단순하고 Supabase에서 기본 제공.</p>
+      <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+        <span style="background:#22c55e20;color:#86efac;font-size:11px;padding:2px 8px;border-radius:4px;">구현 쉬움</span>
+        <span style="background:#1e293b;color:#64748b;font-size:11px;padding:2px 8px;border-radius:4px;">Supabase 기본 제공</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="google" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>🔵 구글 로그인</h3>
+      <p>버튼 하나로 로그인 완료. 비밀번호 관리 불필요. 한국 앱에서 가장 보편적인 소셜 로그인.</p>
+      <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+        <span style="background:#fbbf2420;color:#fde68a;font-size:11px;padding:2px 8px;border-radius:4px;">UX 최고</span>
+        <span style="background:#1e293b;color:#64748b;font-size:11px;padding:2px 8px;border-radius:4px;">구글 콘솔 설정 필요</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="kakao" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>🟡 카카오 로그인</h3>
+      <p>국내 앱에서 선호도 1위. 카카오 계정으로 원터치 로그인. 단, Supabase와 연동 설정이 다소 복잡함.</p>
+      <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+        <span style="background:#fbbf2420;color:#fde68a;font-size:11px;padding:2px 8px;border-radius:4px;">국내 사용자 친숙</span>
+        <span style="background:#ef444420;color:#fca5a5;font-size:11px;padding:2px 8px;border-radius:4px;">설정 복잡</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="anonymous" onclick="toggleSelect(this)">
+    <div class="letter">D</div>
+    <div class="content">
+      <h3>👤 비회원 모드 지원</h3>
+      <p>로그인 없이도 앱 사용 가능. 나중에 계정 만들면 기존 데이터 이전. 사용자 진입 장벽을 낮추고 싶을 때.</p>
+      <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+        <span style="background:#22c55e20;color:#86efac;font-size:11px;padding:2px 8px;border-radius:4px;">진입장벽 낮음</span>
+        <span style="background:#fbbf2420;color:#fde68a;font-size:11px;padding:2px 8px;border-radius:4px;">데이터 이전 로직 필요</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div style="margin-top:20px;background:#0f172a;border:1px solid #334155;border-radius:12px;padding:16px;">
+  <p style="margin:0;color:#94a3b8;font-size:14px;">⭐ <strong style="color:#e2e8f0;">초보자 추천 조합:</strong> A(이메일) + D(비회원 모드). 구현이 단순하고, 사용자도 부담 없이 앱을 먼저 써볼 수 있어요. 나중에 B(구글)는 쉽게 추가 가능.</p>
+</div>

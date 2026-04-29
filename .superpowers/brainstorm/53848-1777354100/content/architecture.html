@@ -1,0 +1,83 @@
+<h2>서버 아키텍처 방식, 어떤 구조로 갈까요?</h2>
+<p class="subtitle">3가지 방식 중 하나를 골라주세요. 각 방식의 복잡도와 유연성이 달라요.</p>
+
+<div class="options" style="margin-top:24px;">
+
+  <div class="option" data-choice="direct" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>⚡ Flutter → Supabase 직접 연결</h3>
+      <p style="margin-bottom:12px;">앱에서 Supabase SDK를 직접 호출. 별도 서버 없음.</p>
+      <div style="background:#0f172a;border-radius:8px;padding:12px;font-family:monospace;font-size:12px;color:#94a3b8;margin-bottom:12px;">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span style="background:#6366f1;color:white;padding:4px 12px;border-radius:6px;">Flutter 앱</span>
+          <span style="color:#475569;">──────────────▶</span>
+          <span style="background:#3ECF8E;color:#0f172a;padding:4px 12px;border-radius:6px;font-weight:600;">Supabase</span>
+        </div>
+        <div style="margin-top:8px;color:#475569;font-size:11px;">Auth · Database · Storage 직접 접근</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <span style="background:#22c55e20;color:#86efac;font-size:11px;padding:2px 8px;border-radius:4px;">✓ 가장 단순</span>
+        <span style="background:#22c55e20;color:#86efac;font-size:11px;padding:2px 8px;border-radius:4px;">✓ 초보자 최적</span>
+        <span style="background:#22c55e20;color:#86efac;font-size:11px;padding:2px 8px;border-radius:4px;">✓ 빠른 개발</span>
+        <span style="background:#ef444420;color:#fca5a5;font-size:11px;padding:2px 8px;border-radius:4px;">✗ 복잡한 로직 한계</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="edge" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>🔧 Flutter → Supabase + Edge Functions</h3>
+      <p style="margin-bottom:12px;">기본은 직접 연결, 복잡한 로직(금리 수집, AI 호출)만 Supabase 내부 함수로 처리.</p>
+      <div style="background:#0f172a;border-radius:8px;padding:12px;font-family:monospace;font-size:12px;color:#94a3b8;margin-bottom:12px;">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span style="background:#6366f1;color:white;padding:4px 12px;border-radius:6px;">Flutter 앱</span>
+          <span style="color:#475569;">───▶</span>
+          <div style="background:#1e293b;border:1px solid #3ECF8E40;border-radius:8px;padding:8px;">
+            <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+              <span style="background:#3ECF8E;color:#0f172a;padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;">Supabase DB</span>
+              <span style="color:#475569;font-size:11px;">+</span>
+              <span style="background:#0891b2;color:white;padding:3px 8px;border-radius:4px;font-size:11px;">Edge Functions</span>
+            </div>
+            <div style="margin-top:4px;color:#475569;font-size:10px;">금리수집 · AI조언 · 공유링크 생성</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <span style="background:#22c55e20;color:#86efac;font-size:11px;padding:2px 8px;border-radius:4px;">✓ 균형 잡힌 구조</span>
+        <span style="background:#22c55e20;color:#86efac;font-size:11px;padding:2px 8px;border-radius:4px;">✓ 서버 관리 불필요</span>
+        <span style="background:#22c55e20;color:#86efac;font-size:11px;padding:2px 8px;border-radius:4px;">✓ 4단계 AI까지 확장 가능</span>
+        <span style="background:#fbbf2420;color:#fde68a;font-size:11px;padding:2px 8px;border-radius:4px;">△ A보다 약간 복잡</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="backend" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>🏗️ Flutter → 별도 백엔드 서버 → Supabase</h3>
+      <p style="margin-bottom:12px;">Node.js 또는 Python 서버를 별도로 운영. 앱은 이 서버를 통해서만 데이터 접근.</p>
+      <div style="background:#0f172a;border-radius:8px;padding:12px;font-family:monospace;font-size:12px;color:#94a3b8;margin-bottom:12px;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span style="background:#6366f1;color:white;padding:4px 10px;border-radius:6px;font-size:11px;">Flutter</span>
+          <span style="color:#475569;">▶</span>
+          <span style="background:#f59e0b;color:#0f172a;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;">백엔드 API</span>
+          <span style="color:#475569;">▶</span>
+          <span style="background:#3ECF8E;color:#0f172a;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;">Supabase</span>
+        </div>
+        <div style="margin-top:8px;color:#475569;font-size:11px;">완전한 제어권, 서버 직접 운영 필요</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <span style="background:#22c55e20;color:#86efac;font-size:11px;padding:2px 8px;border-radius:4px;">✓ 최대 유연성</span>
+        <span style="background:#ef444420;color:#fca5a5;font-size:11px;padding:2px 8px;border-radius:4px;">✗ 서버 운영 비용 발생</span>
+        <span style="background:#ef444420;color:#fca5a5;font-size:11px;padding:2px 8px;border-radius:4px;">✗ 초보자에게 과도한 복잡도</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div style="margin-top:20px;background:#0f172a;border:1px solid #6366f1;border-radius:12px;padding:16px;">
+  <p style="margin:0;color:#94a3b8;font-size:14px;">⭐ <strong style="color:#a5b4fc;">추천: B (Supabase + Edge Functions).</strong> 1단계는 A처럼 단순하게 시작하고, 2~4단계에서 Edge Functions를 추가하는 방식이에요. 별도 서버 없이도 AI까지 구현 가능해요.</p>
+</div>

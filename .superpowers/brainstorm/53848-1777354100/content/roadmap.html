@@ -1,0 +1,87 @@
+<h2>서버 연동 단계별 로드맵</h2>
+<p class="subtitle">각 단계가 다음 단계의 기반이 됩니다. 순서대로 하나씩 만들어가요.</p>
+
+<div style="display:flex;flex-direction:column;gap:16px;margin-top:24px;">
+
+  <div style="display:flex;align-items:stretch;gap:16px;">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+      <div style="width:40px;height:40px;border-radius:50%;background:#6366f1;color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;flex-shrink:0;">1</div>
+      <div style="width:2px;flex:1;background:#6366f1;opacity:0.3;"></div>
+    </div>
+    <div style="background:#1e1e2e;border:1px solid #6366f1;border-radius:12px;padding:20px;flex:1;margin-bottom:0;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+        <span style="font-size:22px;">☁️</span>
+        <h3 style="margin:0;color:#a5b4fc;">클라우드 동기화 — 모든 것의 기반</h3>
+        <span style="margin-left:auto;background:#6366f1;color:white;font-size:11px;padding:2px 10px;border-radius:20px;">시작점</span>
+      </div>
+      <p style="margin:0 0 10px;color:#94a3b8;">서버 계정 생성, 로그인/로그아웃, 히스토리 클라우드 저장. <strong style="color:#e2e8f0;">이 단계를 완성하면 나머지 3개가 쉬워져요.</strong></p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <span style="background:#1e293b;color:#64748b;font-size:12px;padding:3px 10px;border-radius:6px;">Firebase / Supabase</span>
+        <span style="background:#1e293b;color:#64748b;font-size:12px;padding:3px 10px;border-radius:6px;">이메일 로그인</span>
+        <span style="background:#1e293b;color:#64748b;font-size:12px;padding:3px 10px;border-radius:6px;">데이터 동기화</span>
+        <span style="background:#22c55e20;color:#86efac;font-size:12px;padding:3px 10px;border-radius:6px;">난이도: 초급</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;align-items:stretch;gap:16px;">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+      <div style="width:40px;height:40px;border-radius:50%;background:#0891b2;color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;flex-shrink:0;">2</div>
+      <div style="width:2px;flex:1;background:#0891b2;opacity:0.3;"></div>
+    </div>
+    <div style="background:#1e1e2e;border:1px solid #0891b2;border-radius:12px;padding:20px;flex:1;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+        <span style="font-size:22px;">📊</span>
+        <h3 style="margin:0;color:#67e8f9;">실시간 금융 데이터</h3>
+      </div>
+      <p style="margin:0 0 10px;color:#94a3b8;">한국은행 API 등에서 기준금리·전환율을 자동으로 가져와 앱에 반영. 사용자가 직접 수치를 입력 안 해도 됨.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <span style="background:#1e293b;color:#64748b;font-size:12px;padding:3px 10px;border-radius:6px;">한국은행 Open API</span>
+        <span style="background:#1e293b;color:#64748b;font-size:12px;padding:3px 10px;border-radius:6px;">서버 스케줄러</span>
+        <span style="background:#fbbf2420;color:#fde68a;font-size:12px;padding:3px 10px;border-radius:6px;">난이도: 중급</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;align-items:stretch;gap:16px;">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+      <div style="width:40px;height:40px;border-radius:50%;background:#7c3aed;color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;flex-shrink:0;">3</div>
+      <div style="width:2px;flex:1;background:#7c3aed;opacity:0.3;"></div>
+    </div>
+    <div style="background:#1e1e2e;border:1px solid #7c3aed;border-radius:12px;padding:20px;flex:1;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+        <span style="font-size:22px;">👥</span>
+        <h3 style="margin:0;color:#c4b5fd;">공유 / 커뮤니티</h3>
+      </div>
+      <p style="margin:0 0 10px;color:#94a3b8;">계산 결과를 링크 하나로 공유. 지역별 임대 시세 데이터 열람. 1단계 계정 시스템 위에 자연스럽게 추가.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <span style="background:#1e293b;color:#64748b;font-size:12px;padding:3px 10px;border-radius:6px;">공유 링크 생성</span>
+        <span style="background:#1e293b;color:#64748b;font-size:12px;padding:3px 10px;border-radius:6px;">지역 시세 DB</span>
+        <span style="background:#fbbf2420;color:#fde68a;font-size:12px;padding:3px 10px;border-radius:6px;">난이도: 중급</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;align-items:stretch;gap:16px;">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+      <div style="width:40px;height:40px;border-radius:50%;background:#f59e0b;color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;flex-shrink:0;">4</div>
+    </div>
+    <div style="background:#1e1e2e;border:1px solid #f59e0b;border-radius:12px;padding:20px;flex:1;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+        <span style="font-size:22px;">🤖</span>
+        <h3 style="margin:0;color:#fcd34d;">AI 분석 / 조언</h3>
+      </div>
+      <p style="margin:0 0 10px;color:#94a3b8;">사용자 데이터 + 시세 데이터를 기반으로 "이 전세금은 이 지역 평균보다 15% 높아요" 같은 맥락 있는 조언 제공.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <span style="background:#1e293b;color:#64748b;font-size:12px;padding:3px 10px;border-radius:6px;">Claude API</span>
+        <span style="background:#1e293b;color:#64748b;font-size:12px;padding:3px 10px;border-radius:6px;">벡터 검색</span>
+        <span style="background:#ef444420;color:#fca5a5;font-size:12px;padding:3px 10px;border-radius:6px;">난이도: 고급</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div style="margin-top:24px;background:#0f172a;border:1px solid #334155;border-radius:12px;padding:16px;">
+  <p style="margin:0;color:#94a3b8;font-size:14px;">💡 <strong style="color:#e2e8f0;">추천:</strong> 1단계부터 시작하면 서버 개념을 자연스럽게 익히면서, 이미 쓸 수 있는 기능이 생겨요. 각 단계는 2~4주 정도 예상됩니다.</p>
+</div>
