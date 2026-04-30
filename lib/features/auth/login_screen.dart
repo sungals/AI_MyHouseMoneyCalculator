@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../shared/widgets/primary_button.dart';
@@ -39,13 +38,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   void _navigateToHome(BuildContext ctx) {
-    ctx.go('/');
-  }
-
-  Future<void> _continueAsGuest(BuildContext ctx) async {
-    final box = Hive.box('app_settings');
-    await box.put('login_skipped', true);
-    if (!ctx.mounted) return;
     ctx.go('/');
   }
 
@@ -211,22 +203,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       fontSize: 14,
                     ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              // Divider
-              const Divider(
-                color: AppColors.divider,
-                thickness: 1,
-              ),
-              const SizedBox(height: 16),
-              // Guest mode button
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  icon: const Icon(Icons.arrow_forward),
-                  label: const Text('로그인 없이 계속하기'),
-                  onPressed: () => _continueAsGuest(context),
                 ),
               ),
               const SizedBox(height: 40),

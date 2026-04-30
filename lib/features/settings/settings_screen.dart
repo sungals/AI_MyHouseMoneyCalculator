@@ -64,34 +64,40 @@ class _PinTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasPIN = pinState is PinEnabled;
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.surface,
+    return Material(
+      color: AppColors.surface,
+      borderRadius: BorderRadius.circular(12),
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.cardBorder),
+        side: const BorderSide(color: Color(0xFFD1D5DB), width: 1.5),
       ),
-      child: ListTile(
-        leading: Icon(
-          hasPIN ? Icons.lock : Icons.lock_open,
-          color: hasPIN ? AppColors.primary : AppColors.textSecondary,
-        ),
-        title: Text(hasPIN ? '간편로그인 사용 중' : '간편로그인 설정'),
-        subtitle: Text(
-          hasPIN ? 'PIN 번호로 앱을 잠금 해제합니다' : 'PIN 번호를 설정하면 빠르게 로그인할 수 있습니다',
-          style: const TextStyle(fontSize: 12),
-        ),
-        trailing: hasPIN
-            ? TextButton(
-                onPressed: () async {
-                  await ref.read(pinNotifierProvider.notifier).disablePin();
-                },
-                child: const Text(
-                  '해제',
-                  style: TextStyle(color: AppColors.danger),
-                ),
-              )
-            : const Icon(Icons.chevron_right),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        highlightColor: const Color(0x141F4FFF),
+        splashColor: const Color(0x1A1F4FFF),
         onTap: hasPIN ? null : () => context.push('/pin-setup'),
+        child: ListTile(
+          leading: Icon(
+            hasPIN ? Icons.lock : Icons.lock_open,
+            color: hasPIN ? AppColors.primary : AppColors.textSecondary,
+          ),
+          title: Text(hasPIN ? '간편로그인 사용 중' : '간편로그인 설정'),
+          subtitle: Text(
+            hasPIN ? 'PIN 번호로 앱을 잠금 해제합니다' : 'PIN 번호를 설정하면 빠르게 로그인할 수 있습니다',
+            style: const TextStyle(fontSize: 12),
+          ),
+          trailing: hasPIN
+              ? TextButton(
+                  onPressed: () async {
+                    await ref.read(pinNotifierProvider.notifier).disablePin();
+                  },
+                  child: const Text(
+                    '해제',
+                    style: TextStyle(color: AppColors.danger),
+                  ),
+                )
+              : const Icon(Icons.chevron_right),
+        ),
       ),
     );
   }
