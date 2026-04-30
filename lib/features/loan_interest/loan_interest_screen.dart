@@ -86,7 +86,7 @@ class _LoanInterestScreenState extends ConsumerState<LoanInterestScreen> {
     final result = ref.read(loanInterestControllerProvider);
     if (result == null) return;
 
-    final text = '''[집돈계산기] 대출이자 계산 결과
+    final text = '''[어떤비용] 대출이자 계산 결과
 
 대출금: ${MoneyFormatter.formatWithWon(result.loanAmount)}
 월 이자: ${MoneyFormatter.formatWithWon(result.monthlyInterest)}

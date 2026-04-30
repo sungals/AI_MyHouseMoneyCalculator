@@ -100,7 +100,7 @@ class _MonthlyExpenseScreenState extends ConsumerState<MonthlyExpenseScreen> {
         .map((e) => '${e.key}: ${MoneyFormatter.formatWithWon(e.value)}')
         .join('\n');
 
-    final text = '''[집돈계산기] 월 고정비 계산 결과
+    final text = '''[어떤비용] 월 고정비 계산 결과
 
 $breakdown
 

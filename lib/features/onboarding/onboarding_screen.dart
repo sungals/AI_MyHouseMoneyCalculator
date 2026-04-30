@@ -18,7 +18,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     _PageData(
       icon: Icons.home_work_outlined,
       color: Color(0xFF4F8EF7),
-      title: '집돈계산기에 오신 걸\n환영합니다!',
+      title: '어떤비용에 오신 걸\n환영합니다!',
       body: '전세·월세·대출·생활비를 한 번에.\n복잡한 주거 비용을 쉽고 빠르게\n계산해 드립니다.',
     ),
     _PageData(

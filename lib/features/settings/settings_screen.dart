@@ -66,17 +66,19 @@ class _PinTile extends StatelessWidget {
     final hasPIN = pinState is PinEnabled;
     return Material(
       color: AppColors.surface,
-      borderRadius: BorderRadius.circular(12),
+      clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: const BorderSide(color: Color(0xFFD1D5DB), width: 1.5),
       ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        highlightColor: const Color(0x141F4FFF),
-        splashColor: const Color(0x1A1F4FFF),
-        onTap: hasPIN ? null : () => context.push('/pin-setup'),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          splashFactory: InkRipple.splashFactory,
+          splashColor: const Color(0x661F4FFF),
+          highlightColor: const Color(0x991F4FFF),
+        ),
         child: ListTile(
+          onTap: hasPIN ? null : () => context.push('/pin-setup'),
           leading: Icon(
             hasPIN ? Icons.lock : Icons.lock_open,
             color: hasPIN ? AppColors.primary : AppColors.textSecondary,

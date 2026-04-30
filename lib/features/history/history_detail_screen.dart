@@ -42,7 +42,7 @@ class _HistoryDetailScreenState extends ConsumerState<HistoryDetailScreen> {
         .map((e) => '${e.key}: ${_formatValue(e.value)}')
         .join('\n');
 
-    final text = '[집돈계산기] ${item.title}\n\n'
+    final text = '[어떤비용] ${item.title}\n\n'
         '${item.summary}\n\n'
         '$resultEntries\n\n'
         '※ 본 계산 결과는 참고용입니다.';

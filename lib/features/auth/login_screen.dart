@@ -93,7 +93,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               const SizedBox(height: 32),
               // App logo/title area
               const Text(
-                '집돈계산기',
+                AppConstants.appName,
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,

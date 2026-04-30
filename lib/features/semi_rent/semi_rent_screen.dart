@@ -106,7 +106,7 @@ class _SemiRentScreenState extends ConsumerState<SemiRentScreen> {
     final result = ref.read(semiRentControllerProvider);
     if (result == null) return;
 
-    final text = '''[집돈계산기] 반전세 계산 결과
+    final text = '''[어떤비용] 반전세 계산 결과
 
 ${result.summaryText}
 

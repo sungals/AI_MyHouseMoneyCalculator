@@ -14,7 +14,7 @@ class App extends ConsumerWidget {
     final isOnline = ref.watch(connectivityProvider);
 
     return MaterialApp.router(
-      title: '집돈계산기',
+      title: '어떤비용',
       theme: AppTheme.light,
       routerConfig: AppRouter.router,
       debugShowCheckedModeBanner: false,
