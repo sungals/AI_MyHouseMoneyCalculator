@@ -15,7 +15,7 @@ void main() {
         jeonseLoan: 200000000,
         interestRate: 4.0,
         monthlyRentDeposit: 10000000,
-        monthlyRent: 900000,
+        monthlyRent: 1600000,
         maintenanceFee: 100000,
         months: 24,
       );
@@ -26,10 +26,12 @@ void main() {
       // Assert
       // 전세 월이자: 200,000,000 * 4% / 12 = 666,667원
       // 전세 월비용: 666,667 + 100,000 = 766,667원
-      // 월세 월비용: 900,000 + 100,000 = 1,000,000원
-      // 차이: 1,000,000 - 766,667 = 233,333원 (전세 유리)
+      // 월세 월비용: 1,600,000 + 100,000 = 1,700,000원
+      // 보증금 차액 기회비용: 290,000,000 * 3.5% / 12 = 845,833원
+      // 보정 월세비용: 1,700,000 - 845,833 = 854,167원
+      // 차이: 854,167 - 766,667 = 87,500원 (전세 유리)
       expect(result.jeonseMonthlyCost, equals(766667));
-      expect(result.rentMonthlyCost, equals(1000000));
+      expect(result.rentMonthlyCost, equals(1700000));
       expect(result.monthlyDifference, greaterThan(0));
       expect(result.isJeonseAdvantageous, isTrue);
       expect(result.totalDifference, equals(result.monthlyDifference * 24));
@@ -74,6 +76,7 @@ void main() {
         monthlyRent: 120000,
         maintenanceFee: 0,
         months: 24,
+        depositInterestRate: 0,
       );
 
       // Act

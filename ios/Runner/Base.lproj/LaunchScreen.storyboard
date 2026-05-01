@@ -16,13 +16,25 @@
                     <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" image="LaunchImage" translatesAutoresizingMaskIntoConstraints="NO" id="YRO-k0-Ey4">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="LaunchIcon" translatesAutoresizingMaskIntoConstraints="NO" id="LP1-k2-M3n">
                             </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="어떤비용" textAlignment="center" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="A1B-2C-3D4">
+                                <fontDescription key="fontDescription" type="system" pointSize="22"/>
+                                <color key="textColor" red="0.12156862745098039" green="0.30980392156862746" blue="1.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" red="0.96862745098039216" green="0.97254901960784314" blue="0.98039215686274506" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="YRO-k0-Ey4" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="1a2-6s-vTC"/>
-                            <constraint firstItem="YRO-k0-Ey4" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="4X2-HB-R7a"/>
+                            <!-- 아이콘: 가로 120pt, 세로 120pt, 화면 중앙보다 60pt 위 -->
+                            <constraint firstItem="LP1-k2-M3n" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="IC1-c2-X3y"/>
+                            <constraint firstItem="LP1-k2-M3n" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" constant="-60" id="IC2-c3-Y4z"/>
+                            <constraint firstItem="LP1-k2-M3n" firstAttribute="width" secondItem="Ze5-6b-2t3" secondAttribute="width" multiplier="0.28" id="IC3-c4-Z5a"/>
+                            <constraint firstItem="LP1-k2-M3n" firstAttribute="height" secondItem="LP1-k2-M3n" secondAttribute="width" id="IC4-c5-A6b"/>
+                            <!-- 앱 이름: 아이콘 아래 16pt -->
+                            <constraint firstItem="A1B-2C-3D4" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="LB1-c2-B7c"/>
+                            <constraint firstItem="A1B-2C-3D4" firstAttribute="top" secondItem="LP1-k2-M3n" secondAttribute="bottom" constant="16" id="LB2-c3-C8d"/>
+                            <constraint firstItem="A1B-2C-3D4" firstAttribute="width" secondItem="Ze5-6b-2t3" secondAttribute="width" multiplier="0.6" id="LB3-c4-D9e"/>
                         </constraints>
                     </view>
                 </viewController>
@@ -32,6 +44,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="LaunchImage" width="168" height="185"/>
+        <image name="LaunchIcon" width="120" height="120"/>
     </resources>
 </document>
