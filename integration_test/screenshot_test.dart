@@ -25,15 +25,23 @@ void main() {
     await screensDir.create(recursive: true);
     debugPrint('SCREENSHOTS_DIR:${screensDir.path}');
 
-    // xcrun simctl io screenshot는 외부에서 트리거 – 테스트는 경로만 출력
     Future<void> markSnap(String name) async {
-      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pumpAndSettle();
       debugPrint('SNAP:$name');
+      await tester.pump(const Duration(milliseconds: 1500));
     }
 
     Future<void> go() async {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
+    }
+
+    Future<void> tapCalc() async {
+      await tester.ensureVisible(find.text('계산하기'));
+      await go();
+      await tester.tap(find.text('계산하기'));
+      await tester.pumpAndSettle();
     }
 
     // ── 홈 화면 ──
@@ -58,11 +66,9 @@ void main() {
     await tester.enterText(find.byType(TextFormField).at(6), '24');
     await go();
 
-    await tester.tap(find.text('계산하기'));
-    await go();
-
+    await tapCalc();
     await tester.drag(
-        find.byType(SingleChildScrollView).first, const Offset(0, -450));
+        find.byType(SingleChildScrollView).first, const Offset(0, -600));
     await go();
     await markSnap('02_rent_compare');
 
@@ -78,8 +84,7 @@ void main() {
     await go();
     await tester.enterText(find.byType(TextFormField).at(2), '36');
     await go();
-    await tester.tap(find.text('계산하기'));
-    await go();
+    await tapCalc();
     await markSnap('03_loan_interest');
 
     await tester.pageBack();
@@ -102,10 +107,9 @@ void main() {
     await go();
     await tester.enterText(find.byType(TextFormField).at(6), '400000');
     await go();
-    await tester.tap(find.text('계산하기'));
-    await go();
+    await tapCalc();
     await tester.drag(
-        find.byType(SingleChildScrollView).first, const Offset(0, -400));
+        find.byType(SingleChildScrollView).first, const Offset(0, -600));
     await go();
     await markSnap('04_monthly_expense');
 
@@ -122,7 +126,9 @@ void main() {
     await go();
     await tester.enterText(find.byType(TextFormField).at(1), '900000');
     await go();
-    await tester.tap(find.text('계산하기'));
+    await tapCalc();
+    await tester.drag(
+        find.byType(SingleChildScrollView).first, const Offset(0, -400));
     await go();
     await markSnap('05_tax_deduction');
 
