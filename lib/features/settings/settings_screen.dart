@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/constants/disclaimer_texts.dart';
 import '../../core/theme/app_colors.dart';
@@ -122,8 +123,13 @@ class _AccountSection extends StatelessWidget {
         title: const Text('로그인됨'),
         subtitle: const Text('계정으로 데이터가 동기화됩니다'),
         trailing: TextButton(
-          onPressed: () {
-            ref.read(authNotifierProvider.notifier).signOut();
+          onPressed: () async {
+            final box = Hive.box('app_settings');
+            await box.put('login_skipped', false);
+            await ref.read(authNotifierProvider.notifier).signOut();
+            if (context.mounted) {
+              context.go('/login');
+            }
           },
           child: const Text('로그아웃'),
         ),

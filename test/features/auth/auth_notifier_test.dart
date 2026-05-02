@@ -34,6 +34,8 @@ void main() {
       // Default mock behavior
       when(() => mockSupabaseClient.auth).thenReturn(mockGoTrueClient);
       when(() => mockGoTrueClient.currentSession).thenReturn(null);
+      when(() => mockGoTrueClient.onAuthStateChange)
+          .thenAnswer((_) => const Stream<AuthState>.empty());
       when(() => mockRepository.migrateLocalToRemote())
           .thenAnswer((_) async => {});
     });
@@ -269,10 +271,12 @@ void main() {
       test('emits [AuthLoading, AuthAuthenticated] on successful sign up',
           () async {
         final mockUser = MockUser();
+        final mockSession = MockSession();
         final mockAuthResponse = MockAuthResponse();
 
         when(() => mockUser.id).thenReturn('new_user_123');
         when(() => mockAuthResponse.user).thenReturn(mockUser);
+        when(() => mockAuthResponse.session).thenReturn(mockSession);
         when(
           () => mockGoTrueClient.signUp(
             email: 'newuser@example.com',
@@ -294,10 +298,12 @@ void main() {
 
       test('calls migrateLocalToRemote on successful sign up', () async {
         final mockUser = MockUser();
+        final mockSession = MockSession();
         final mockAuthResponse = MockAuthResponse();
 
         when(() => mockUser.id).thenReturn('new_user_456');
         when(() => mockAuthResponse.user).thenReturn(mockUser);
+        when(() => mockAuthResponse.session).thenReturn(mockSession);
         when(
           () => mockGoTrueClient.signUp(
             email: 'newuser@example.com',
@@ -354,17 +360,19 @@ void main() {
         expect(authNotifier.state, isA<AppAuthError>());
         expect(
           (authNotifier.state as AppAuthError).message,
-          'Sign up failed: No user ID returned',
+          'Sign up failed: No user returned',
         );
       });
 
       test('continues to AuthAuthenticated even if migration fails',
           () async {
         final mockUser = MockUser();
+        final mockSession = MockSession();
         final mockAuthResponse = MockAuthResponse();
 
         when(() => mockUser.id).thenReturn('new_user_789');
         when(() => mockAuthResponse.user).thenReturn(mockUser);
+        when(() => mockAuthResponse.session).thenReturn(mockSession);
         when(
           () => mockGoTrueClient.signUp(
             email: 'newuser@example.com',

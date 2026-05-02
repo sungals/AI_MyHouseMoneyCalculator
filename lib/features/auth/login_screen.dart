@@ -37,6 +37,81 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     super.dispose();
   }
 
+  void _showFindIdDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('아이디 찾기'),
+        content: const Text(
+          '이 앱은 이메일 주소가 아이디입니다.\n가입 시 사용하신 이메일로 로그인해 주세요.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('확인'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showResetPasswordDialog(BuildContext context) {
+    final emailController = TextEditingController(
+      text: _emailController.text.trim(),
+    );
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('비밀번호 찾기'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('가입한 이메일로 비밀번호 재설정 링크를 보내드립니다.'),
+            const SizedBox(height: 16),
+            TextField(
+              controller: emailController,
+              keyboardType: TextInputType.emailAddress,
+              decoration: const InputDecoration(
+                labelText: '이메일',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('취소', style: TextStyle(color: AppColors.textSecondary)),
+          ),
+          TextButton(
+            onPressed: () async {
+              final email = emailController.text.trim();
+              if (email.isEmpty) return;
+              Navigator.pop(ctx);
+              final messenger = ScaffoldMessenger.of(context);
+              final error = await ref
+                  .read(authNotifierProvider.notifier)
+                  .resetPassword(email);
+              if (!mounted) return;
+              messenger.showSnackBar(
+                SnackBar(
+                  content: Text(
+                    error == null
+                        ? '재설정 링크를 $email 로 보냈어요. 메일함을 확인해주세요.'
+                        : '오류: $error',
+                  ),
+                  backgroundColor: error == null ? AppColors.primary : AppColors.danger,
+                ),
+              );
+            },
+            child: const Text('보내기'),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _navigateToHome(BuildContext ctx) {
     ctx.go('/');
   }
@@ -68,12 +143,29 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           } else {
             _navigateToHome(context);
           }
+        } else if (next is AppAuthPendingVerification) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (ctx) => AlertDialog(
+              title: const Text('이메일 인증 필요'),
+              content: Text(
+                '${next.email}\n\n으로 인증 링크를 보냈어요.\n받은 메일함에서 링크를 클릭하면 자동으로 로그인됩니다.',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: const Text('확인'),
+                ),
+              ],
+            ),
+          );
         }
       },
     );
 
     final authState = ref.watch(authNotifierProvider);
-    final isLoading = authState is AppAuthLoading;
+    final isLoading = authState is AppAuthLoading || authState is AppAuthPendingVerification;
     final errorMessage =
         authState is AppAuthError ? authState.message : null;
 
@@ -205,7 +297,30 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 40),
+              if (!_isSignUp) ...[
+                const Divider(height: 32),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: () => _showFindIdDialog(context),
+                      child: const Text(
+                        '아이디 찾기',
+                        style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                      ),
+                    ),
+                    const Text('|', style: TextStyle(color: AppColors.textSecondary)),
+                    TextButton(
+                      onPressed: () => _showResetPasswordDialog(context),
+                      child: const Text(
+                        '비밀번호 찾기',
+                        style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+              const SizedBox(height: 24),
             ],
           ),
         ),

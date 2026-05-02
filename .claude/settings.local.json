@@ -6,7 +6,18 @@
       "Bash(java -version)",
       "Bash(flutter doctor *)",
       "Bash(flutter clean *)",
-      "Bash(flutter analyze *)"
+      "Bash(flutter analyze *)",
+      "Bash(flutter test *)",
+      "Bash(xcodebuild -exportArchive -archivePath build/ios/archive/Runner.xcarchive -exportPath build/ios/ipa -exportOptionsPlist ios/ExportOptions.plist)",
+      "Bash(chmod +x scripts/distribute.sh)",
+      "Bash(bash *)",
+      "Bash(mkdir -p ~/.appstoreconnect/private_keys)",
+      "Bash(cp ~/AI_MyHouseMoneyCalculator/Cer/AuthKey_8GUMN3AWQT.p8 ~/.appstoreconnect/private_keys/)",
+      "Bash(xcodebuild -exportArchive -archivePath build/ios/archive/Runner.xcarchive -exportPath build/ios/ipa -exportOptionsPlist ios/ExportOptions.plist -allowProvisioningUpdates)",
+      "Bash(xcrun altool *)",
+      "Bash(git restore *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)"
     ]
   }
 }

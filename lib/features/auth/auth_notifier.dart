@@ -13,7 +13,17 @@ class AuthNotifier extends StateNotifier<AppAuthState> {
     required CalculationHistoryRepository repo,
   })  : _client = client,
         _repo = repo,
-        super(_initializeState(client));
+        super(_initializeState(client)) {
+    _client.auth.onAuthStateChange.listen((data) {
+      final event = data.event;
+      final session = data.session;
+      if (event == AuthChangeEvent.signedIn && session != null) {
+        state = AppAuthAuthenticated(session.user.id);
+      } else if (event == AuthChangeEvent.signedOut) {
+        state = const AppAuthUnauthenticated();
+      }
+    });
+  }
 
   static AppAuthState _initializeState(SupabaseClient client) {
     final session = client.auth.currentSession;
@@ -62,24 +72,38 @@ class AuthNotifier extends StateNotifier<AppAuthState> {
         password: password,
       );
 
-      final userId = response.user?.id;
-      if (userId == null) {
-        state = const AppAuthError('Sign up failed: No user ID returned');
+      final user = response.user;
+      if (user == null) {
+        state = const AppAuthError('Sign up failed: No user returned');
         return;
       }
 
-      // Migrate local records to remote on first sign up
-      try {
-        await _repo.migrateLocalToRemote();
-      } catch (_) {
-        // Log or handle migration error silently to not block signup
+      // session이 null이면 이메일 인증 대기 중
+      if (response.session == null) {
+        state = AppAuthPendingVerification(email);
+        return;
       }
 
-      state = AppAuthAuthenticated(userId);
+      try {
+        await _repo.migrateLocalToRemote();
+      } catch (_) {}
+
+      state = AppAuthAuthenticated(user.id);
     } on AuthException catch (e) {
       state = AppAuthError(e.message);
     } catch (e) {
       state = AppAuthError(e.toString());
+    }
+  }
+
+  Future<String?> resetPassword(String email) async {
+    try {
+      await _client.auth.resetPasswordForEmail(email);
+      return null;
+    } on AuthException catch (e) {
+      return e.message;
+    } catch (e) {
+      return e.toString();
     }
   }
 

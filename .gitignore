@@ -50,3 +50,9 @@ android/key.properties
 android/app/upload-keystore.jks
 android/app/*.jks
 android/app/*.keystore
+
+# App Store credentials
+.appstore_credentials
+
+# Certificates & Keys
+Cer/

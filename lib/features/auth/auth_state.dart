@@ -21,3 +21,9 @@ class AppAuthError extends AppAuthState {
 
   const AppAuthError(this.message);
 }
+
+class AppAuthPendingVerification extends AppAuthState {
+  final String email;
+
+  const AppAuthPendingVerification(this.email);
+}

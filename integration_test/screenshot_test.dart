@@ -47,6 +47,13 @@ void main() {
     // ── 홈 화면 ──
     await markSnap('01_home');
 
+    // ── 설정 화면 ──
+    await tester.tap(find.byIcon(Icons.settings_outlined));
+    await tester.pumpAndSettle();
+    await markSnap('06_settings');
+    await tester.pageBack();
+    await go();
+
     // ── 전세 vs 월세 비교 ──
     await tester.tap(find.text('전세 vs 월세 비교'));
     await go();
