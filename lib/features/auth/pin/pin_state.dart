@@ -8,9 +8,19 @@ class PinDisabled extends PinState {
 
 class PinEnabled extends PinState {
   final bool isUnlocked;
+  final bool requireAuthOnLaunch;
 
-  const PinEnabled({this.isUnlocked = false});
+  const PinEnabled({
+    this.isUnlocked = false,
+    this.requireAuthOnLaunch = true,
+  });
 
-  PinEnabled copyWith({bool? isUnlocked}) =>
-      PinEnabled(isUnlocked: isUnlocked ?? this.isUnlocked);
+  PinEnabled copyWith({
+    bool? isUnlocked,
+    bool? requireAuthOnLaunch,
+  }) =>
+      PinEnabled(
+        isUnlocked: isUnlocked ?? this.isUnlocked,
+        requireAuthOnLaunch: requireAuthOnLaunch ?? this.requireAuthOnLaunch,
+      );
 }

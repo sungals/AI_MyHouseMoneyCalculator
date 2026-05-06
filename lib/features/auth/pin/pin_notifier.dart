@@ -9,11 +9,20 @@ class PinNotifier extends StateNotifier<PinState> {
 
   static const _keyEnabled = 'simple_login_enabled';
   static const _keyHash = 'simple_login_pin_hash';
+  static const _keyBiometricEnabled = 'simple_login_biometric_enabled';
+  static const _keyRequireAuthOnLaunch = 'simple_login_require_auth_on_launch';
 
   static PinState _loadInitialState() {
     final box = Hive.box('app_settings');
     final enabled = box.get(_keyEnabled, defaultValue: false) as bool;
-    return enabled ? const PinEnabled() : const PinDisabled();
+    final requireAuthOnLaunch =
+        box.get(_keyRequireAuthOnLaunch, defaultValue: true) as bool;
+    return enabled
+        ? PinEnabled(
+            isUnlocked: !requireAuthOnLaunch,
+            requireAuthOnLaunch: requireAuthOnLaunch,
+          )
+        : const PinDisabled();
   }
 
   static String _hash(String pin) {
@@ -23,9 +32,15 @@ class PinNotifier extends StateNotifier<PinState> {
 
   Future<void> setPin(String pin) async {
     final box = Hive.box('app_settings');
+    final requireAuthOnLaunch =
+        box.get(_keyRequireAuthOnLaunch, defaultValue: true) as bool;
     await box.put(_keyHash, _hash(pin));
     await box.put(_keyEnabled, true);
-    state = const PinEnabled(isUnlocked: true);
+    await box.put(_keyRequireAuthOnLaunch, requireAuthOnLaunch);
+    state = PinEnabled(
+      isUnlocked: true,
+      requireAuthOnLaunch: requireAuthOnLaunch,
+    );
   }
 
   bool verifyPin(String pin) {
@@ -41,11 +56,32 @@ class PinNotifier extends StateNotifier<PinState> {
     }
   }
 
+  void lockForLaunch() {
+    final current = state;
+    if (current is PinEnabled && current.requireAuthOnLaunch) {
+      state = current.copyWith(isUnlocked: false);
+    }
+  }
+
   Future<void> disablePin() async {
     final box = Hive.box('app_settings');
     await box.delete(_keyHash);
+    await box.delete(_keyBiometricEnabled);
+    await box.delete(_keyRequireAuthOnLaunch);
     await box.put(_keyEnabled, false);
     state = const PinDisabled();
+  }
+
+  Future<void> setRequireAuthOnLaunch(bool requireAuthOnLaunch) async {
+    final current = state;
+    if (current is! PinEnabled) return;
+
+    final box = Hive.box('app_settings');
+    await box.put(_keyRequireAuthOnLaunch, requireAuthOnLaunch);
+    state = current.copyWith(
+      isUnlocked: requireAuthOnLaunch ? current.isUnlocked : true,
+      requireAuthOnLaunch: requireAuthOnLaunch,
+    );
   }
 
   bool get hasPIN => state is PinEnabled;

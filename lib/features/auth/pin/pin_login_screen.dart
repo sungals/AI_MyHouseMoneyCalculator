@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../../../core/theme/app_colors.dart';
 import 'pin_notifier.dart';
+import 'randomized_pin_pad.dart';
 
 class PinLoginScreen extends ConsumerStatefulWidget {
   const PinLoginScreen({super.key});
@@ -13,15 +14,21 @@ class PinLoginScreen extends ConsumerStatefulWidget {
 }
 
 class _PinLoginScreenState extends ConsumerState<PinLoginScreen> {
+  static const _pinLength = 6;
+  static const _maxPinAttempts = 5;
+
   String _entered = '';
   bool _hasError = false;
-  static const _pinLength = 6;
+  String? _message;
+  int _keypadShuffleSeed = 0;
+  int _pinFailCount = 0;
 
   void _onDigit(String digit) {
     if (_entered.length >= _pinLength) return;
     setState(() {
       _entered += digit;
       _hasError = false;
+      _message = null;
     });
     if (_entered.length == _pinLength) {
       _verify();
@@ -33,27 +40,44 @@ class _PinLoginScreenState extends ConsumerState<PinLoginScreen> {
     setState(() {
       _entered = _entered.substring(0, _entered.length - 1);
       _hasError = false;
+      _message = null;
     });
   }
 
-  void _verify() {
+  Future<void> _verify() async {
     final notifier = ref.read(pinNotifierProvider.notifier);
     if (notifier.verifyPin(_entered)) {
       notifier.unlock();
       context.go('/');
     } else {
+      _pinFailCount++;
+
+      if (_pinFailCount >= _maxPinAttempts) {
+        await _resetPinAndGoToEmailLogin();
+        return;
+      }
+
+      final remaining = _maxPinAttempts - _pinFailCount;
       setState(() {
         _entered = '';
         _hasError = true;
+        _message = 'PIN 번호가 틀렸습니다. $remaining회 더 시도할 수 있습니다';
+        _keypadShuffleSeed++;
       });
     }
   }
 
-  void _useEmailLogin() {
-    ref.read(pinNotifierProvider.notifier).disablePin();
+  Future<void> _resetPinAndGoToEmailLogin() async {
+    await ref.read(pinNotifierProvider.notifier).disablePin();
     final box = Hive.box('app_settings');
-    box.put('login_skipped', false);
-    context.go('/login');
+    await box.put('login_skipped', false);
+    if (mounted) context.go('/login');
+  }
+
+  Future<void> _useEmailLogin() async {
+    final box = Hive.box('app_settings');
+    await box.put('login_skipped', false);
+    if (mounted) context.go('/login');
   }
 
   @override
@@ -61,43 +85,63 @@ class _PinLoginScreenState extends ConsumerState<PinLoginScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: Column(
-          children: [
-            const Spacer(),
-            const Text(
-              '간편로그인',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: IntrinsicHeight(
+                  child: Column(
+                    children: [
+                      const Spacer(),
+                      const Text(
+                        'PIN 인증',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        _message ?? 'PIN 번호를 입력하세요',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: _hasError
+                              ? AppColors.danger
+                              : AppColors.textSecondary,
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                      _PinDots(
+                        entered: _entered.length,
+                        total: _pinLength,
+                        hasError: _hasError,
+                      ),
+                      const Spacer(),
+                      RandomizedPinPad(
+                        onDigit: _onDigit,
+                        onDelete: _onDelete,
+                        shuffleSeed: _keypadShuffleSeed,
+                      ),
+                      const SizedBox(height: 24),
+                      TextButton(
+                        onPressed: _useEmailLogin,
+                        child: const Text(
+                          '이메일로 로그인',
+                          style: TextStyle(
+                            color: AppColors.textSecondary,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                    ],
+                  ),
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              _hasError ? '비밀번호가 틀렸습니다' : 'PIN 번호를 입력하세요',
-              style: TextStyle(
-                fontSize: 14,
-                color: _hasError ? AppColors.danger : AppColors.textSecondary,
-              ),
-            ),
-            const SizedBox(height: 32),
-            _PinDots(
-              entered: _entered.length,
-              total: _pinLength,
-              hasError: _hasError,
-            ),
-            const Spacer(),
-            _NumPad(onDigit: _onDigit, onDelete: _onDelete),
-            const SizedBox(height: 24),
-            TextButton(
-              onPressed: _useEmailLogin,
-              child: const Text(
-                '이메일로 로그인',
-                style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
-              ),
-            ),
-            const SizedBox(height: 32),
-          ],
+            );
+          },
         ),
       ),
     );
@@ -142,110 +186,6 @@ class _PinDots extends StatelessWidget {
           ),
         );
       }),
-    );
-  }
-}
-
-class _NumPad extends StatelessWidget {
-  final void Function(String) onDigit;
-  final VoidCallback onDelete;
-
-  const _NumPad({required this.onDigit, required this.onDelete});
-
-  static const _rows = [
-    ['1', '2', '3'],
-    ['4', '5', '6'],
-    ['7', '8', '9'],
-    ['', '0', 'del'],
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: _rows.map((row) {
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: row.map((key) {
-            if (key.isEmpty) return const SizedBox(width: 96, height: 84);
-            if (key == 'del') {
-              return _KeyButton(
-                onTap: (_) => onDelete(),
-                child: const Icon(
-                  Icons.backspace_outlined,
-                  size: 22,
-                  color: AppColors.textPrimary,
-                ),
-              );
-            }
-            return _KeyButton(onTap: onDigit, label: key);
-          }).toList(),
-        );
-      }).toList(),
-    );
-  }
-}
-
-class _KeyButton extends StatefulWidget {
-  final void Function(String) onTap;
-  final String? label;
-  final Widget? child;
-
-  const _KeyButton({required this.onTap, this.label, this.child});
-
-  @override
-  State<_KeyButton> createState() => _KeyButtonState();
-}
-
-class _KeyButtonState extends State<_KeyButton> {
-  bool _pressed = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTapDown: (_) => setState(() => _pressed = true),
-      onTapUp: (_) {
-        widget.onTap(widget.label ?? '');
-        setState(() => _pressed = false);
-      },
-      onTapCancel: () => setState(() => _pressed = false),
-      child: SizedBox(
-        width: 96,
-        height: 84,
-        child: Center(
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 80),
-            width: 68,
-            height: 68,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: _pressed
-                  ? const Color(0xFFD8DCE4)
-                  : AppColors.surface,
-              boxShadow: _pressed
-                  ? []
-                  : [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.18),
-                        blurRadius: 5,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
-            ),
-            child: Center(
-              child: widget.child ??
-                  Text(
-                    widget.label!,
-                    style: const TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

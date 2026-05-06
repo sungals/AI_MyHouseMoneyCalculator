@@ -33,6 +33,10 @@ class SettingsScreen extends ConsumerWidget {
               const SizedBox(height: 24),
               const _SectionHeader('간편로그인'),
               _PinTile(pinState: pinState, ref: ref),
+              if (pinState is PinEnabled) ...[
+                const SizedBox(height: 12),
+                _RequireAuthOnLaunchTile(pinState: pinState, ref: ref),
+              ],
             ],
             const SizedBox(height: 24),
             const _SectionHeader('앱 정보'),
@@ -47,10 +51,49 @@ class SettingsScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: AppColors.cardBorder),
               ),
-              child: const Text(DisclaimerTexts.main, style: AppTextStyles.disclaimer),
+              child: const Text(DisclaimerTexts.main,
+                  style: AppTextStyles.disclaimer),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _RequireAuthOnLaunchTile extends StatelessWidget {
+  final PinEnabled pinState;
+  final WidgetRef ref;
+
+  const _RequireAuthOnLaunchTile({
+    required this.pinState,
+    required this.ref,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: AppColors.surface,
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: const BorderSide(color: Color(0xFFD1D5DB), width: 1.5),
+      ),
+      child: SwitchListTile(
+        value: pinState.requireAuthOnLaunch,
+        onChanged: (value) {
+          ref.read(pinNotifierProvider.notifier).setRequireAuthOnLaunch(value);
+        },
+        secondary: const Icon(
+          Icons.screen_lock_portrait,
+          color: AppColors.primary,
+        ),
+        title: const Text('앱 재진입 시 인증'),
+        subtitle: const Text(
+          '앱을 종료한 뒤 다시 열 때 PIN 또는 생체인증을 요구합니다',
+          style: TextStyle(fontSize: 12),
+        ),
+        activeColor: AppColors.primary,
       ),
     );
   }

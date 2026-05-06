@@ -13,8 +13,11 @@ import '../features/history/history_detail_screen.dart';
 import '../features/settings/settings_screen.dart';
 import '../features/tax_deduction/tax_deduction_screen.dart';
 import '../features/auth/login_screen.dart';
+import '../features/auth/pin/biometric_auth_service.dart';
+import '../features/auth/pin/biometric_login_screen.dart';
 import '../features/auth/pin/pin_login_screen.dart';
 import '../features/auth/pin/pin_notifier.dart';
+import '../features/auth/pin/biometric_setup_screen.dart';
 import '../features/auth/pin/pin_setup_screen.dart';
 import '../features/auth/pin/pin_state.dart';
 
@@ -32,20 +35,36 @@ class AppRouter {
       }
 
       if (done) {
-        final loginSkipped = box.get('login_skipped', defaultValue: false) as bool;
+        final loginSkipped =
+            box.get('login_skipped', defaultValue: false) as bool;
         final hasSession = Supabase.instance.client.auth.currentSession != null;
         final loc = state.matchedLocation;
 
-        if (!hasSession && !loginSkipped && loc != '/login' && loc != '/onboarding') {
+        if (!hasSession &&
+            !loginSkipped &&
+            loc != '/login' &&
+            loc != '/onboarding') {
           return '/login';
         }
 
         if (hasSession) {
           final container = ProviderScope.containerOf(context);
           final pinState = container.read(pinNotifierProvider);
-          final pinRoutes = {'/pin-login', '/pin-setup', '/login', '/onboarding'};
-          if (pinState is PinEnabled && !pinState.isUnlocked && !pinRoutes.contains(loc)) {
-            return '/pin-login';
+          final pinRoutes = {
+            '/biometric-login',
+            '/pin-login',
+            '/pin-setup',
+            '/biometric-setup',
+            '/login',
+            '/onboarding',
+          };
+          if (pinState is PinEnabled &&
+              !pinState.isUnlocked &&
+              !pinRoutes.contains(loc)) {
+            final container = ProviderScope.containerOf(context);
+            final biometricEnabled =
+                container.read(biometricAuthServiceProvider).isEnabled;
+            return biometricEnabled ? '/biometric-login' : '/pin-login';
           }
         }
       }
@@ -100,12 +119,20 @@ class AppRouter {
         builder: (context, state) => const LoginScreen(),
       ),
       GoRoute(
+        path: '/biometric-login',
+        builder: (context, state) => const BiometricLoginScreen(),
+      ),
+      GoRoute(
         path: '/pin-login',
         builder: (context, state) => const PinLoginScreen(),
       ),
       GoRoute(
         path: '/pin-setup',
         builder: (context, state) => const PinSetupScreen(),
+      ),
+      GoRoute(
+        path: '/biometric-setup',
+        builder: (context, state) => const BiometricSetupScreen(),
       ),
     ],
   );
