@@ -11,7 +11,10 @@ import '../features/monthly_expense/monthly_expense_screen.dart';
 import '../features/history/history_screen.dart';
 import '../features/history/history_detail_screen.dart';
 import '../features/settings/settings_screen.dart';
+import '../features/settings/legal_document_screen.dart';
+import '../features/settings/notices_screen.dart';
 import '../features/tax_deduction/tax_deduction_screen.dart';
+import '../core/constants/legal_texts.dart';
 import '../features/auth/login_screen.dart';
 import '../features/auth/pin/biometric_auth_service.dart';
 import '../features/auth/pin/biometric_login_screen.dart';
@@ -113,6 +116,22 @@ class AppRouter {
       GoRoute(
         path: '/settings',
         builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: '/notices',
+        builder: (context, state) => const NoticesScreen(),
+      ),
+      GoRoute(
+        path: '/terms',
+        builder: (context, state) => const LegalDocumentScreen(
+          document: LegalTexts.terms,
+        ),
+      ),
+      GoRoute(
+        path: '/privacy',
+        builder: (context, state) => const LegalDocumentScreen(
+          document: LegalTexts.privacy,
+        ),
       ),
       GoRoute(
         path: '/login',

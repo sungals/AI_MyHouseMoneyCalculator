@@ -2,17 +2,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../data/repositories/calculation_history_repository.dart';
 import '../../providers/calculation_history_provider.dart';
+import '../../core/notifications/firebase_push_service.dart';
 import 'auth_state.dart';
 
 class AuthNotifier extends StateNotifier<AppAuthState> {
   final SupabaseClient _client;
   final CalculationHistoryRepository _repo;
+  final Future<void> Function()? _beforeSignOut;
 
   AuthNotifier({
     required SupabaseClient client,
     required CalculationHistoryRepository repo,
+    Future<void> Function()? beforeSignOut,
   })  : _client = client,
         _repo = repo,
+        _beforeSignOut = beforeSignOut,
         super(_initializeState(client)) {
     _client.auth.onAuthStateChange.listen((data) {
       final event = data.event;
@@ -109,6 +113,7 @@ class AuthNotifier extends StateNotifier<AppAuthState> {
 
   Future<void> signOut() async {
     try {
+      await _beforeSignOut?.call();
       await _client.auth.signOut();
       state = const AppAuthUnauthenticated();
     } catch (e) {
@@ -126,5 +131,9 @@ final authNotifierProvider =
     StateNotifierProvider<AuthNotifier, AppAuthState>((ref) {
   final client = Supabase.instance.client;
   final repo = ref.read(calculationHistoryRepositoryProvider);
-  return AuthNotifier(client: client, repo: repo);
+  return AuthNotifier(
+    client: client,
+    repo: repo,
+    beforeSignOut: () => ref.read(firebasePushServiceProvider).stop(),
+  );
 });

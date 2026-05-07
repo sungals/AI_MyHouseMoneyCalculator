@@ -40,10 +40,39 @@ class SettingsScreen extends ConsumerWidget {
             ],
             const SizedBox(height: 24),
             const _SectionHeader('앱 정보'),
+            _SettingsActionTile(
+              icon: Icons.campaign_outlined,
+              title: '공지사항',
+              subtitle: '서비스 안내와 업데이트 소식을 확인합니다',
+              onTap: () => context.push('/notices'),
+            ),
             const _InfoTile(label: '앱 이름', value: AppConstants.appName),
             const _InfoTile(label: '버전', value: '1.0.0'),
             const SizedBox(height: 24),
             const _SectionHeader('법적 고지'),
+            _SettingsActionTile(
+              icon: Icons.description_outlined,
+              title: '이용약관',
+              subtitle: '서비스 이용 조건과 책임 범위를 확인합니다',
+              onTap: () => context.push('/terms'),
+            ),
+            _SettingsActionTile(
+              icon: Icons.privacy_tip_outlined,
+              title: '개인정보 처리방침',
+              subtitle: '수집 정보와 이용 목적을 확인합니다',
+              onTap: () => context.push('/privacy'),
+            ),
+            _SettingsActionTile(
+              icon: Icons.code,
+              title: '오픈소스 라이선스',
+              subtitle: '앱에서 사용하는 오픈소스 정보를 확인합니다',
+              onTap: () => showLicensePage(
+                context: context,
+                applicationName: AppConstants.appName,
+                applicationVersion: '1.0.0',
+              ),
+            ),
+            const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -55,6 +84,42 @@ class SettingsScreen extends ConsumerWidget {
                   style: AppTextStyles.disclaimer),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SettingsActionTile extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  const _SettingsActionTile({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Material(
+        color: AppColors.surface,
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: const BorderSide(color: Color(0xFFD1D5DB), width: 1.5),
+        ),
+        child: ListTile(
+          onTap: onTap,
+          leading: Icon(icon, color: AppColors.primary),
+          title: Text(title),
+          subtitle: Text(subtitle, style: const TextStyle(fontSize: 12)),
+          trailing: const Icon(Icons.chevron_right),
         ),
       ),
     );

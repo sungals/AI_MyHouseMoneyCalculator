@@ -1,5 +1,6 @@
 plugins {
     id "com.android.application"
+    id "com.google.gms.google-services"
     id "kotlin-android"
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id "dev.flutter.flutter-gradle-plugin"
@@ -12,11 +13,12 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace = "com.sungals07.house_money_calculator"
+    namespace = "com.sungals.houseMoneyCalculator"
     compileSdk = 35
     ndkVersion = "25.1.8937393"
 
     compileOptions {
+        coreLibraryDesugaringEnabled true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
@@ -35,7 +37,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.sungals07.house_money_calculator"
+        applicationId = "com.sungals.houseMoneyCalculator"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
@@ -51,4 +53,8 @@ android {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.1.5"
 }
