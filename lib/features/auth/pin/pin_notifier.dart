@@ -43,6 +43,15 @@ class PinNotifier extends StateNotifier<PinState> {
     );
   }
 
+  Future<bool> changePin({
+    required String currentPin,
+    required String newPin,
+  }) async {
+    if (!verifyPin(currentPin)) return false;
+    await setPin(newPin);
+    return true;
+  }
+
   bool verifyPin(String pin) {
     final box = Hive.box('app_settings');
     final stored = box.get(_keyHash) as String?;

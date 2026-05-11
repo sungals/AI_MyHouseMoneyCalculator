@@ -82,7 +82,8 @@ class _MoneyInputFieldState extends State<MoneyInputField> {
     }
 
     if (widget.sliderMax != null) {
-      final clamped = value.toDouble().clamp(widget.sliderMin, widget.sliderMax!);
+      final clamped =
+          value.toDouble().clamp(widget.sliderMin, widget.sliderMax!);
       if (clamped != _sliderValue) {
         setState(() => _sliderValue = clamped);
       }
@@ -216,9 +217,9 @@ class _QuickButtons extends StatelessWidget {
 
   static String _label(int amount) {
     if (amount >= 100000000) return '${amount ~/ 100000000}억';
-    if (amount >= 10000000)  return '${amount ~/ 10000000}천만';
-    if (amount >= 1000000)   return '${amount ~/ 1000000}백만';
-    if (amount >= 10000)     return '${amount ~/ 10000}만';
+    if (amount >= 10000000) return '${amount ~/ 10000000}천만';
+    if (amount >= 1000000) return '${amount ~/ 1000000}백만';
+    if (amount >= 10000) return '${amount ~/ 10000}만';
     return amount.toString();
   }
 
@@ -260,17 +261,17 @@ class _Chip extends StatelessWidget {
     final Color text;
 
     if (isReset) {
-      bg     = AppColors.background;
+      bg = AppColors.background;
       border = AppColors.divider;
-      text   = AppColors.textSecondary;
+      text = AppColors.textSecondary;
     } else if (isDelete) {
-      bg     = const Color(0xFFFFF7ED);
+      bg = const Color(0xFFFFF7ED);
       border = const Color(0xFFFDBA74);
-      text   = const Color(0xFFEA580C);
+      text = const Color(0xFFEA580C);
     } else {
-      bg     = AppColors.primary.withOpacity(0.08);
+      bg = AppColors.primary.withOpacity(0.08);
       border = AppColors.primary.withOpacity(0.3);
-      text   = AppColors.primary;
+      text = AppColors.primary;
     }
 
     return GestureDetector(

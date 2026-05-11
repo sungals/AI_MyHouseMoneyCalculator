@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/constants/app_constants.dart';
@@ -14,6 +15,7 @@ class NoticesScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final notices = ref.watch(noticesProvider);
+    final readIds = ref.watch(readNoticeIdsProvider).valueOrNull ?? {};
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -29,7 +31,11 @@ class NoticesScreen extends ConsumerWidget {
 
             return ListView.separated(
               padding: const EdgeInsets.all(AppConstants.horizontalPadding),
-              itemBuilder: (context, index) => _NoticeCard(items[index]),
+              itemBuilder: (context, index) => _NoticeCard(
+                notice: items[index],
+                isRead: readIds.contains(items[index].id),
+                onTap: () => context.push('/notices/${items[index].id}'),
+              ),
               separatorBuilder: (_, __) => const SizedBox(height: 12),
               itemCount: items.length,
             );
@@ -53,8 +59,14 @@ class NoticesScreen extends ConsumerWidget {
 
 class _NoticeCard extends StatelessWidget {
   final Notice notice;
+  final bool isRead;
+  final VoidCallback onTap;
 
-  const _NoticeCard(this.notice);
+  const _NoticeCard({
+    required this.notice,
+    required this.isRead,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -62,25 +74,55 @@ class _NoticeCard extends StatelessWidget {
       notice.publishedAt,
     );
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
+    return Material(
+      color: isRead ? AppColors.surface : const Color(0xFFEFF6FF),
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.cardBorder),
+        side: BorderSide(
+          color: isRead ? AppColors.cardBorder : AppColors.primary,
+        ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(notice.title, style: AppTextStyles.heading3),
-          const SizedBox(height: 6),
-          Text(publishedAt, style: AppTextStyles.caption),
-          const SizedBox(height: 12),
-          Text(
-            notice.body,
-            style: AppTextStyles.bodySecondary.copyWith(height: 1.55),
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (!isRead) ...[
+                Container(
+                  width: 8,
+                  height: 8,
+                  margin: const EdgeInsets.only(top: 8, right: 10),
+                  decoration: const BoxDecoration(
+                    color: AppColors.primary,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(notice.title, style: AppTextStyles.heading3),
+                    const SizedBox(height: 6),
+                    Text(publishedAt, style: AppTextStyles.caption),
+                    const SizedBox(height: 10),
+                    Text(
+                      notice.body,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.bodySecondary.copyWith(height: 1.45),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              const Icon(Icons.chevron_right, color: AppColors.textSecondary),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

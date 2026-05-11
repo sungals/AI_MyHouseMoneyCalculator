@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../router/app_router.dart';
 import 'biometric_auth_service.dart';
 import 'pin_notifier.dart';
 
@@ -51,7 +52,7 @@ class _BiometricLoginScreenState extends ConsumerState<BiometricLoginScreen> {
 
     if (result == BiometricAuthResult.authenticated) {
       ref.read(pinNotifierProvider.notifier).unlock();
-      context.go('/');
+      context.go(AppRouter.consumePendingRouteAfterUnlock());
       return;
     }
 

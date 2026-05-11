@@ -82,7 +82,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('취소', style: TextStyle(color: AppColors.textSecondary)),
+            child: const Text('취소',
+                style: TextStyle(color: AppColors.textSecondary)),
           ),
           TextButton(
             onPressed: () async {
@@ -101,7 +102,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ? '재설정 링크를 $email 로 보냈어요. 메일함을 확인해주세요.'
                         : '오류: $error',
                   ),
-                  backgroundColor: error == null ? AppColors.primary : AppColors.danger,
+                  backgroundColor:
+                      error == null ? AppColors.primary : AppColors.danger,
                 ),
               );
             },
@@ -165,9 +167,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
 
     final authState = ref.watch(authNotifierProvider);
-    final isLoading = authState is AppAuthLoading || authState is AppAuthPendingVerification;
-    final errorMessage =
-        authState is AppAuthError ? authState.message : null;
+    final isLoading =
+        authState is AppAuthLoading || authState is AppAuthPendingVerification;
+    final errorMessage = authState is AppAuthError ? authState.message : null;
 
     return Scaffold(
       appBar: AppBar(
@@ -287,9 +289,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     });
                   },
                   child: Text(
-                    _isSignUp
-                        ? '이미 계정이 있어요 → 로그인'
-                        : '계정이 없어요 → 회원가입',
+                    _isSignUp ? '이미 계정이 있어요 → 로그인' : '계정이 없어요 → 회원가입',
                     style: const TextStyle(
                       color: AppColors.primary,
                       fontSize: 14,
@@ -306,15 +306,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       onPressed: () => _showFindIdDialog(context),
                       child: const Text(
                         '아이디 찾기',
-                        style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                        style: TextStyle(
+                            color: AppColors.textSecondary, fontSize: 13),
                       ),
                     ),
-                    const Text('|', style: TextStyle(color: AppColors.textSecondary)),
+                    const Text('|',
+                        style: TextStyle(color: AppColors.textSecondary)),
                     TextButton(
                       onPressed: () => _showResetPasswordDialog(context),
                       child: const Text(
                         '비밀번호 찾기',
-                        style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                        style: TextStyle(
+                            color: AppColors.textSecondary, fontSize: 13),
                       ),
                     ),
                   ],

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1035628526485",
+    "project_id": "housemoneycalculator",
+    "storage_bucket": "housemoneycalculator.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1035628526485:android:c88bd1f601e8bfb75ad49c",
+        "android_client_info": {
+          "package_name": "com.sungals.houseMoneyCalculator"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABL75IdPIx45RbAxX9ilP0N8UCzWnOJZ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

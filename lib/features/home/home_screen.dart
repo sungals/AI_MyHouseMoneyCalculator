@@ -1,14 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
+import '../../data/models/calculation_history.dart';
+import '../../providers/calculation_history_provider.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  List<CalculationHistory> _recentItems = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRecentItems();
+  }
+
+  Future<void> _loadRecentItems() async {
+    final repo = ref.read(calculationHistoryRepositoryProvider);
+    await repo.init();
+    if (!mounted) return;
+    setState(() => _recentItems = repo.getAll().take(3).toList());
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final favoriteCount = _recentItems.where((item) => item.isFavorite).length;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -27,7 +52,19 @@ class HomeScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 8),
-              const Text('오늘 어떤 비용을\n계산할까요?', style: AppTextStyles.heading1),
+              Text(
+                _recentItems.isEmpty
+                    ? '오늘 어떤 비용을\n계산할까요?'
+                    : '최근 계산을 이어서\n확인해보세요',
+                style: AppTextStyles.heading1,
+              ),
+              if (_recentItems.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                _RecentHistoryPanel(
+                  items: _recentItems,
+                  favoriteCount: favoriteCount,
+                ),
+              ],
               const SizedBox(height: 24),
               _MenuCard(
                 title: '전세 vs 월세 비교',
@@ -70,6 +107,30 @@ class HomeScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               _MenuCard(
+                title: 'DSR/DTI 계산',
+                description: '소득 대비 대출 상환 부담을 확인해요',
+                icon: Icons.speed_rounded,
+                color: const Color(0xFF0F766E),
+                onTap: () => context.push('/dsr-dti'),
+              ),
+              const SizedBox(height: 12),
+              _MenuCard(
+                title: '중개보수 계산',
+                description: '주택 매매와 임대차 중개보수 상한을 계산해요',
+                icon: Icons.handshake_outlined,
+                color: const Color(0xFF9333EA),
+                onTap: () => context.push('/brokerage-fee'),
+              ),
+              const SizedBox(height: 12),
+              _MenuCard(
+                title: '취득세 계산',
+                description: '주택 취득가액과 보유 주택 수로 간이 계산해요',
+                icon: Icons.account_balance_wallet_outlined,
+                color: const Color(0xFFBE123C),
+                onTap: () => context.push('/acquisition-tax'),
+              ),
+              const SizedBox(height: 12),
+              _MenuCard(
                 title: '저장한 계산 보기',
                 description: '이전에 저장한 계산 결과를 확인해요',
                 icon: Icons.bookmark_outlined,
@@ -79,6 +140,76 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: 24),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RecentHistoryPanel extends StatelessWidget {
+  final List<CalculationHistory> items;
+  final int favoriteCount;
+
+  const _RecentHistoryPanel({
+    required this.items,
+    required this.favoriteCount,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: AppColors.surface,
+      borderRadius: BorderRadius.circular(AppConstants.cardRadius),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(AppConstants.cardRadius),
+          border: Border.all(color: AppColors.cardBorder),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Expanded(
+                  child: Text('최근 저장한 계산', style: AppTextStyles.heading3),
+                ),
+                if (favoriteCount > 0)
+                  Text('$favoriteCount개 즐겨찾기', style: AppTextStyles.caption),
+              ],
+            ),
+            const SizedBox(height: 10),
+            ...items.map(
+              (item) => InkWell(
+                onTap: () => context.push('/history/${item.id}'),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 7),
+                  child: Row(
+                    children: [
+                      Icon(
+                        item.isFavorite ? Icons.star : Icons.history,
+                        size: 18,
+                        color: item.isFavorite
+                            ? AppColors.warning
+                            : AppColors.textSecondary,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          item.title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const Icon(Icons.chevron_right_rounded,
+                          color: AppColors.textSecondary),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -136,7 +267,8 @@ class _MenuCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary),
+              const Icon(Icons.chevron_right_rounded,
+                  color: AppColors.textSecondary),
             ],
           ),
         ),

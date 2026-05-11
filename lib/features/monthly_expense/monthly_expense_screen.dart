@@ -34,8 +34,14 @@ class _MonthlyExpenseScreenState extends ConsumerState<MonthlyExpenseScreen> {
   @override
   void dispose() {
     for (final c in [
-      _housing, _maintenance, _communication, _transportation,
-      _insurance, _subscription, _food, _other,
+      _housing,
+      _maintenance,
+      _communication,
+      _transportation,
+      _insurance,
+      _subscription,
+      _food,
+      _other,
     ]) {
       c.dispose();
     }
@@ -128,8 +134,7 @@ $breakdown
             const _SectionTitle(
               '월 고정 지출',
               helpTitle: '월 고정비란?',
-              helpBody:
-                  '매달 일정하게 나가는 생활 고정 지출 항목입니다.\n\n'
+              helpBody: '매달 일정하게 나가는 생활 고정 지출 항목입니다.\n\n'
                   '• 주거비: 월세 또는 전세 대출 월 이자\n'
                   '• 관리비: 건물 관리·공용 시설 이용 비용\n'
                   '• 통신비: 핸드폰·인터넷 요금\n'
@@ -143,13 +148,41 @@ $breakdown
             const SizedBox(height: 12),
             Column(
               children: [
-                _ExpenseField(label: '주거비 (월세/이자)', controller: _housing, sliderMax: 3000000, sliderDivisions: 60),
-                _ExpenseField(label: '관리비', controller: _maintenance, sliderMax: 500000, sliderDivisions: 50),
-                _ExpenseField(label: '통신비', controller: _communication, sliderMax: 300000, sliderDivisions: 60),
-                _ExpenseField(label: '교통비', controller: _transportation, sliderMax: 500000, sliderDivisions: 50),
-                _ExpenseField(label: '보험료', controller: _insurance, sliderMax: 1000000, sliderDivisions: 100),
-                _ExpenseField(label: '구독료', controller: _subscription, sliderMax: 200000, sliderDivisions: 40),
-                _ExpenseField(label: '식비', controller: _food, sliderMax: 2000000, sliderDivisions: 40),
+                _ExpenseField(
+                    label: '주거비 (월세/이자)',
+                    controller: _housing,
+                    sliderMax: 3000000,
+                    sliderDivisions: 60),
+                _ExpenseField(
+                    label: '관리비',
+                    controller: _maintenance,
+                    sliderMax: 500000,
+                    sliderDivisions: 50),
+                _ExpenseField(
+                    label: '통신비',
+                    controller: _communication,
+                    sliderMax: 300000,
+                    sliderDivisions: 60),
+                _ExpenseField(
+                    label: '교통비',
+                    controller: _transportation,
+                    sliderMax: 500000,
+                    sliderDivisions: 50),
+                _ExpenseField(
+                    label: '보험료',
+                    controller: _insurance,
+                    sliderMax: 1000000,
+                    sliderDivisions: 100),
+                _ExpenseField(
+                    label: '구독료',
+                    controller: _subscription,
+                    sliderMax: 200000,
+                    sliderDivisions: 40),
+                _ExpenseField(
+                    label: '식비',
+                    controller: _food,
+                    sliderMax: 2000000,
+                    sliderDivisions: 40),
                 _ExpenseField(
                   label: '기타',
                   controller: _other,
@@ -220,8 +253,7 @@ $breakdown
                       children: [
                         const Text('연간 합계',
                             style: TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textSecondary)),
+                                fontSize: 14, color: AppColors.textSecondary)),
                         Text(
                           MoneyFormatter.formatWithWon(result.totalAnnual),
                           style: const TextStyle(

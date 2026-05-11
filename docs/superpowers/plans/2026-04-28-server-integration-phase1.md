@@ -112,7 +112,7 @@ pubspec.yaml                              [MODIFY] 3개 패키지 추가
 - [ ] **Step 2: 패키지 설치 및 확인**
 
   ```bash
-  cd /Users/sungals07/AI_MyFinanceApp/house_money_calculator
+  cd /Users/sungals/AI_MyFinanceApp/house_money_calculator
   flutter pub get
   ```
 

@@ -11,9 +11,14 @@ import '../features/monthly_expense/monthly_expense_screen.dart';
 import '../features/history/history_screen.dart';
 import '../features/history/history_detail_screen.dart';
 import '../features/settings/settings_screen.dart';
+import '../features/settings/app_guide_screen.dart';
 import '../features/settings/legal_document_screen.dart';
 import '../features/settings/notices_screen.dart';
+import '../features/settings/notice_detail_screen.dart';
 import '../features/tax_deduction/tax_deduction_screen.dart';
+import '../features/advanced_calculators/acquisition_tax_screen.dart';
+import '../features/advanced_calculators/brokerage_fee_screen.dart';
+import '../features/advanced_calculators/dsr_dti_screen.dart';
 import '../core/constants/legal_texts.dart';
 import '../features/auth/login_screen.dart';
 import '../features/auth/pin/biometric_auth_service.dart';
@@ -21,11 +26,14 @@ import '../features/auth/pin/biometric_login_screen.dart';
 import '../features/auth/pin/pin_login_screen.dart';
 import '../features/auth/pin/pin_notifier.dart';
 import '../features/auth/pin/biometric_setup_screen.dart';
+import '../features/auth/pin/pin_change_screen.dart';
 import '../features/auth/pin/pin_setup_screen.dart';
 import '../features/auth/pin/pin_state.dart';
 
 class AppRouter {
   AppRouter._();
+
+  static String? _pendingRouteAfterUnlock;
 
   static final router = GoRouter(
     initialLocation: '/',
@@ -57,6 +65,7 @@ class AppRouter {
             '/biometric-login',
             '/pin-login',
             '/pin-setup',
+            '/pin-change',
             '/biometric-setup',
             '/login',
             '/onboarding',
@@ -67,6 +76,7 @@ class AppRouter {
             final container = ProviderScope.containerOf(context);
             final biometricEnabled =
                 container.read(biometricAuthServiceProvider).isEnabled;
+            _pendingRouteAfterUnlock = state.uri.toString();
             return biometricEnabled ? '/biometric-login' : '/pin-login';
           }
         }
@@ -114,12 +124,34 @@ class AppRouter {
         builder: (context, state) => const TaxDeductionScreen(),
       ),
       GoRoute(
+        path: '/dsr-dti',
+        builder: (context, state) => const DsrDtiScreen(),
+      ),
+      GoRoute(
+        path: '/brokerage-fee',
+        builder: (context, state) => const BrokerageFeeScreen(),
+      ),
+      GoRoute(
+        path: '/acquisition-tax',
+        builder: (context, state) => const AcquisitionTaxScreen(),
+      ),
+      GoRoute(
         path: '/settings',
         builder: (context, state) => const SettingsScreen(),
       ),
       GoRoute(
+        path: '/app-guide',
+        builder: (context, state) => const AppGuideScreen(),
+      ),
+      GoRoute(
         path: '/notices',
         builder: (context, state) => const NoticesScreen(),
+      ),
+      GoRoute(
+        path: '/notices/:id',
+        builder: (context, state) => NoticeDetailScreen(
+          noticeId: state.pathParameters['id']!,
+        ),
       ),
       GoRoute(
         path: '/terms',
@@ -150,9 +182,28 @@ class AppRouter {
         builder: (context, state) => const PinSetupScreen(),
       ),
       GoRoute(
+        path: '/pin-change',
+        builder: (context, state) => const PinChangeScreen(),
+      ),
+      GoRoute(
         path: '/biometric-setup',
         builder: (context, state) => const BiometricSetupScreen(),
       ),
     ],
   );
+
+  static void openNoticeFromPush(String? noticeId) {
+    final id = noticeId?.trim();
+    if (id == null || id.isEmpty) {
+      router.go('/notices');
+      return;
+    }
+    router.go('/notices/$id');
+  }
+
+  static String consumePendingRouteAfterUnlock() {
+    final route = _pendingRouteAfterUnlock;
+    _pendingRouteAfterUnlock = null;
+    return route == null || route.isEmpty ? '/' : route;
+  }
 }

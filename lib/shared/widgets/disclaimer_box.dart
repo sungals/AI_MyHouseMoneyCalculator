@@ -20,7 +20,8 @@ class DisclaimerBox extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.info_outline, size: 16, color: AppColors.textSecondary),
+          const Icon(Icons.info_outline,
+              size: 16, color: AppColors.textSecondary),
           const SizedBox(width: 8),
           Expanded(
             child: Text(

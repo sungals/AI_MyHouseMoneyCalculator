@@ -52,11 +52,10 @@ class AuthNotifier extends StateNotifier<AppAuthState> {
         return;
       }
 
-      // Migrate local records to remote on first login
       try {
-        await _repo.migrateLocalToRemote();
+        await _repo.syncWithRemote();
       } catch (_) {
-        // Log or handle migration error silently to not block login
+        // 동기화 실패가 로그인을 막지 않도록 로컬 데이터는 유지합니다.
       }
 
       state = AppAuthAuthenticated(userId);
@@ -89,7 +88,7 @@ class AuthNotifier extends StateNotifier<AppAuthState> {
       }
 
       try {
-        await _repo.migrateLocalToRemote();
+        await _repo.syncWithRemote();
       } catch (_) {}
 
       state = AppAuthAuthenticated(user.id);
@@ -123,8 +122,9 @@ class AuthNotifier extends StateNotifier<AppAuthState> {
 
   bool get isAuthenticated => state is AppAuthAuthenticated;
 
-  String? get currentUserId =>
-      state is AppAuthAuthenticated ? (state as AppAuthAuthenticated).userId : null;
+  String? get currentUserId => state is AppAuthAuthenticated
+      ? (state as AppAuthAuthenticated).userId
+      : null;
 }
 
 final authNotifierProvider =

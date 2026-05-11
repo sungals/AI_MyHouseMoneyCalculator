@@ -173,8 +173,7 @@ class _RentCompareScreenState extends ConsumerState<RentCompareScreen> {
                   const _SectionTitle(
                     '전세 조건',
                     helpTitle: '전세란?',
-                    helpBody:
-                        '전세는 보증금을 집주인에게 맡기고 월세 없이 거주하는 방식입니다.\n\n'
+                    helpBody: '전세는 보증금을 집주인에게 맡기고 월세 없이 거주하는 방식입니다.\n\n'
                         '• 전세 보증금: 집주인에게 맡기는 총 금액 (계약 만료 시 반환)\n'
                         '• 전세대출 금액: 보증금 중 은행에서 빌린 금액\n'
                         '• 전세대출 연이율: 대출에 적용되는 연간 이자율\n\n'
@@ -223,8 +222,7 @@ class _RentCompareScreenState extends ConsumerState<RentCompareScreen> {
                   const _SectionTitle(
                     '월세 조건',
                     helpTitle: '월세란?',
-                    helpBody:
-                        '월세는 보증금을 일부 맡기고 매월 임대료를 납부하는 방식입니다.\n\n'
+                    helpBody: '월세는 보증금을 일부 맡기고 매월 임대료를 납부하는 방식입니다.\n\n'
                         '• 월세 보증금: 계약 시 집주인에게 맡기는 금액\n'
                         '• 월세: 매달 납부하는 임대료\n'
                         '• 관리비: 건물 유지·공용 시설 이용 월 비용\n\n'
@@ -266,8 +264,7 @@ class _RentCompareScreenState extends ConsumerState<RentCompareScreen> {
                   const _SectionTitle(
                     '거주 기간',
                     helpTitle: '거주 기간이란?',
-                    helpBody:
-                        '비교할 실제 거주 예정 기간(개월)을 입력합니다.\n\n'
+                    helpBody: '비교할 실제 거주 예정 기간(개월)을 입력합니다.\n\n'
                         '거주 기간에 따라 총 비용 차이가 달라지므로,\n'
                         '실제 계약 기간과 동일하게 입력하세요.\n\n'
                         '예: 2년 계약 → 24개월',

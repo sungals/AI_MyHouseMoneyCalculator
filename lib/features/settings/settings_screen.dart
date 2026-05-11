@@ -6,8 +6,10 @@ import '../../core/constants/app_constants.dart';
 import '../../core/constants/disclaimer_texts.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
+import '../../core/notifications/firebase_push_service.dart';
 import '../auth/auth_notifier.dart';
 import '../auth/auth_state.dart';
+import '../auth/pin/biometric_auth_service.dart';
 import '../auth/pin/pin_notifier.dart';
 import '../auth/pin/pin_state.dart';
 
@@ -35,11 +37,35 @@ class SettingsScreen extends ConsumerWidget {
               _PinTile(pinState: pinState, ref: ref),
               if (pinState is PinEnabled) ...[
                 const SizedBox(height: 12),
+                _SettingsActionTile(
+                  icon: Icons.password_outlined,
+                  title: 'PIN 변경',
+                  subtitle: '현재 PIN 확인 후 새 PIN으로 변경합니다',
+                  onTap: () => context.push('/pin-change'),
+                ),
+                _SettingsActionTile(
+                  icon: Icons.fingerprint,
+                  title: '생체인증 재설정',
+                  subtitle: '등록된 생체인증 사용 여부를 다시 설정합니다',
+                  onTap: () async {
+                    await ref.read(biometricAuthServiceProvider).disable();
+                    if (context.mounted) context.push('/biometric-setup');
+                  },
+                ),
                 _RequireAuthOnLaunchTile(pinState: pinState, ref: ref),
               ],
+              const SizedBox(height: 24),
+              const _SectionHeader('알림'),
+              _NoticePushTile(ref: ref),
             ],
             const SizedBox(height: 24),
             const _SectionHeader('앱 정보'),
+            _SettingsActionTile(
+              icon: Icons.help_outline,
+              title: '앱 설명 및 사용법',
+              subtitle: '주요 기능, 저장 기록, 동기화, 알림 사용법을 확인합니다',
+              onTap: () => context.push('/app-guide'),
+            ),
             _SettingsActionTile(
               icon: Icons.campaign_outlined,
               title: '공지사항',
@@ -121,6 +147,72 @@ class _SettingsActionTile extends StatelessWidget {
           subtitle: Text(subtitle, style: const TextStyle(fontSize: 12)),
           trailing: const Icon(Icons.chevron_right),
         ),
+      ),
+    );
+  }
+}
+
+class _NoticePushTile extends StatefulWidget {
+  final WidgetRef ref;
+
+  const _NoticePushTile({required this.ref});
+
+  @override
+  State<_NoticePushTile> createState() => _NoticePushTileState();
+}
+
+class _NoticePushTileState extends State<_NoticePushTile> {
+  late bool _enabled;
+  bool _isSaving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _enabled = FirebasePushService.isNoticePushEnabled;
+  }
+
+  Future<void> _setEnabled(bool value) async {
+    setState(() {
+      _enabled = value;
+      _isSaving = true;
+    });
+
+    await widget.ref
+        .read(firebasePushServiceProvider)
+        .setNoticePushEnabled(value);
+
+    if (!mounted) return;
+    setState(() => _isSaving = false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: AppColors.surface,
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: const BorderSide(color: Color(0xFFD1D5DB), width: 1.5),
+      ),
+      child: SwitchListTile(
+        value: _enabled,
+        onChanged: _isSaving ? null : _setEnabled,
+        secondary: _isSaving
+            ? const SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            : const Icon(
+                Icons.notifications_active_outlined,
+                color: AppColors.primary,
+              ),
+        title: const Text('공지 푸시 알림'),
+        subtitle: const Text(
+          '로그인 상태에서 새 공지사항 알림을 받습니다',
+          style: TextStyle(fontSize: 12),
+        ),
+        activeColor: AppColors.primary,
       ),
     );
   }

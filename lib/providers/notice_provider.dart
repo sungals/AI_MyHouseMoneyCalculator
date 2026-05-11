@@ -10,3 +10,12 @@ final noticeRepositoryProvider = Provider<NoticeRepository>((ref) {
 final noticesProvider = StreamProvider<List<Notice>>((ref) {
   return ref.watch(noticeRepositoryProvider).watchNotices();
 });
+
+final readNoticeIdsProvider = FutureProvider<Set<String>>((ref) {
+  return ref.watch(noticeRepositoryProvider).fetchReadNoticeIds();
+});
+
+final noticeDetailProvider =
+    FutureProvider.family<Notice?, String>((ref, noticeId) {
+  return ref.watch(noticeRepositoryProvider).fetchNoticeById(noticeId);
+});

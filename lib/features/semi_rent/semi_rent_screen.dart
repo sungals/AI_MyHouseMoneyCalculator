@@ -41,8 +41,12 @@ class _SemiRentScreenState extends ConsumerState<SemiRentScreen> {
   @override
   void dispose() {
     for (final c in [
-      _baseDeposit, _convertedDeposit, _monthlyRent,
-      _conversionRate, _maintenance, _months,
+      _baseDeposit,
+      _convertedDeposit,
+      _monthlyRent,
+      _conversionRate,
+      _maintenance,
+      _months,
     ]) {
       c.dispose();
     }
@@ -139,8 +143,7 @@ ${result.summaryText}
                   const _SectionTitle(
                     '보증금 조건',
                     helpTitle: '반전세 보증금이란?',
-                    helpBody:
-                        '반전세는 전세보증금 일부를 줄이는 대신 월세를 내는 방식입니다.\n\n'
+                    helpBody: '반전세는 전세보증금 일부를 줄이는 대신 월세를 내는 방식입니다.\n\n'
                         '• 기준 전세 보증금: 순수 전세일 때의 보증금 (예: 3억)\n'
                         '• 전환 후 보증금: 반전세 계약 시 실제 납부 보증금 (예: 1억)\n\n'
                         '두 금액의 차이(예: 2억)가 월세로 전환됩니다.\n'
@@ -166,8 +169,7 @@ ${result.summaryText}
                   const _SectionTitle(
                     '월세 및 관리비',
                     helpTitle: '전월세 전환율이란?',
-                    helpBody:
-                        '보증금을 월세로 환산할 때 사용하는 연간 비율입니다.\n\n'
+                    helpBody: '보증금을 월세로 환산할 때 사용하는 연간 비율입니다.\n\n'
                         '법정 상한: 기준금리 + 2% (현재 통상 5~6%)\n\n'
                         '예시) 전환 보증금 차이 2억 × 전환율 5% ÷ 12\n'
                         '→ 적정 월세 = 약 833,000원\n\n'
@@ -199,8 +201,7 @@ ${result.summaryText}
                   const _SectionTitle(
                     '거주 기간',
                     helpTitle: '거주 기간이란?',
-                    helpBody:
-                        '비교할 실제 거주 예정 기간(개월)을 입력합니다.\n\n'
+                    helpBody: '비교할 실제 거주 예정 기간(개월)을 입력합니다.\n\n'
                         '거주 기간이 길수록 월세 차이에 따른 총 손익이\n'
                         '크게 벌어집니다.\n\n'
                         '예: 2년 계약 → 24개월',
@@ -308,12 +309,14 @@ class _ResultCard extends StatelessWidget {
               const SizedBox(height: 16),
               _Row(
                 label: '전환율 기준 적정 월세',
-                value: MoneyFormatter.formatWithWon(result.fairMonthlyRent as int),
+                value:
+                    MoneyFormatter.formatWithWon(result.fairMonthlyRent as int),
               ),
               const SizedBox(height: 10),
               _Row(
                 label: '실제 월세',
-                value: MoneyFormatter.formatWithWon(result.actualMonthlyRent as int),
+                value: MoneyFormatter.formatWithWon(
+                    result.actualMonthlyRent as int),
                 valueColor: color,
                 isBold: true,
               ),
@@ -367,7 +370,9 @@ class _Row extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: const TextStyle(fontSize: 14, color: AppColors.textSecondary)),
+        Text(label,
+            style:
+                const TextStyle(fontSize: 14, color: AppColors.textSecondary)),
         Text(
           value,
           style: TextStyle(

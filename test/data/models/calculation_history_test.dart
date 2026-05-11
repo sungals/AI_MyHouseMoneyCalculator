@@ -23,8 +23,11 @@ void main() {
     });
 
     test('CalculationType.taxDeduction exists at index 4', () {
-      expect(CalculationType.values.length, equals(5));
+      expect(CalculationType.values.length, equals(8));
       expect(CalculationType.values[4], equals(CalculationType.taxDeduction));
+      expect(CalculationType.values[5], equals(CalculationType.dsrDti));
+      expect(CalculationType.values[6], equals(CalculationType.brokerageFee));
+      expect(CalculationType.values[7], equals(CalculationType.acquisitionTax));
     });
 
     test('featureType returns correct string', () {

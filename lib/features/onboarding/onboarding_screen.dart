@@ -25,25 +25,29 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       icon: Icons.compare_arrows_rounded,
       color: Color(0xFF6C5CE7),
       title: '전세 vs 월세 비교',
-      body: '전세대출 이자와 월세 중 어느 쪽이\n실제로 더 유리한지 비교합니다.\n기회비용(예금이율)까지 고려한\n정확한 총비용을 계산해 드립니다.',
+      body:
+          '전세대출 이자와 월세 중 어느 쪽이\n실제로 더 유리한지 비교합니다.\n기회비용(예금이율)까지 고려한\n정확한 총비용을 계산해 드립니다.',
     ),
     _PageData(
       icon: Icons.swap_horiz_rounded,
       color: Color(0xFF00B894),
       title: '반전세 계산',
-      body: '보증금 일부를 월세로 전환한\n반전세 계약이 적정한지 확인합니다.\n전월세 전환율을 기준으로\n적정 월세와의 차이를 알려줍니다.',
+      body:
+          '보증금 일부를 월세로 전환한\n반전세 계약이 적정한지 확인합니다.\n전월세 전환율을 기준으로\n적정 월세와의 차이를 알려줍니다.',
     ),
     _PageData(
       icon: Icons.account_balance_outlined,
       color: Color(0xFFE17055),
       title: '대출이자 계산',
-      body: '대출금액·연이율·기간을 입력하면\n월 이자와 총 이자를 즉시 계산합니다.\n금리 변동에 따른 이자 부담을\n미리 파악해 보세요.',
+      body:
+          '대출금액·연이율·기간을 입력하면\n월 이자와 총 이자를 즉시 계산합니다.\n금리 변동에 따른 이자 부담을\n미리 파악해 보세요.',
     ),
     _PageData(
       icon: Icons.receipt_long_outlined,
       color: Color(0xFFFDAB1D),
       title: '월 고정비 계산',
-      body: '주거비·관리비·통신비·보험료 등\n매달 나가는 고정 지출을 한눈에.\n연간 총 지출까지 함께 확인하고\n생활비를 계획해 보세요.',
+      body:
+          '주거비·관리비·통신비·보험료 등\n매달 나가는 고정 지출을 한눈에.\n연간 총 지출까지 함께 확인하고\n생활비를 계획해 보세요.',
     ),
   ];
 
@@ -73,7 +77,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: TextButton(
                 onPressed: _finish,
                 child: const Text('건너뛰기',
-                    style: TextStyle(color: AppColors.textSecondary, fontSize: 14)),
+                    style: TextStyle(
+                        color: AppColors.textSecondary, fontSize: 14)),
               ),
             ),
             Expanded(

@@ -8,6 +8,9 @@ enum CalculationType {
   loanInterest,
   monthlyExpense,
   taxDeduction,
+  dsrDti,
+  brokerageFee,
+  acquisitionTax,
 }
 
 extension CalculationTypeLabel on CalculationType {
@@ -23,6 +26,12 @@ extension CalculationTypeLabel on CalculationType {
         return '월 고정비 계산';
       case CalculationType.taxDeduction:
         return '세금 공제 계산';
+      case CalculationType.dsrDti:
+        return 'DSR/DTI 계산';
+      case CalculationType.brokerageFee:
+        return '중개보수 계산';
+      case CalculationType.acquisitionTax:
+        return '취득세 계산';
     }
   }
 }
@@ -53,6 +62,18 @@ class CalculationHistory extends HiveObject {
   @HiveField(7)
   final DateTime? syncedAt;
 
+  @HiveField(8)
+  final String memo;
+
+  @HiveField(9)
+  final bool isFavorite;
+
+  @HiveField(10)
+  final DateTime updatedAt;
+
+  @HiveField(11)
+  final DateTime? deletedAt;
+
   CalculationHistory({
     required this.id,
     required this.typeIndex,
@@ -62,9 +83,14 @@ class CalculationHistory extends HiveObject {
     required this.result,
     required this.createdAt,
     this.syncedAt,
-  });
+    this.memo = '',
+    this.isFavorite = false,
+    DateTime? updatedAt,
+    this.deletedAt,
+  }) : updatedAt = updatedAt ?? createdAt;
 
   CalculationType get type => CalculationType.values[typeIndex];
+  bool get isDeleted => deletedAt != null;
 
   CalculationHistory copyWith({
     String? id,
@@ -75,6 +101,11 @@ class CalculationHistory extends HiveObject {
     Map<String, dynamic>? result,
     DateTime? createdAt,
     DateTime? syncedAt,
+    String? memo,
+    bool? isFavorite,
+    DateTime? updatedAt,
+    DateTime? deletedAt,
+    bool clearDeletedAt = false,
   }) {
     return CalculationHistory(
       id: id ?? this.id,
@@ -85,6 +116,10 @@ class CalculationHistory extends HiveObject {
       result: result ?? Map.from(this.result),
       createdAt: createdAt ?? this.createdAt,
       syncedAt: syncedAt ?? this.syncedAt,
+      memo: memo ?? this.memo,
+      isFavorite: isFavorite ?? this.isFavorite,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: clearDeletedAt ? null : deletedAt ?? this.deletedAt,
     );
   }
 
@@ -95,6 +130,9 @@ class CalculationHistory extends HiveObject {
       'loan_interest',
       'monthly_expense',
       'tax_deduction',
+      'dsr_dti',
+      'brokerage_fee',
+      'acquisition_tax',
     ];
     return types[typeIndex];
   }
@@ -108,6 +146,9 @@ class CalculationHistory extends HiveObject {
       'input_data': input,
       'result_data': result,
       'created_at': createdAt.toUtc().toIso8601String(),
+      'updated_at': updatedAt.toUtc().toIso8601String(),
+      'memo': memo,
+      'is_favorite': isFavorite,
       'synced_at': DateTime.now().toUtc().toIso8601String(),
     };
   }
@@ -119,7 +160,11 @@ class CalculationHistory extends HiveObject {
       'loan_interest': 2,
       'monthly_expense': 3,
       'tax_deduction': 4,
+      'dsr_dti': 5,
+      'brokerage_fee': 6,
+      'acquisition_tax': 7,
     };
+    final createdAt = DateTime.parse(json['created_at'] as String);
     return CalculationHistory(
       id: json['id'] as String,
       typeIndex: featureTypeMap[json['feature_type'] as String] ?? 0,
@@ -127,9 +172,17 @@ class CalculationHistory extends HiveObject {
       summary: json['summary'] as String? ?? '',
       input: Map<String, dynamic>.from(json['input_data'] as Map? ?? {}),
       result: Map<String, dynamic>.from(json['result_data'] as Map? ?? {}),
-      createdAt: DateTime.parse(json['created_at'] as String),
+      createdAt: createdAt,
       syncedAt: json['synced_at'] != null
           ? DateTime.parse(json['synced_at'] as String)
+          : null,
+      memo: json['memo'] as String? ?? '',
+      isFavorite: json['is_favorite'] as bool? ?? false,
+      updatedAt: json['updated_at'] != null
+          ? DateTime.parse(json['updated_at'] as String)
+          : createdAt,
+      deletedAt: json['deleted_at'] != null
+          ? DateTime.parse(json['deleted_at'] as String)
           : null,
     );
   }

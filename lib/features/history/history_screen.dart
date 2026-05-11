@@ -17,6 +17,9 @@ class HistoryScreen extends ConsumerStatefulWidget {
 class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   List<CalculationHistory> _items = [];
   bool _isLoading = true;
+  String _query = '';
+  CalculationType? _selectedType;
+  bool _favoritesOnly = false;
 
   @override
   void initState() {
@@ -44,6 +47,31 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     }
   }
 
+  Future<void> _toggleFavorite(String id) async {
+    final repo = ref.read(calculationHistoryRepositoryProvider);
+    await repo.init();
+    await repo.toggleFavorite(id);
+    if (mounted) {
+      setState(() => _items = repo.getAll());
+    }
+  }
+
+  List<CalculationHistory> get _filteredItems {
+    final normalizedQuery = _query.trim().toLowerCase();
+    return _items.where((item) {
+      if (_selectedType != null && item.type != _selectedType) return false;
+      if (_favoritesOnly && !item.isFavorite) return false;
+      if (normalizedQuery.isEmpty) return true;
+      final haystack = [
+        item.title,
+        item.summary,
+        item.memo,
+        item.type.label,
+      ].join(' ').toLowerCase();
+      return haystack.contains(normalizedQuery);
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,21 +91,90 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                     ],
                   ),
                 )
-              : ListView.separated(
-                  padding: const EdgeInsets.all(AppConstants.horizontalPadding),
-                  itemCount: _items.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 10),
-                  itemBuilder: (context, index) {
-                    final item = _items[index];
-                    return _HistoryCard(
-                      item: item,
-                      onTap: () async {
-                        await context.push('/history/${item.id}');
-                        _load();
-                      },
-                      onDelete: () => _delete(item.id),
-                    );
-                  },
+              : Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        AppConstants.horizontalPadding,
+                        8,
+                        AppConstants.horizontalPadding,
+                        10,
+                      ),
+                      child: TextField(
+                        onChanged: (value) => setState(() => _query = value),
+                        decoration: const InputDecoration(
+                          prefixIcon: Icon(Icons.search),
+                          hintText: '제목, 요약, 메모 검색',
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 44,
+                      child: ListView(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppConstants.horizontalPadding,
+                        ),
+                        children: [
+                          FilterChip(
+                            label: const Text('즐겨찾기'),
+                            selected: _favoritesOnly,
+                            onSelected: (selected) =>
+                                setState(() => _favoritesOnly = selected),
+                          ),
+                          const SizedBox(width: 8),
+                          ChoiceChip(
+                            label: const Text('전체'),
+                            selected: _selectedType == null,
+                            onSelected: (_) =>
+                                setState(() => _selectedType = null),
+                          ),
+                          const SizedBox(width: 8),
+                          ...CalculationType.values.map(
+                            (type) => Padding(
+                              padding: const EdgeInsets.only(right: 8),
+                              child: ChoiceChip(
+                                label: Text(type.label),
+                                selected: _selectedType == type,
+                                onSelected: (_) =>
+                                    setState(() => _selectedType = type),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: _filteredItems.isEmpty
+                          ? const Center(
+                              child: Text(
+                                '조건에 맞는 저장 기록이 없습니다.',
+                                style: AppTextStyles.bodySecondary,
+                              ),
+                            )
+                          : ListView.separated(
+                              padding: const EdgeInsets.all(
+                                AppConstants.horizontalPadding,
+                              ),
+                              itemCount: _filteredItems.length,
+                              separatorBuilder: (_, __) =>
+                                  const SizedBox(height: 10),
+                              itemBuilder: (context, index) {
+                                final item = _filteredItems[index];
+                                return _HistoryCard(
+                                  item: item,
+                                  onTap: () async {
+                                    await context.push('/history/${item.id}');
+                                    _load();
+                                  },
+                                  onDelete: () => _delete(item.id),
+                                  onToggleFavorite: () =>
+                                      _toggleFavorite(item.id),
+                                );
+                              },
+                            ),
+                    ),
+                  ],
                 ),
     );
   }
@@ -87,11 +184,13 @@ class _HistoryCard extends StatelessWidget {
   final CalculationHistory item;
   final VoidCallback onTap;
   final VoidCallback onDelete;
+  final VoidCallback onToggleFavorite;
 
   const _HistoryCard({
     required this.item,
     required this.onTap,
     required this.onDelete,
+    required this.onToggleFavorite,
   });
 
   @override
@@ -118,16 +217,59 @@ class _HistoryCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(item.title, style: AppTextStyles.heading3),
+                    Row(
+                      children: [
+                        Expanded(
+                          child:
+                              Text(item.title, style: AppTextStyles.heading3),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withOpacity(0.08),
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                          child: Text(
+                            item.type.label,
+                            style: const TextStyle(
+                              color: AppColors.primary,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 4),
                     Text(item.summary,
                         style: AppTextStyles.bodySecondary,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis),
+                    if (item.memo.trim().isNotEmpty) ...[
+                      const SizedBox(height: 6),
+                      Text(
+                        item.memo,
+                        style: AppTextStyles.caption,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                     const SizedBox(height: 6),
                     Text(dateStr, style: AppTextStyles.caption),
                   ],
                 ),
+              ),
+              IconButton(
+                icon: Icon(
+                  item.isFavorite ? Icons.star : Icons.star_border,
+                  color: item.isFavorite
+                      ? AppColors.warning
+                      : AppColors.textSecondary,
+                ),
+                onPressed: onToggleFavorite,
               ),
               IconButton(
                 icon: const Icon(Icons.delete_outline,

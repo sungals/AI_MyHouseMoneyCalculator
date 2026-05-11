@@ -118,8 +118,7 @@ ${result.months}개월 총 이자: ${MoneyFormatter.formatWithWon(result.totalIn
                   const _SectionTitle(
                     '대출 조건',
                     helpTitle: '대출이자 계산이란?',
-                    helpBody:
-                        '단리(이자만 납부) 방식으로 월 이자와 총 이자를 계산합니다.\n\n'
+                    helpBody: '단리(이자만 납부) 방식으로 월 이자와 총 이자를 계산합니다.\n\n'
                         '• 대출금: 은행에서 빌리는 원금\n'
                         '• 연이율: 연간 적용 이자율 (예: 4.5%)\n'
                         '• 대출 기간: 이자를 납부할 기간 (개월)\n\n'
@@ -180,7 +179,8 @@ ${result.months}개월 총 이자: ${MoneyFormatter.formatWithWon(result.totalIn
                     const SizedBox(height: 16),
                     _ResultRow(
                       label: '월 이자',
-                      value: MoneyFormatter.formatWithWon(result.monthlyInterest),
+                      value:
+                          MoneyFormatter.formatWithWon(result.monthlyInterest),
                       isBold: true,
                       valueColor: AppColors.primary,
                     ),
@@ -279,8 +279,8 @@ class _ResultRow extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(label,
-            style: const TextStyle(
-                fontSize: 14, color: AppColors.textSecondary)),
+            style:
+                const TextStyle(fontSize: 14, color: AppColors.textSecondary)),
         Text(
           value,
           style: TextStyle(

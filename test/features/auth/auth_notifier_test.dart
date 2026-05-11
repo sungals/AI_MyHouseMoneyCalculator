@@ -36,8 +36,7 @@ void main() {
       when(() => mockGoTrueClient.currentSession).thenReturn(null);
       when(() => mockGoTrueClient.onAuthStateChange)
           .thenAnswer((_) => const Stream<AuthState>.empty());
-      when(() => mockRepository.migrateLocalToRemote())
-          .thenAnswer((_) async => {});
+      when(() => mockRepository.syncWithRemote()).thenAnswer((_) async => {});
     });
 
     group('initialization', () {
@@ -159,7 +158,7 @@ void main() {
         );
       });
 
-      test('calls migrateLocalToRemote on successful sign in', () async {
+      test('calls syncWithRemote on successful sign in', () async {
         final mockUser = MockUser();
         final mockAuthResponse = MockAuthResponse();
 
@@ -174,7 +173,7 @@ void main() {
 
         await authNotifier.signInWithEmail('test@example.com', 'password123');
 
-        verify(() => mockRepository.migrateLocalToRemote()).called(1);
+        verify(() => mockRepository.syncWithRemote()).called(1);
       });
 
       test('emits [AuthLoading, AuthError] on AuthException', () async {
@@ -187,7 +186,8 @@ void main() {
           const AuthException('Invalid login credentials'),
         );
 
-        await authNotifier.signInWithEmail('test@example.com', 'wrong_password');
+        await authNotifier.signInWithEmail(
+            'test@example.com', 'wrong_password');
 
         expect(authNotifier.state, isA<AppAuthError>());
         expect(
@@ -233,8 +233,7 @@ void main() {
         );
       });
 
-      test('continues to AuthAuthenticated even if migration fails',
-          () async {
+      test('continues to AuthAuthenticated even if sync fails', () async {
         final mockUser = MockUser();
         final mockAuthResponse = MockAuthResponse();
 
@@ -246,8 +245,8 @@ void main() {
             password: 'password123',
           ),
         ).thenAnswer((_) async => mockAuthResponse);
-        when(() => mockRepository.migrateLocalToRemote())
-            .thenThrow(Exception('Migration failed'));
+        when(() => mockRepository.syncWithRemote())
+            .thenThrow(Exception('Sync failed'));
 
         await authNotifier.signInWithEmail('test@example.com', 'password123');
 
@@ -296,7 +295,7 @@ void main() {
         );
       });
 
-      test('calls migrateLocalToRemote on successful sign up', () async {
+      test('calls syncWithRemote on successful sign up', () async {
         final mockUser = MockUser();
         final mockSession = MockSession();
         final mockAuthResponse = MockAuthResponse();
@@ -316,7 +315,7 @@ void main() {
           'newpassword123',
         );
 
-        verify(() => mockRepository.migrateLocalToRemote()).called(1);
+        verify(() => mockRepository.syncWithRemote()).called(1);
       });
 
       test('emits [AuthLoading, AuthError] on AuthException', () async {
@@ -364,8 +363,7 @@ void main() {
         );
       });
 
-      test('continues to AuthAuthenticated even if migration fails',
-          () async {
+      test('continues to AuthAuthenticated even if sync fails', () async {
         final mockUser = MockUser();
         final mockSession = MockSession();
         final mockAuthResponse = MockAuthResponse();
@@ -379,8 +377,8 @@ void main() {
             password: 'password123',
           ),
         ).thenAnswer((_) async => mockAuthResponse);
-        when(() => mockRepository.migrateLocalToRemote())
-            .thenThrow(Exception('Migration failed'));
+        when(() => mockRepository.syncWithRemote())
+            .thenThrow(Exception('Sync failed'));
 
         await authNotifier.signUpWithEmail(
           'newuser@example.com',
@@ -411,8 +409,7 @@ void main() {
       });
 
       test('emits AuthUnauthenticated on successful sign out', () async {
-        when(() => mockGoTrueClient.signOut())
-            .thenAnswer((_) async => {});
+        when(() => mockGoTrueClient.signOut()).thenAnswer((_) async => {});
 
         await authNotifier.signOut();
 
@@ -420,8 +417,7 @@ void main() {
       });
 
       test('calls auth.signOut', () async {
-        when(() => mockGoTrueClient.signOut())
-            .thenAnswer((_) async => {});
+        when(() => mockGoTrueClient.signOut()).thenAnswer((_) async => {});
 
         await authNotifier.signOut();
 

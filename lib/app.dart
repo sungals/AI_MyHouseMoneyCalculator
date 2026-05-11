@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'connectivity/connectivity_notifier.dart';
 import 'core/notifications/firebase_push_service.dart';
 import 'core/theme/app_theme.dart';
-import 'core/notifications/notice_realtime_service.dart';
 import 'features/auth/auth_notifier.dart';
 import 'features/auth/auth_state.dart';
 import 'features/auth/pin/pin_notifier.dart';
@@ -29,7 +28,6 @@ class _AppState extends ConsumerState<App> with WidgetsBindingObserver {
       if (authState is AppAuthAuthenticated) {
         ref.read(firebasePushServiceProvider).start();
       }
-      ref.read(noticeRealtimeServiceProvider).start();
     });
   }
 
@@ -59,7 +57,8 @@ class _AppState extends ConsumerState<App> with WidgetsBindingObserver {
       final push = ref.read(firebasePushServiceProvider);
       if (next is AppAuthAuthenticated && previous is! AppAuthAuthenticated) {
         push.start();
-      } else if (next is AppAuthUnauthenticated && previous is AppAuthAuthenticated) {
+      } else if (next is AppAuthUnauthenticated &&
+          previous is AppAuthAuthenticated) {
         push.stop();
       }
     });

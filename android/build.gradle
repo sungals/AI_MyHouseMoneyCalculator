@@ -8,6 +8,11 @@ allprojects {
 rootProject.buildDir = "../build"
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
+    project.configurations.configureEach {
+        resolutionStrategy.force "androidx.test:runner:1.5.2"
+        resolutionStrategy.force "androidx.test:rules:1.5.0"
+        resolutionStrategy.force "androidx.test.espresso:espresso-core:3.5.1"
+    }
 }
 subprojects {
     project.evaluationDependsOn(":app")

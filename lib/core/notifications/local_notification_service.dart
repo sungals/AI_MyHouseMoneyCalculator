@@ -14,7 +14,9 @@ class LocalNotificationService {
     importance: Importance.high,
   );
 
-  Future<void> initialize() async {
+  Future<void> initialize({
+    void Function(String? payload)? onSelectNotification,
+  }) async {
     const android = AndroidInitializationSettings('@mipmap/ic_launcher');
     const darwin = DarwinInitializationSettings(
       requestAlertPermission: true,
@@ -24,6 +26,9 @@ class LocalNotificationService {
 
     await _plugin.initialize(
       const InitializationSettings(android: android, iOS: darwin),
+      onDidReceiveNotificationResponse: (response) {
+        onSelectNotification?.call(response.payload);
+      },
     );
 
     final androidPlugin = _plugin.resolvePlatformSpecificImplementation<
@@ -43,6 +48,7 @@ class LocalNotificationService {
   Future<void> showNotice({
     required String title,
     required String body,
+    String? noticeId,
   }) {
     return _plugin.show(
       DateTime.now().millisecondsSinceEpoch.remainder(100000),
@@ -58,6 +64,7 @@ class LocalNotificationService {
         ),
         iOS: DarwinNotificationDetails(),
       ),
+      payload: noticeId,
     );
   }
 }

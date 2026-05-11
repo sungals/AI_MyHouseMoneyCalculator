@@ -13,7 +13,8 @@ class TaxDeductionCalculator {
 
     final annualRentTotal = input.monthlyRent * 12;
     final eligibleAnnualRent = annualRentTotal.clamp(0, _rentDeductionLimit);
-    final rentTaxCredit = (eligibleAnnualRent * rentDeductionRate / 100).round();
+    final rentTaxCredit =
+        (eligibleAnnualRent * rentDeductionRate / 100).round();
 
     final eligibleRepayment =
         input.annualLoanRepayment.clamp(0, _loanDeductionLimit);

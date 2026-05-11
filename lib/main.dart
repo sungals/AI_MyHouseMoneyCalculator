@@ -10,6 +10,7 @@ import 'core/notifications/firebase_push_service.dart';
 import 'core/notifications/local_notification_service.dart';
 import 'data/local/calculation_history_store.dart';
 import 'data/models/calculation_history.dart';
+import 'router/app_router.dart';
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -24,7 +25,9 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   if (Supabase.instance.client.auth.currentSession == null) return;
 
   final notificationService = LocalNotificationService();
-  await notificationService.initialize();
+  await notificationService.initialize(
+    onSelectNotification: AppRouter.openNoticeFromPush,
+  );
   await FirebasePushService.showRemoteMessage(
     message,
     notificationService: notificationService,

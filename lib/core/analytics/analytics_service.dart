@@ -8,7 +8,8 @@ class NoOpAnalyticsService implements AnalyticsService {
   Future<void> initialize() async {}
 
   @override
-  Future<void> logEvent(String name, {Map<String, dynamic>? parameters}) async {}
+  Future<void> logEvent(String name,
+      {Map<String, dynamic>? parameters}) async {}
 }
 
 class AnalyticsEvents {

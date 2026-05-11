@@ -5,9 +5,11 @@ import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'local_notification_service.dart';
+import '../../router/app_router.dart';
 
 class FirebasePushService {
   FirebasePushService({
@@ -25,9 +27,32 @@ class FirebasePushService {
   bool _started = false;
   StreamSubscription<String>? _tokenRefreshSub;
   StreamSubscription<RemoteMessage>? _onMessageSub;
+  StreamSubscription<RemoteMessage>? _onMessageOpenedAppSub;
+
+  static const _noticePushEnabledKey = 'notice_push_enabled';
+
+  static bool get isNoticePushEnabled {
+    return Hive.box('app_settings').get(
+      _noticePushEnabledKey,
+      defaultValue: true,
+    ) as bool;
+  }
+
+  Future<void> setNoticePushEnabled(bool enabled) async {
+    await Hive.box('app_settings').put(_noticePushEnabledKey, enabled);
+    if (enabled) {
+      await start();
+    } else {
+      await stop();
+    }
+  }
 
   Future<void> start() async {
     if (_started) return;
+    if (!isNoticePushEnabled) {
+      _debugLog('Skipping push start: notice push disabled.');
+      return;
+    }
     _started = true;
 
     try {
@@ -55,6 +80,14 @@ class FirebasePushService {
       _onMessageSub = FirebaseMessaging.onMessage.listen((message) {
         showRemoteMessage(message, notificationService: _notificationService);
       });
+      _onMessageOpenedAppSub = FirebaseMessaging.onMessageOpenedApp.listen(
+        _openNoticeFromMessage,
+      );
+
+      final initialMessage = await _messaging.getInitialMessage();
+      if (initialMessage != null) {
+        _openNoticeFromMessage(initialMessage);
+      }
     } on Object catch (error, stackTrace) {
       developer.log(
         'Failed to start Firebase push service.',
@@ -66,13 +99,14 @@ class FirebasePushService {
   }
 
   Future<void> stop() async {
-    if (!_started) return;
     _started = false;
 
     await _tokenRefreshSub?.cancel();
     _tokenRefreshSub = null;
     await _onMessageSub?.cancel();
     _onMessageSub = null;
+    await _onMessageOpenedAppSub?.cancel();
+    _onMessageOpenedAppSub = null;
 
     try {
       final token = await _messaging.getToken();
@@ -148,15 +182,22 @@ class FirebasePushService {
     final title = message.notification?.title ??
         message.data['title'] as String? ??
         '공지사항';
-    final body = message.notification?.body ??
-        message.data['body'] as String? ??
-        '';
+    final body =
+        message.notification?.body ?? message.data['body'] as String? ?? '';
 
     if (body.isEmpty && title == '공지사항') {
       return Future<void>.value();
     }
 
-    return notificationService.showNotice(title: title, body: body);
+    return notificationService.showNotice(
+      title: title,
+      body: body,
+      noticeId: message.data['notice_id'] as String?,
+    );
+  }
+
+  void _openNoticeFromMessage(RemoteMessage message) {
+    AppRouter.openNoticeFromPush(message.data['notice_id'] as String?);
   }
 
   String get _platform {

@@ -17,8 +17,7 @@ class TaxDeductionScreen extends ConsumerStatefulWidget {
   const TaxDeductionScreen({super.key});
 
   @override
-  ConsumerState<TaxDeductionScreen> createState() =>
-      _TaxDeductionScreenState();
+  ConsumerState<TaxDeductionScreen> createState() => _TaxDeductionScreenState();
 }
 
 class _TaxDeductionScreenState extends ConsumerState<TaxDeductionScreen> {

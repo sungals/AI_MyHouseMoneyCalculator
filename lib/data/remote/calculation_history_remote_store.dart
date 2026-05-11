@@ -39,15 +39,23 @@ class CalculationHistoryRemoteStore {
     if (userId == null) return;
     if (items.isEmpty) return;
 
-    final rows = items.map((h) => {
-      ...h.toSupabaseJson(),
-      'user_id': userId,
-    }).toList();
+    final rows = items
+        .where((h) => !h.isDeleted)
+        .map((h) => {
+              ...h.toSupabaseJson(),
+              'user_id': userId,
+            })
+        .toList();
+
+    if (rows.isEmpty) return;
 
     await _client.from(_table).upsert(rows);
   }
 
   Future<void> delete(String id) async {
-    await _client.from(_table).delete().eq('id', id);
+    final userId = _client.auth.currentUser?.id;
+    if (userId == null) return;
+
+    await _client.from(_table).delete().eq('id', id).eq('user_id', userId);
   }
 }
