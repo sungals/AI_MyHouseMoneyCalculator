@@ -2,8 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../features/home/home_screen.dart';
 import '../features/onboarding/onboarding_screen.dart';
+import '../features/shared/main_shell.dart';
 import '../features/rent_compare/rent_compare_screen.dart';
 import '../features/semi_rent/semi_rent_screen.dart';
 import '../features/loan_interest/loan_interest_screen.dart';
@@ -91,7 +91,7 @@ class AppRouter {
       ),
       GoRoute(
         path: '/',
-        builder: (context, state) => const HomeScreen(),
+        builder: (context, state) => const MainShell(),
       ),
       GoRoute(
         path: '/rent-compare',

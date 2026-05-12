@@ -16,8 +16,13 @@
     .card p, .card li { font-size: 15px; line-height: 1.7; color: #3c3c43; }
     .card ul { padding-left: 20px; }
     .card ul li { margin-bottom: 6px; }
+    .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+    .feature-item { background: #f2f2f7; border-radius: 10px; padding: 12px 14px; font-size: 14px; color: #3c3c43; }
+    .feature-item strong { display: block; font-size: 14px; font-weight: 600; color: #1c1c1e; margin-bottom: 2px; }
+    .badge { display: inline-block; background: #e8edff; color: #4169e1; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 99px; margin-left: 6px; vertical-align: middle; }
     .contact a { color: #4169e1; text-decoration: none; }
     footer { text-align: center; padding: 24px; font-size: 13px; color: #8e8e93; }
+    @media (max-width: 480px) { .feature-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -29,13 +34,54 @@
   <div class="container">
     <div class="card">
       <h2>앱 소개</h2>
-      <p>어떤비용은 복잡한 주거 비용을 쉽고 빠르게 계산할 수 있는 모바일 앱입니다.</p>
-      <ul style="margin-top: 12px;">
-        <li>전세 vs 월세 비교</li>
-        <li>반전세 계산</li>
-        <li>대출이자 계산</li>
-        <li>월 고정비 계산</li>
-        <li>연말정산 세액공제 계산</li>
+      <p>어떤비용은 복잡한 주거 비용을 쉽고 빠르게 계산할 수 있는 모바일 앱입니다. 계산 결과를 저장하고 언제든지 다시 확인하세요.</p>
+
+      <div class="feature-grid" style="margin-top: 16px;">
+        <div class="feature-item">
+          <strong>전세 vs 월세 비교</strong>
+          전세 대출이자와 월세 비용을 비교해요
+        </div>
+        <div class="feature-item">
+          <strong>반전세 계산</strong>
+          전월세 전환율로 월세 적정성을 확인해요
+        </div>
+        <div class="feature-item">
+          <strong>대출이자 계산</strong>
+          월 이자와 총 이자를 빠르게 계산해요
+        </div>
+        <div class="feature-item">
+          <strong>월 고정비 계산</strong>
+          매달 나가는 고정 지출을 한눈에 정리해요
+        </div>
+        <div class="feature-item">
+          <strong>연말정산 세액공제</strong>
+          월세 공제와 전세대출 절세 혜택을 계산해요
+        </div>
+        <div class="feature-item">
+          <strong>DSR/DTI 계산</strong>
+          소득 대비 대출 상환 부담을 확인해요
+        </div>
+        <div class="feature-item">
+          <strong>중개보수 계산</strong>
+          매매·임대차 중개보수 상한을 계산해요
+        </div>
+        <div class="feature-item">
+          <strong>취득세 계산</strong>
+          취득가액과 보유 주택 수로 간이 계산해요
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>주요 기능</h2>
+      <ul>
+        <li><strong>최근계산 탭</strong> — 저장된 계산 내역을 바텀 탭에서 바로 확인 <span class="badge">NEW</span></li>
+        <li><strong>계산 결과 저장 및 메모</strong> — 계산 후 저장하고 메모를 추가할 수 있어요</li>
+        <li><strong>즐겨찾기</strong> — 자주 보는 계산을 즐겨찾기로 빠르게 접근해요</li>
+        <li><strong>CSV / PDF 내보내기</strong> — 계산 결과를 파일로 내보내 공유할 수 있어요</li>
+        <li><strong>생체인증 / PIN 잠금</strong> — Face ID·Touch ID 또는 PIN으로 앱을 보호해요</li>
+        <li><strong>공지사항</strong> — 앱 내 공지사항을 푸시 알림으로 받아볼 수 있어요</li>
+        <li><strong>로그인 없이 사용 가능</strong> — 모든 계산 기능은 비로그인으로도 이용 가능해요</li>
       </ul>
     </div>
 
@@ -47,6 +93,8 @@
       <p>로그인 없이도 모든 계산 기능을 이용할 수 있습니다. 계산 결과 저장 및 기기 간 동기화는 로그인이 필요합니다.</p>
       <p style="margin-top: 12px;"><strong>Q. 개인정보가 저장되나요?</strong></p>
       <p>입력한 금액 등 계산 데이터는 기기 내에 저장되며, 로그인 후 저장·동기화 기능을 사용할 경우 계정과 연동되어 서버에 저장될 수 있습니다. 자세한 내용은 <a href="privacy.html">개인정보처리방침</a>을 참고하세요.</p>
+      <p style="margin-top: 12px;"><strong>Q. 생체인증은 어떻게 설정하나요?</strong></p>
+      <p>설정 화면에서 Face ID / Touch ID 또는 PIN 잠금을 활성화할 수 있습니다.</p>
     </div>
 
     <div class="card contact">
