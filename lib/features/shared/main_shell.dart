@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../history/history_screen.dart';
 import '../home/home_screen.dart';
+import '../settings/settings_screen.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -21,6 +22,7 @@ class _MainShellState extends State<MainShell> {
         children: const [
           HomeScreen(),
           HistoryScreen(),
+          SettingsScreen(),
         ],
       ),
       bottomNavigationBar: NavigationBar(
@@ -39,6 +41,11 @@ class _MainShellState extends State<MainShell> {
             icon: Icon(Icons.history_outlined),
             selectedIcon: Icon(Icons.history, color: AppColors.primary),
             label: '최근계산',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.settings_outlined),
+            selectedIcon: Icon(Icons.settings, color: AppColors.primary),
+            label: '설정',
           ),
         ],
       ),
