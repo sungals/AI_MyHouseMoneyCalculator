@@ -121,6 +121,21 @@ class AuthNotifier extends StateNotifier<AppAuthState> {
     }
   }
 
+  Future<String?> deleteAccount() async {
+    final previous = state;
+    state = const AppAuthLoading();
+    try {
+      await _beforeSignOut?.call();
+      await _client.rpc('delete_account');
+      await _repo.clearLocal();
+      state = const AppAuthUnauthenticated();
+      return null;
+    } catch (e) {
+      state = previous;
+      return e.toString();
+    }
+  }
+
   bool get isAuthenticated => state is AppAuthAuthenticated;
 
   String? get currentUserId => state is AppAuthAuthenticated

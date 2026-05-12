@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:share_plus/share_plus.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/money_formatter.dart';
+import '../../core/utils/share_helper.dart';
 import '../../providers/calculation_history_provider.dart';
 import '../../data/models/calculation_history.dart';
 import '../../domain/entities/monthly_expense_input.dart';
@@ -115,7 +115,12 @@ $breakdown
 
 ※ 본 계산 결과는 참고용입니다.''';
 
-    Share.share(text);
+    ShareHelper.shareText(
+      context,
+      text: text,
+      subject: '월 고정비 계산 결과',
+      title: '월 고정비 계산 결과',
+    );
   }
 
   @override

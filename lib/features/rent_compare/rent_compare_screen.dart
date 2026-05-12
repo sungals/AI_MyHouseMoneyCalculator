@@ -9,6 +9,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/money_formatter.dart';
+import '../../core/utils/share_helper.dart';
 import '../../core/utils/validators.dart';
 import '../../providers/calculation_history_provider.dart';
 import '../../data/models/calculation_history.dart';
@@ -145,10 +146,19 @@ class _RentCompareScreenState extends ConsumerState<RentCompareScreen> {
     final dir = await getTemporaryDirectory();
     final file = File('${dir.path}/rent_compare_result.png');
     await file.writeAsBytes(imageBytes);
+    if (!mounted) return;
 
-    await Share.shareXFiles(
-      [XFile(file.path)],
+    await ShareHelper.shareFiles(
+      context,
+      files: [
+        XFile(
+          file.path,
+          mimeType: 'image/png',
+          name: 'rent_compare_result.png',
+        ),
+      ],
       text: '전세 vs 월세 비교 결과',
+      title: '전세 vs 월세 비교 결과',
     );
   }
 

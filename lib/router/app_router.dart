@@ -13,6 +13,7 @@ import '../features/history/history_detail_screen.dart';
 import '../features/settings/settings_screen.dart';
 import '../features/settings/app_guide_screen.dart';
 import '../features/settings/legal_document_screen.dart';
+import '../features/settings/account_manage_screen.dart';
 import '../features/settings/notices_screen.dart';
 import '../features/settings/notice_detail_screen.dart';
 import '../features/tax_deduction/tax_deduction_screen.dart';
@@ -144,6 +145,10 @@ class AppRouter {
         builder: (context, state) => const AppGuideScreen(),
       ),
       GoRoute(
+        path: '/account-manage',
+        builder: (context, state) => const AccountManageScreen(),
+      ),
+      GoRoute(
         path: '/notices',
         builder: (context, state) => const NoticesScreen(),
       ),
@@ -194,11 +199,13 @@ class AppRouter {
 
   static void openNoticeFromPush(String? noticeId) {
     final id = noticeId?.trim();
+    // go('/') sets MainShell as the base so the back button exists on the pushed screen
+    router.go('/');
     if (id == null || id.isEmpty) {
-      router.go('/notices');
-      return;
+      router.push('/notices');
+    } else {
+      router.push('/notices/$id');
     }
-    router.go('/notices/$id');
   }
 
   static String consumePendingRouteAfterUnlock() {

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:share_plus/share_plus.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/money_formatter.dart';
+import '../../core/utils/share_helper.dart';
 import '../../core/utils/validators.dart';
 import '../../providers/calculation_history_provider.dart';
 import '../../data/models/calculation_history.dart';
@@ -94,7 +94,12 @@ ${result.months}개월 총 이자: ${MoneyFormatter.formatWithWon(result.totalIn
 
 ※ 본 계산 결과는 참고용입니다. 실제 계약 전 전문가에게 확인하세요.''';
 
-    Share.share(text);
+    ShareHelper.shareText(
+      context,
+      text: text,
+      subject: '대출이자 계산 결과',
+      title: '대출이자 계산 결과',
+    );
   }
 
   @override

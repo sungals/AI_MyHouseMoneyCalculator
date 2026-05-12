@@ -113,6 +113,8 @@ class CalculationHistoryRepository {
     } catch (_) {}
   }
 
+  Future<void> clearLocal() => localStore.clear();
+
   Future<void> _syncOne(String id) async {
     if (remoteStore == null) return;
     final item = localStore.getById(id);

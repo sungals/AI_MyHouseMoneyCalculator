@@ -11,6 +11,7 @@ import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/utils/money_formatter.dart';
+import '../../core/utils/share_helper.dart';
 import '../../data/models/calculation_history.dart';
 import '../../providers/calculation_history_provider.dart';
 
@@ -66,7 +67,12 @@ class _HistoryDetailScreenState extends ConsumerState<HistoryDetailScreen> {
         '$resultEntries\n\n'
         '※ 본 계산 결과는 참고용입니다.';
 
-    Share.share(text);
+    ShareHelper.shareText(
+      context,
+      text: text,
+      subject: item.title,
+      title: item.title,
+    );
   }
 
   Future<void> _toggleFavorite() async {
@@ -111,7 +117,20 @@ class _HistoryDetailScreenState extends ConsumerState<HistoryDetailScreen> {
     ];
     final csv = rows.map((row) => row.map(_escapeCsv).join(',')).join('\n');
     final file = await _writeExportFile(item, 'csv', csv.codeUnits);
-    await Share.shareXFiles([XFile(file.path)], text: '${item.title} CSV');
+    if (!mounted) return;
+    await ShareHelper.shareFiles(
+      context,
+      files: [
+        XFile(
+          file.path,
+          mimeType: 'text/csv',
+          name: '${_safeFileName(item)}.csv',
+        ),
+      ],
+      text: '${item.title} CSV',
+      subject: item.title,
+      title: '${item.title} CSV',
+    );
   }
 
   Future<void> _exportPdf() async {
@@ -143,7 +162,20 @@ class _HistoryDetailScreenState extends ConsumerState<HistoryDetailScreen> {
     );
 
     final file = await _writeExportFile(item, 'pdf', await doc.save());
-    await Share.shareXFiles([XFile(file.path)], text: '${item.title} PDF');
+    if (!mounted) return;
+    await ShareHelper.shareFiles(
+      context,
+      files: [
+        XFile(
+          file.path,
+          mimeType: 'application/pdf',
+          name: '${_safeFileName(item)}.pdf',
+        ),
+      ],
+      text: '${item.title} PDF',
+      subject: item.title,
+      title: '${item.title} PDF',
+    );
   }
 
   pw.Widget _pdfSection(String title, List<String> lines) {
@@ -175,9 +207,13 @@ class _HistoryDetailScreenState extends ConsumerState<HistoryDetailScreen> {
     List<int> bytes,
   ) async {
     final dir = await getTemporaryDirectory();
-    final safeTitle = item.title.replaceAll(RegExp(r'[^a-zA-Z0-9가-힣_-]'), '_');
-    final file = File('${dir.path}/${safeTitle}_${item.id}.$extension');
+    final file = File('${dir.path}/${_safeFileName(item)}.$extension');
     return file.writeAsBytes(bytes, flush: true);
+  }
+
+  String _safeFileName(CalculationHistory item) {
+    final safeTitle = item.title.replaceAll(RegExp(r'[^a-zA-Z0-9가-힣_-]'), '_');
+    return '${safeTitle}_${item.id}';
   }
 
   String _escapeCsv(String value) {
