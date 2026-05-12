@@ -73,6 +73,7 @@ class AuthNotifier extends StateNotifier<AppAuthState> {
       final response = await _client.auth.signUp(
         email: email,
         password: password,
+        emailRedirectTo: 'com.sungals.housemoneycalculator://login-callback/',
       );
 
       final user = response.user;
