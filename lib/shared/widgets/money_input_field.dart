@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import '../../core/utils/money_formatter.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 
@@ -41,6 +42,7 @@ class MoneyInputField extends StatefulWidget {
 class _MoneyInputFieldState extends State<MoneyInputField> {
   final _formatter = NumberFormat('#,###', 'ko_KR');
   double _sliderValue = 0;
+  String _koreanAmount = '';
 
   @override
   void initState() {
@@ -50,9 +52,10 @@ class _MoneyInputFieldState extends State<MoneyInputField> {
   }
 
   void _syncSliderFromText() {
-    if (widget.sliderMax == null) return;
     final digits = widget.controller.text.replaceAll(',', '');
     final value = double.tryParse(digits) ?? 0;
+    _koreanAmount = MoneyFormatter.formatKorean(value.round());
+    if (widget.sliderMax == null) return;
     _sliderValue = value.clamp(widget.sliderMin, widget.sliderMax!);
   }
 
@@ -62,6 +65,8 @@ class _MoneyInputFieldState extends State<MoneyInputField> {
     if (digits.isEmpty) {
       if (widget.sliderMax != null) {
         setState(() => _sliderValue = widget.sliderMin);
+      } else if (_koreanAmount.isNotEmpty) {
+        setState(() => _koreanAmount = '');
       }
       return;
     }
@@ -84,8 +89,17 @@ class _MoneyInputFieldState extends State<MoneyInputField> {
     if (widget.sliderMax != null) {
       final clamped =
           value.toDouble().clamp(widget.sliderMin, widget.sliderMax!);
-      if (clamped != _sliderValue) {
-        setState(() => _sliderValue = clamped);
+      final korean = MoneyFormatter.formatKorean(value);
+      if (clamped != _sliderValue || korean != _koreanAmount) {
+        setState(() {
+          _sliderValue = clamped;
+          _koreanAmount = korean;
+        });
+      }
+    } else {
+      final korean = MoneyFormatter.formatKorean(value);
+      if (korean != _koreanAmount) {
+        setState(() => _koreanAmount = korean);
       }
     }
   }
@@ -165,6 +179,7 @@ class _MoneyInputFieldState extends State<MoneyInputField> {
             labelText: widget.label,
             hintText: widget.hint ?? '0',
             suffixText: '원',
+            helperText: _koreanAmount.isEmpty ? null : _koreanAmount,
           ),
         ),
         if (widget.sliderMax != null) ...[

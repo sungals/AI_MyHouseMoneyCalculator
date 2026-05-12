@@ -73,7 +73,7 @@ class SettingsScreen extends ConsumerWidget {
               onTap: () => context.push('/notices'),
             ),
             const _InfoTile(label: '앱 이름', value: AppConstants.appName),
-            const _InfoTile(label: '버전', value: '1.0.0'),
+            const _InfoTile(label: '버전', value: AppConstants.appVersion),
             const SizedBox(height: 24),
             const _SectionHeader('법적 고지'),
             _SettingsActionTile(
@@ -95,7 +95,7 @@ class SettingsScreen extends ConsumerWidget {
               onTap: () => showLicensePage(
                 context: context,
                 applicationName: AppConstants.appName,
-                applicationVersion: '1.0.0',
+                applicationVersion: AppConstants.appVersion,
               ),
             ),
             const SizedBox(height: 8),

@@ -6,6 +6,8 @@ import '../../core/theme/app_colors.dart';
 import '../../core/utils/money_formatter.dart';
 import '../../core/utils/validators.dart';
 import '../../data/models/calculation_history.dart';
+import '../../domain/calculators/brokerage_fee_calculator.dart';
+import '../../domain/entities/brokerage_fee_input.dart';
 import '../../providers/calculation_history_provider.dart';
 import '../../shared/widgets/disclaimer_box.dart';
 import '../../shared/widgets/money_input_field.dart';
@@ -35,13 +37,18 @@ class _BrokerageFeeScreenState extends ConsumerState<BrokerageFeeScreen> {
   void _calculate() {
     if (!_formKey.currentState!.validate()) return;
     final amount = MoneyFormatter.parse(_price.text);
-    final bracket =
-        _type == 'sale' ? _saleBracket(amount) : _leaseBracket(amount);
-    final rawFee = (amount * bracket.rate).round();
+    final result = BrokerageFeeCalculator().calculate(
+      BrokerageFeeInput(
+        transactionType: _type == 'sale'
+            ? BrokerageTransactionType.sale
+            : BrokerageTransactionType.lease,
+        transactionAmount: amount,
+      ),
+    );
     setState(() {
-      _rate = bracket.rate;
-      _cap = bracket.cap;
-      _fee = bracket.cap == null ? rawFee : rawFee.clamp(0, bracket.cap!);
+      _rate = result.rate;
+      _cap = result.cap;
+      _fee = result.fee;
     });
     FocusScope.of(context).unfocus();
   }
@@ -73,24 +80,6 @@ class _BrokerageFeeScreenState extends ConsumerState<BrokerageFeeScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('계산 결과가 저장되었습니다.')),
     );
-  }
-
-  _FeeBracket _saleBracket(int amount) {
-    if (amount < 50000000) return const _FeeBracket(0.006, 250000);
-    if (amount < 200000000) return const _FeeBracket(0.005, 800000);
-    if (amount < 900000000) return const _FeeBracket(0.004, null);
-    if (amount < 1200000000) return const _FeeBracket(0.005, null);
-    if (amount < 1500000000) return const _FeeBracket(0.006, null);
-    return const _FeeBracket(0.007, null);
-  }
-
-  _FeeBracket _leaseBracket(int amount) {
-    if (amount < 50000000) return const _FeeBracket(0.005, 200000);
-    if (amount < 100000000) return const _FeeBracket(0.004, 300000);
-    if (amount < 600000000) return const _FeeBracket(0.003, null);
-    if (amount < 1200000000) return const _FeeBracket(0.004, null);
-    if (amount < 1500000000) return const _FeeBracket(0.005, null);
-    return const _FeeBracket(0.006, null);
   }
 
   @override
@@ -148,13 +137,6 @@ class _BrokerageFeeScreenState extends ConsumerState<BrokerageFeeScreen> {
       ),
     );
   }
-}
-
-class _FeeBracket {
-  final double rate;
-  final int? cap;
-
-  const _FeeBracket(this.rate, this.cap);
 }
 
 class _ResultCard extends StatelessWidget {

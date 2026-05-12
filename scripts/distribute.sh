@@ -4,17 +4,31 @@ set -e
 CREDENTIALS_FILE="$(dirname "$0")/../.appstore_credentials"
 if [ ! -f "$CREDENTIALS_FILE" ]; then
   echo "❌ .appstore_credentials 파일이 없습니다."
+  echo "   .appstore_credentials.example 파일을 복사해 App Store Connect API 정보를 입력하세요."
   exit 1
 fi
 source "$CREDENTIALS_FILE"
 
+if [ -z "$ASC_KEY_ID" ] || [ -z "$ASC_ISSUER_ID" ]; then
+  echo "❌ ASC_KEY_ID 또는 ASC_ISSUER_ID 값이 비어 있습니다."
+  exit 1
+fi
+
+KEY_FILE="$HOME/.appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID}.p8"
+if [ ! -f "$KEY_FILE" ]; then
+  echo "❌ App Store Connect API 키 파일을 찾을 수 없습니다: $KEY_FILE"
+  exit 1
+fi
+
 # 빌드 번호 자동 증가
 PUBSPEC="$(dirname "$0")/../pubspec.yaml"
+APP_CONSTANTS="$(dirname "$0")/../lib/core/constants/app_constants.dart"
 CURRENT=$(grep '^version:' "$PUBSPEC" | sed 's/version: //')
 VERSION=$(echo "$CURRENT" | cut -d+ -f1)
 BUILD=$(echo "$CURRENT" | cut -d+ -f2)
 NEW_BUILD=$((BUILD + 1))
 sed -i '' "s/^version: .*/version: ${VERSION}+${NEW_BUILD}/" "$PUBSPEC"
+sed -i '' "s/static const String appVersion = '.*';/static const String appVersion = '${VERSION}+${NEW_BUILD}';/" "$APP_CONSTANTS"
 echo "▶ 버전: ${VERSION}+${NEW_BUILD}"
 
 echo "▶ [1/3] Flutter IPA 빌드 중..."
@@ -25,6 +39,9 @@ xcodebuild -exportArchive \
   -exportPath build/ios/ipa \
   -exportOptionsPlist ios/ExportOptions.plist \
   -allowProvisioningUpdates \
+  -authenticationKeyPath "$KEY_FILE" \
+  -authenticationKeyID "$ASC_KEY_ID" \
+  -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
   2>&1 | grep -E "EXPORT|error:" || true
 
 IPA_PATH="build/ios/ipa/어떤비용.ipa"

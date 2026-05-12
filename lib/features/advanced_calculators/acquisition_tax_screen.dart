@@ -6,6 +6,8 @@ import '../../core/theme/app_colors.dart';
 import '../../core/utils/money_formatter.dart';
 import '../../core/utils/validators.dart';
 import '../../data/models/calculation_history.dart';
+import '../../domain/calculators/acquisition_tax_calculator.dart';
+import '../../domain/entities/acquisition_tax_input.dart';
 import '../../providers/calculation_history_provider.dart';
 import '../../shared/widgets/disclaimer_box.dart';
 import '../../shared/widgets/money_input_field.dart';
@@ -36,10 +38,16 @@ class _AcquisitionTaxScreenState extends ConsumerState<AcquisitionTaxScreen> {
   void _calculate() {
     if (!_formKey.currentState!.validate()) return;
     final price = MoneyFormatter.parse(_price.text);
-    final rate = _taxRate(price);
+    final result = AcquisitionTaxCalculator().calculate(
+      AcquisitionTaxInput(
+        price: price,
+        houseCount: _houseCountType,
+        regulatedArea: _regulatedArea,
+      ),
+    );
     setState(() {
-      _rate = rate;
-      _tax = (price * rate).round();
+      _rate = result.rate;
+      _tax = result.tax;
     });
     FocusScope.of(context).unfocus();
   }
@@ -74,15 +82,16 @@ class _AcquisitionTaxScreenState extends ConsumerState<AcquisitionTaxScreen> {
     );
   }
 
-  double _taxRate(int price) {
-    if (_houseCount == 'threePlus') return 0.12;
-    if (_houseCount == 'two' && _regulatedArea) return 0.08;
-    if (price <= 600000000) return 0.01;
-    if (price <= 900000000) {
-      final hundredMillion = price / 100000000;
-      return ((hundredMillion * 2 / 3) - 3) / 100;
+  HouseCountType get _houseCountType {
+    switch (_houseCount) {
+      case 'two':
+        return HouseCountType.two;
+      case 'threePlus':
+        return HouseCountType.threePlus;
+      case 'one':
+      default:
+        return HouseCountType.one;
     }
-    return 0.03;
   }
 
   @override

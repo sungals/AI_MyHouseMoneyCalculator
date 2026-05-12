@@ -6,6 +6,8 @@ import '../../core/theme/app_colors.dart';
 import '../../core/utils/money_formatter.dart';
 import '../../core/utils/validators.dart';
 import '../../data/models/calculation_history.dart';
+import '../../domain/calculators/dsr_dti_calculator.dart';
+import '../../domain/entities/dsr_dti_input.dart';
 import '../../providers/calculation_history_provider.dart';
 import '../../shared/widgets/disclaimer_box.dart';
 import '../../shared/widgets/money_input_field.dart';
@@ -40,9 +42,16 @@ class _DsrDtiScreenState extends ConsumerState<DsrDtiScreen> {
     final income = MoneyFormatter.parse(_annualIncome.text);
     final housing = MoneyFormatter.parse(_housingDebt.text);
     final other = MoneyFormatter.parse(_otherDebt.text);
+    final result = DsrDtiCalculator().calculate(
+      DsrDtiInput(
+        annualIncome: income,
+        housingDebtAnnualPayment: housing,
+        otherDebtAnnualPayment: other,
+      ),
+    );
     setState(() {
-      _dti = income == 0 ? 0 : housing / income * 100;
-      _dsr = income == 0 ? 0 : (housing + other) / income * 100;
+      _dti = result.dti;
+      _dsr = result.dsr;
     });
     FocusScope.of(context).unfocus();
   }

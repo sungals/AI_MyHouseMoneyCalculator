@@ -23,32 +23,36 @@
 <body>
   <header>
     <h1>개인정보처리방침</h1>
-    <p>어떤비용 · 최종 수정일: 2026년 5월 1일</p>
+    <p>어떤비용 · 최종 수정일: 2026년 5월 12일</p>
   </header>
 
   <div class="container">
     <div class="card">
       <h2>1. 수집하는 개인정보</h2>
-      <p>어떤비용은 다음과 같은 정보를 수집합니다.</p>
+      <p>어떤비용은 서비스 제공을 위해 다음과 같은 정보를 수집하거나 저장할 수 있습니다.</p>
       <ul>
-        <li><strong>계정 정보</strong>: 회원가입 시 이메일 주소</li>
-        <li><strong>계산 데이터</strong>: 사용자가 입력한 금액, 계산 결과 (로그인 시 서버 저장)</li>
-        <li><strong>앱 설정</strong>: 온보딩 완료 여부, PIN 설정 여부 (기기 내 저장)</li>
+        <li><strong>계정 정보</strong>: 회원가입, 로그인, 비밀번호 재설정을 위한 이메일 주소 및 사용자 식별자</li>
+        <li><strong>계산 데이터</strong>: 사용자가 입력한 금액, 소득, 대출 상환액, 세금·중개보수 계산 입력값, 계산 결과, 저장 제목, 요약, 메모, 즐겨찾기 여부, 생성·수정 시각</li>
+        <li><strong>알림 데이터</strong>: 공지 푸시 알림 발송을 위한 Firebase 푸시 토큰, 공지사항 읽음 여부</li>
+        <li><strong>앱 설정 및 보안 정보</strong>: 온보딩 완료 여부, PIN 해시, 생체인증 사용 여부, 앱 재진입 인증 설정 등 기기 내 설정값</li>
       </ul>
+      <p style="margin-top: 8px;">비밀번호와 생체인증 원본 정보는 앱 서버에 직접 저장하지 않습니다. 비밀번호 인증은 Supabase Auth를 통해 처리되며, 생체인증은 기기 운영체제의 인증 기능을 사용합니다.</p>
     </div>
 
     <div class="card">
       <h2>2. 개인정보 수집 및 이용 목적</h2>
       <ul>
         <li>계산 결과 저장 및 기기 간 동기화 서비스 제공</li>
-        <li>서비스 운영 및 개선</li>
+        <li>회원 인증, 로그인 상태 유지, 비밀번호 재설정</li>
+        <li>공지사항 제공 및 사용자가 동의한 푸시 알림 발송</li>
+        <li>서비스 운영, 보안 유지 및 기능 개선</li>
         <li>문의 응대</li>
       </ul>
     </div>
 
     <div class="card">
       <h2>3. 개인정보 보유 및 이용 기간</h2>
-      <p>회원 탈퇴 시 또는 수집 목적이 달성된 후 지체 없이 파기합니다. 단, 관련 법령에 따라 보존이 필요한 경우 해당 기간 동안 보관합니다.</p>
+      <p>계정 정보와 서버에 동기화된 계산 데이터는 회원 탈퇴 또는 삭제 요청 시 지체 없이 파기합니다. 기기 내에 저장된 계산 기록과 앱 설정은 사용자가 앱 데이터를 삭제하거나 앱을 제거할 때 기기에서 삭제됩니다. 단, 관련 법령에 따라 보존이 필요한 경우 해당 기간 동안 보관할 수 있습니다.</p>
     </div>
 
     <div class="card">
@@ -62,24 +66,34 @@
 
     <div class="card">
       <h2>5. 제3자 서비스</h2>
-      <p>어떤비용은 다음 서비스를 이용합니다.</p>
+      <p>어떤비용은 서비스 제공을 위해 다음 외부 서비스를 이용합니다.</p>
       <ul>
         <li><strong>Supabase</strong>: 계정 인증 및 데이터 저장 (<a href="https://supabase.com/privacy" target="_blank">개인정보처리방침</a>)</li>
+        <li><strong>Firebase Cloud Messaging</strong>: 푸시 알림 토큰 발급 및 공지 알림 발송 (<a href="https://firebase.google.com/support/privacy" target="_blank">개인정보 및 보안</a>)</li>
       </ul>
     </div>
 
     <div class="card">
-      <h2>6. 사용자의 권리</h2>
+      <h2>6. 개인정보의 저장 위치</h2>
+      <ul>
+        <li><strong>기기 내 저장</strong>: 로그인 여부와 관계없이 계산 기록, 앱 설정, PIN 해시 등은 사용자 기기에 저장될 수 있습니다.</li>
+        <li><strong>서버 저장</strong>: 로그인한 사용자가 계산 결과를 저장하거나 동기화 기능을 사용할 경우 계산 데이터와 계정 식별자가 Supabase에 저장됩니다.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>7. 사용자의 권리</h2>
       <p>사용자는 언제든지 다음 권리를 행사할 수 있습니다.</p>
       <ul>
         <li>개인정보 열람, 수정, 삭제 요청</li>
         <li>계정 탈퇴 및 데이터 삭제 요청</li>
+        <li>푸시 알림 수신 동의 철회</li>
       </ul>
       <p style="margin-top: 8px;">요청은 아래 이메일로 문의해주세요.</p>
     </div>
 
     <div class="card">
-      <h2>7. 문의처</h2>
+      <h2>8. 문의처</h2>
       <p>개인정보 관련 문의사항은 아래로 연락주세요.</p>
       <p style="margin-top: 8px;">✉️ <a href="mailto:sungals@gmail.com">sungals@gmail.com</a></p>
     </div>
