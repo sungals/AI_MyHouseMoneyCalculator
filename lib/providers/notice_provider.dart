@@ -19,3 +19,7 @@ final noticeDetailProvider =
     FutureProvider.family<Notice?, String>((ref, noticeId) {
   return ref.watch(noticeRepositoryProvider).fetchNoticeById(noticeId);
 });
+
+final allNoticesAdminProvider = FutureProvider<List<Notice>>((ref) {
+  return ref.watch(noticeRepositoryProvider).fetchAllNoticesForAdmin();
+});

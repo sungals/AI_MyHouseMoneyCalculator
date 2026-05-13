@@ -112,7 +112,7 @@ class SettingsScreen extends ConsumerWidget {
                 onTap: () => context.push('/notices'),
               ),
               const _Divider(),
-              _InfoRow(
+              const _InfoRow(
                 icon: Icons.info_outline,
                 title: '버전',
                 value: AppConstants.appVersion,
@@ -168,6 +168,17 @@ class SettingsScreen extends ConsumerWidget {
                   icon: Icons.logout,
                   title: '로그아웃',
                   onTap: () => _signOut(context, ref),
+                ),
+              ]),
+            ],
+            if (email == AppConstants.adminEmail) ...[
+              const SizedBox(height: 24),
+              const _Label('관리자'),
+              _SettingsCard(children: [
+                _ActionRow(
+                  icon: Icons.admin_panel_settings_outlined,
+                  title: '공지사항 관리',
+                  onTap: () => context.push('/admin/notices'),
                 ),
               ]),
             ],
@@ -238,22 +249,18 @@ class _ActionRow extends StatelessWidget {
   final IconData icon;
   final String title;
   final VoidCallback? onTap;
-  final bool isDestructive;
 
   const _ActionRow({
     required this.icon,
     required this.title,
     this.onTap,
-    this.isDestructive = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final color = isDestructive ? AppColors.danger : AppColors.textPrimary;
-    final iconColor = isDestructive ? AppColors.danger : AppColors.primary;
     return ListTile(
-      leading: Icon(icon, color: iconColor, size: 22),
-      title: Text(title, style: TextStyle(fontSize: 15, color: color)),
+      leading: Icon(icon, color: AppColors.primary, size: 22),
+      title: Text(title, style: const TextStyle(fontSize: 15, color: AppColors.textPrimary)),
       trailing: const Icon(
         Icons.chevron_right,
         color: AppColors.textSecondary,

@@ -13,22 +13,34 @@ class MainShell extends StatefulWidget {
 
 class _MainShellState extends State<MainShell> {
   int _selectedIndex = 0;
+  int _historyRefreshKey = 0;
+  final Set<int> _visitedIndexes = {0};
+
+  void _selectDestination(int index) {
+    setState(() {
+      _selectedIndex = index;
+      _visitedIndexes.add(index);
+      if (index == 1) {
+        _historyRefreshKey++;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
+      body: _LazyIndexedStack(
         index: _selectedIndex,
-        children: const [
-          HomeScreen(),
-          HistoryScreen(),
-          SettingsScreen(),
+        visitedIndexes: _visitedIndexes,
+        children: [
+          const HomeScreen(),
+          HistoryScreen(key: ValueKey(_historyRefreshKey)),
+          const SettingsScreen(),
         ],
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
-        onDestinationSelected: (index) =>
-            setState(() => _selectedIndex = index),
+        onDestinationSelected: _selectDestination,
         backgroundColor: AppColors.surface,
         indicatorColor: AppColors.primary.withOpacity(0.12),
         destinations: const [
@@ -49,6 +61,29 @@ class _MainShellState extends State<MainShell> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _LazyIndexedStack extends StatelessWidget {
+  const _LazyIndexedStack({
+    required this.index,
+    required this.visitedIndexes,
+    required this.children,
+  });
+
+  final int index;
+  final Set<int> visitedIndexes;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return IndexedStack(
+      index: index,
+      children: [
+        for (var i = 0; i < children.length; i++)
+          visitedIndexes.contains(i) ? children[i] : const SizedBox.shrink(),
+      ],
     );
   }
 }

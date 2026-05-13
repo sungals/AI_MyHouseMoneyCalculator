@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/notice.dart';
@@ -27,6 +29,14 @@ class NoticeRepository {
         .eq('id', id)
         .eq('is_published', true)
         .maybeSingle();
+
+    if (row == null) return null;
+    return Notice.fromJson(row);
+  }
+
+  Future<Notice?> fetchNoticeByIdForAdmin(String id) async {
+    final row =
+        await _client.from('notices').select().eq('id', id).maybeSingle();
 
     if (row == null) return null;
     return Notice.fromJson(row);
@@ -67,5 +77,64 @@ class NoticeRepository {
         .eq('is_published', true)
         .order('published_at', ascending: false)
         .map((rows) => rows.map(Notice.fromJson).toList());
+  }
+
+  Future<List<Notice>> fetchAllNoticesForAdmin() async {
+    final rows = await _client
+        .from('notices')
+        .select()
+        .order('published_at', ascending: false)
+        .order('created_at', ascending: false);
+
+    return (rows as List)
+        .map((row) => Notice.fromJson(row as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<void> createNotice({
+    required String title,
+    required String body,
+    String? contentHtml,
+    required DateTime publishedAt,
+    required bool isPublished,
+  }) async {
+    await _client.from('notices').insert({
+      'title': title,
+      'body': body,
+      'content_html': contentHtml,
+      'published_at': publishedAt.toUtc().toIso8601String(),
+      'is_published': isPublished,
+    });
+  }
+
+  Future<void> updateNotice({
+    required String id,
+    required String title,
+    required String body,
+    String? contentHtml,
+    required DateTime publishedAt,
+    required bool isPublished,
+  }) async {
+    await _client.from('notices').update({
+      'title': title,
+      'body': body,
+      'content_html': contentHtml,
+      'published_at': publishedAt.toUtc().toIso8601String(),
+      'is_published': isPublished,
+    }).eq('id', id);
+  }
+
+  Future<void> deleteNotice(String id) async {
+    await _client.from('notices').delete().eq('id', id);
+  }
+
+  Future<String> uploadNoticeImage(String fileName, Uint8List bytes) async {
+    final path = 'notices/$fileName';
+    await _client.storage.from('notice-images').uploadBinary(
+          path,
+          bytes,
+          fileOptions: const FileOptions(upsert: true),
+        );
+    return _client.storage.from('notice-images').getPublicUrl(path);
   }
 }

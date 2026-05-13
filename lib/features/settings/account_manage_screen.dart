@@ -48,11 +48,9 @@ class AccountManageScreen extends ConsumerWidget {
                 ],
               ),
             ),
-
             const SizedBox(height: 40),
-
-            Padding(
-              padding: const EdgeInsets.only(left: 4, bottom: 8),
+            const Padding(
+              padding: EdgeInsets.only(left: 4, bottom: 8),
               child: Text('위험 구역', style: AppTextStyles.label),
             ),
             Container(
@@ -83,8 +81,8 @@ class AccountManageScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 4),
               child: Text(
                 '탈퇴하면 계정과 저장된 모든 계산 기록이 삭제되며 되돌릴 수 없습니다.',
                 style: AppTextStyles.caption,
@@ -134,8 +132,8 @@ class AccountManageScreen extends ConsumerWidget {
       return;
     }
 
-    final box = Hive.box('app_settings');
-    await box.put('login_skipped', false);
+    await Hive.box('app_settings').put('login_skipped', false);
+    if (!context.mounted) return;
     context.go('/login');
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/constants/app_constants.dart';
@@ -59,10 +60,15 @@ class _NoticeDetailScreenState extends ConsumerState<NoticeDetailScreen> {
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: AppColors.cardBorder),
                   ),
-                  child: Text(
-                    item.body,
-                    style: AppTextStyles.body.copyWith(height: 1.6),
-                  ),
+                  child: item.contentHtml != null
+                      ? HtmlWidget(
+                          item.contentHtml!,
+                          textStyle: AppTextStyles.body.copyWith(height: 1.6),
+                        )
+                      : Text(
+                          item.body,
+                          style: AppTextStyles.body.copyWith(height: 1.6),
+                        ),
                 ),
               ],
             );

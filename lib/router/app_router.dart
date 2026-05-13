@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../core/constants/app_constants.dart';
 import '../features/onboarding/onboarding_screen.dart';
 import '../features/shared/main_shell.dart';
 import '../features/rent_compare/rent_compare_screen.dart';
@@ -30,6 +31,8 @@ import '../features/auth/pin/biometric_setup_screen.dart';
 import '../features/auth/pin/pin_change_screen.dart';
 import '../features/auth/pin/pin_setup_screen.dart';
 import '../features/auth/pin/pin_state.dart';
+import '../features/admin/admin_notices_screen.dart';
+import '../features/admin/admin_notice_form_screen.dart';
 
 class AppRouter {
   AppRouter._();
@@ -51,6 +54,12 @@ class AppRouter {
             box.get('login_skipped', defaultValue: false) as bool;
         final hasSession = Supabase.instance.client.auth.currentSession != null;
         final loc = state.matchedLocation;
+
+        if (loc.startsWith('/admin')) {
+          if (!hasSession) return '/login';
+          final email = Supabase.instance.client.auth.currentUser?.email;
+          if (email != AppConstants.adminEmail) return '/';
+        }
 
         if (!hasSession &&
             !loginSkipped &&
@@ -193,6 +202,20 @@ class AppRouter {
       GoRoute(
         path: '/biometric-setup',
         builder: (context, state) => const BiometricSetupScreen(),
+      ),
+      GoRoute(
+        path: '/admin/notices',
+        builder: (context, state) => const AdminNoticesScreen(),
+      ),
+      GoRoute(
+        path: '/admin/notices/new',
+        builder: (context, state) => const AdminNoticeFormScreen(),
+      ),
+      GoRoute(
+        path: '/admin/notices/:id/edit',
+        builder: (context, state) => AdminNoticeFormScreen(
+          noticeId: state.pathParameters['id'],
+        ),
       ),
     ],
   );

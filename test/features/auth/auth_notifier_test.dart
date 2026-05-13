@@ -280,6 +280,7 @@ void main() {
           () => mockGoTrueClient.signUp(
             email: 'newuser@example.com',
             password: 'newpassword123',
+            emailRedirectTo: any(named: 'emailRedirectTo'),
           ),
         ).thenAnswer((_) async => mockAuthResponse);
 
@@ -307,6 +308,7 @@ void main() {
           () => mockGoTrueClient.signUp(
             email: 'newuser@example.com',
             password: 'newpassword123',
+            emailRedirectTo: any(named: 'emailRedirectTo'),
           ),
         ).thenAnswer((_) async => mockAuthResponse);
 
@@ -323,6 +325,7 @@ void main() {
           () => mockGoTrueClient.signUp(
             email: 'existing@example.com',
             password: 'password123',
+            emailRedirectTo: any(named: 'emailRedirectTo'),
           ),
         ).thenThrow(
           const AuthException('User already registered'),
@@ -348,6 +351,7 @@ void main() {
           () => mockGoTrueClient.signUp(
             email: 'newuser@example.com',
             password: 'password123',
+            emailRedirectTo: any(named: 'emailRedirectTo'),
           ),
         ).thenAnswer((_) async => mockAuthResponse);
 
@@ -375,6 +379,7 @@ void main() {
           () => mockGoTrueClient.signUp(
             email: 'newuser@example.com',
             password: 'password123',
+            emailRedirectTo: any(named: 'emailRedirectTo'),
           ),
         ).thenAnswer((_) async => mockAuthResponse);
         when(() => mockRepository.syncWithRemote())

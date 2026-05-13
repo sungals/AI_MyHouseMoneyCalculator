@@ -76,7 +76,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: const Text('저장한 계산')),
+      appBar: AppBar(title: const Text('최근계산')),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _items.isEmpty
