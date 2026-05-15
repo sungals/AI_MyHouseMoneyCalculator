@@ -30,6 +30,8 @@
 	<true/>
 	<key>NSFaceIDUsageDescription</key>
 	<string>간편로그인을 위해 Face ID를 사용합니다.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>이 앱은 음성 녹음 기능을 제공하지 않습니다. iOS 오디오 관련 라이브러리 호환을 위해 필요한 권한 설명입니다.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>공지사항에 첨부할 이미지를 선택하기 위해 사용합니다.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

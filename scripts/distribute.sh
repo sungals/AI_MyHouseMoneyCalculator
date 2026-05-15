@@ -1,10 +1,14 @@
 #!/bin/bash
 set -e
 
-CREDENTIALS_FILE="$(dirname "$0")/../.appstore_credentials"
-if [ ! -f "$CREDENTIALS_FILE" ]; then
-  echo "❌ .appstore_credentials 파일이 없습니다."
-  echo "   .appstore_credentials.example 파일을 복사해 App Store Connect API 정보를 입력하세요."
+CREDENTIALS_DIR="$(dirname "$0")/.."
+if [ -f "$CREDENTIALS_DIR/.appstore_credentials" ]; then
+  CREDENTIALS_FILE="$CREDENTIALS_DIR/.appstore_credentials"
+elif [ -f "$CREDENTIALS_DIR/appstore_credentials" ]; then
+  CREDENTIALS_FILE="$CREDENTIALS_DIR/appstore_credentials"
+else
+  echo "❌ App Store Connect credentials 파일이 없습니다."
+  echo "   .appstore_credentials 또는 appstore_credentials 파일을 준비하세요."
   exit 1
 fi
 source "$CREDENTIALS_FILE"
@@ -15,6 +19,9 @@ if [ -z "$ASC_KEY_ID" ] || [ -z "$ASC_ISSUER_ID" ]; then
 fi
 
 KEY_FILE="$HOME/.appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID}.p8"
+if [ -n "$ASC_KEY_PATH" ] && [ -f "$ASC_KEY_PATH" ]; then
+  KEY_FILE="$ASC_KEY_PATH"
+fi
 if [ ! -f "$KEY_FILE" ]; then
   echo "❌ App Store Connect API 키 파일을 찾을 수 없습니다: $KEY_FILE"
   exit 1

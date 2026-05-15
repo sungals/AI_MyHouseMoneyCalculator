@@ -2,7 +2,7 @@ class AppConstants {
   AppConstants._();
 
   static const String appName = '어떤비용';
-  static const String appVersion = '1.0.1+7';
+  static const String appVersion = '1.0.1+11';
   static const double horizontalPadding = 20.0;
   static const double cardRadius = 20.0;
   static const double cardPadding = 20.0;

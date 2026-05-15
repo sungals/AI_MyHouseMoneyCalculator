@@ -19,10 +19,11 @@ subprojects {
     // flutter.compileSdkVersion을 라이브러리 플러그인 프로젝트에서도 접근할 수 있도록 폴백 제공
     project.beforeEvaluate {
         if (project.name != 'app' && !project.extensions.findByName('flutter')) {
-            project.extensions.add('flutter', [compileSdkVersion: 34, minSdkVersion: 21, targetSdkVersion: 34])
+            project.extensions.add('flutter', [compileSdkVersion: 35, minSdkVersion: 21, targetSdkVersion: 35])
         }
     }
 }
+
 
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
