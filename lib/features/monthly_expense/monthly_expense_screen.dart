@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:screenshot/screenshot.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/calculation_pdf_exporter.dart';
@@ -23,6 +26,7 @@ class MonthlyExpenseScreen extends ConsumerStatefulWidget {
 }
 
 class _MonthlyExpenseScreenState extends ConsumerState<MonthlyExpenseScreen> {
+  final _resultScreenshotController = ScreenshotController();
   final _housing = TextEditingController();
   final _maintenance = TextEditingController();
   final _communication = TextEditingController();
@@ -128,10 +132,13 @@ $breakdown
     final result = ref.read(monthlyExpenseControllerProvider);
     if (result == null) return;
 
+    final imageBytes = await _captureResultImage();
+    if (!mounted) return;
     await CalculationPdfExporter.share(
       context,
       title: '월 고정비 계산 결과',
       summary: '월 합계 ${MoneyFormatter.formatWithWon(result.totalMonthly)}',
+      resultImageBytes: imageBytes,
       input: {
         for (final entry in result.breakdown.entries)
           if (entry.value > 0)
@@ -142,6 +149,11 @@ $breakdown
         '연간 합계': MoneyFormatter.formatWithWon(result.totalAnnual),
       },
     );
+  }
+
+  Future<Uint8List?> _captureResultImage() async {
+    await Future<void>.delayed(const Duration(milliseconds: 80));
+    return _resultScreenshotController.capture(pixelRatio: 3.0);
   }
 
   @override
@@ -222,75 +234,79 @@ $breakdown
             PrimaryButton(label: '계산하기', onPressed: _calculate),
             if (result != null) ...[
               const SizedBox(height: 24),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppColors.cardBorder),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('계산 결과',
-                        style: TextStyle(
-                            fontSize: 14, color: AppColors.textSecondary)),
-                    const SizedBox(height: 16),
-                    ...result.breakdown.entries
-                        .where((e) => e.value > 0)
-                        .map((e) => Padding(
-                              padding: const EdgeInsets.only(bottom: 8),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(e.key,
-                                      style: const TextStyle(
-                                          fontSize: 14,
-                                          color: AppColors.textSecondary)),
-                                  Text(
-                                    MoneyFormatter.formatWithWon(e.value),
-                                    style: const TextStyle(fontSize: 14),
-                                  ),
-                                ],
-                              ),
-                            )),
-                    const Divider(height: 24),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text('월 합계',
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold)),
-                        Text(
-                          MoneyFormatter.formatWithWon(result.totalMonthly),
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.primary,
+              Screenshot(
+                controller: _resultScreenshotController,
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: AppColors.cardBorder),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('계산 결과',
+                          style: TextStyle(
+                              fontSize: 14, color: AppColors.textSecondary)),
+                      const SizedBox(height: 16),
+                      ...result.breakdown.entries
+                          .where((e) => e.value > 0)
+                          .map((e) => Padding(
+                                padding: const EdgeInsets.only(bottom: 8),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(e.key,
+                                        style: const TextStyle(
+                                            fontSize: 14,
+                                            color: AppColors.textSecondary)),
+                                    Text(
+                                      MoneyFormatter.formatWithWon(e.value),
+                                      style: const TextStyle(fontSize: 14),
+                                    ),
+                                  ],
+                                ),
+                              )),
+                      const Divider(height: 24),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('월 합계',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold)),
+                          Text(
+                            MoneyFormatter.formatWithWon(result.totalMonthly),
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.primary,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text('연간 합계',
-                            style: TextStyle(
-                                fontSize: 14, color: AppColors.textSecondary)),
-                        Text(
-                          MoneyFormatter.formatWithWon(result.totalAnnual),
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('연간 합계',
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.textSecondary)),
+                          Text(
+                            MoneyFormatter.formatWithWon(result.totalAnnual),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textPrimary,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 12),

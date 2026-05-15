@@ -11,6 +11,7 @@ class RentCompareResultCard extends StatelessWidget {
   final VoidCallback? onSave;
   final VoidCallback? onShare;
   final VoidCallback? onExportPdf;
+  final bool showActions;
 
   const RentCompareResultCard({
     super.key,
@@ -18,6 +19,7 @@ class RentCompareResultCard extends StatelessWidget {
     this.onSave,
     this.onShare,
     this.onExportPdf,
+    this.showActions = true,
   });
 
   @override
@@ -183,7 +185,8 @@ class RentCompareResultCard extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         const DisclaimerBox(),
-        if (onSave != null || onShare != null || onExportPdf != null) ...[
+        if (showActions &&
+            (onSave != null || onShare != null || onExportPdf != null)) ...[
           const SizedBox(height: 16),
           Row(
             children: [

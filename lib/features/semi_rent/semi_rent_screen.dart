@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:screenshot/screenshot.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/calculation_pdf_exporter.dart';
@@ -25,6 +28,7 @@ class SemiRentScreen extends ConsumerStatefulWidget {
 
 class _SemiRentScreenState extends ConsumerState<SemiRentScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _resultScreenshotController = ScreenshotController();
 
   final _baseDeposit = TextEditingController();
   final _convertedDeposit = TextEditingController();
@@ -132,10 +136,13 @@ ${result.summaryText}
     final result = ref.read(semiRentControllerProvider);
     if (result == null) return;
 
+    final imageBytes = await _captureResultImage();
+    if (!mounted) return;
     await CalculationPdfExporter.share(
       context,
       title: '반전세 계산 결과',
       summary: result.summaryText,
+      resultImageBytes: imageBytes,
       input: {
         '기준 전세 보증금': MoneyFormatter.formatWithWon(
             MoneyFormatter.parse(_baseDeposit.text)),
@@ -153,6 +160,11 @@ ${result.summaryText}
         '전체 기간 차이': MoneyFormatter.formatWithWon(result.totalDifference.abs()),
       },
     );
+  }
+
+  Future<Uint8List?> _captureResultImage() async {
+    await Future<void>.delayed(const Duration(milliseconds: 80));
+    return _resultScreenshotController.capture(pixelRatio: 3.0);
   }
 
   @override
@@ -258,10 +270,22 @@ ${result.summaryText}
             PrimaryButton(label: '계산하기', onPressed: _calculate),
             if (result != null) ...[
               const SizedBox(height: 24),
-              _ResultCard(
-                result: result,
-                onSave: _save,
+              Screenshot(
+                controller: _resultScreenshotController,
+                child: _ResultCard(
+                  result: result,
+                  onSave: _save,
+                  onShare: _share,
+                  onExportPdf: _exportPdf,
+                  showActions: false,
+                ),
+              ),
+              const SizedBox(height: 12),
+              const DisclaimerBox(),
+              const SizedBox(height: 16),
+              _ResultActions(
                 onShare: _share,
+                onSave: _save,
                 onExportPdf: _exportPdf,
               ),
             ] else ...[
@@ -309,12 +333,14 @@ class _ResultCard extends StatelessWidget {
   final VoidCallback onSave;
   final VoidCallback onShare;
   final VoidCallback onExportPdf;
+  final bool showActions;
 
   const _ResultCard({
     required this.result,
     required this.onSave,
     required this.onShare,
     required this.onExportPdf,
+    this.showActions = true,
   });
 
   @override
@@ -363,9 +389,36 @@ class _ResultCard extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 12),
-        const DisclaimerBox(),
-        const SizedBox(height: 16),
+        if (showActions) ...[
+          const SizedBox(height: 12),
+          const DisclaimerBox(),
+          const SizedBox(height: 16),
+          _ResultActions(
+            onShare: onShare,
+            onSave: onSave,
+            onExportPdf: onExportPdf,
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _ResultActions extends StatelessWidget {
+  final VoidCallback onShare;
+  final VoidCallback onSave;
+  final VoidCallback onExportPdf;
+
+  const _ResultActions({
+    required this.onShare,
+    required this.onSave,
+    required this.onExportPdf,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
         Row(
           children: [
             Expanded(

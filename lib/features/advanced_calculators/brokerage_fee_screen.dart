@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:screenshot/screenshot.dart';
 
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
@@ -23,6 +26,7 @@ class BrokerageFeeScreen extends ConsumerStatefulWidget {
 
 class _BrokerageFeeScreenState extends ConsumerState<BrokerageFeeScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _resultScreenshotController = ScreenshotController();
   final _price = TextEditingController();
   String _type = 'sale';
   int? _fee;
@@ -88,10 +92,13 @@ class _BrokerageFeeScreenState extends ConsumerState<BrokerageFeeScreen> {
     final rate = _rate;
     if (fee == null || rate == null) return;
 
+    final imageBytes = await _captureResultImage();
+    if (!mounted) return;
     await CalculationPdfExporter.share(
       context,
       title: '중개보수 계산 결과',
       summary: '예상 중개보수 ${MoneyFormatter.formatWithWon(fee)}',
+      resultImageBytes: imageBytes,
       input: {
         '거래 유형': _type == 'sale' ? '매매' : '임대차',
         '거래 금액':
@@ -103,6 +110,11 @@ class _BrokerageFeeScreenState extends ConsumerState<BrokerageFeeScreen> {
         '예상 중개보수': MoneyFormatter.formatWithWon(fee),
       },
     );
+  }
+
+  Future<Uint8List?> _captureResultImage() async {
+    await Future<void>.delayed(const Duration(milliseconds: 80));
+    return _resultScreenshotController.capture(pixelRatio: 3.0);
   }
 
   @override
@@ -139,12 +151,16 @@ class _BrokerageFeeScreenState extends ConsumerState<BrokerageFeeScreen> {
               PrimaryButton(label: '계산하기', onPressed: _calculate),
               if (_fee != null && _rate != null) ...[
                 const SizedBox(height: 24),
-                _ResultCard(rows: {
-                  '상한 요율': '${(_rate! * 100).toStringAsFixed(2)}%',
-                  '한도액':
-                      _cap == null ? '없음' : MoneyFormatter.formatWithWon(_cap!),
-                  '예상 중개보수': MoneyFormatter.formatWithWon(_fee!),
-                }),
+                Screenshot(
+                  controller: _resultScreenshotController,
+                  child: _ResultCard(rows: {
+                    '상한 요율': '${(_rate! * 100).toStringAsFixed(2)}%',
+                    '한도액': _cap == null
+                        ? '없음'
+                        : MoneyFormatter.formatWithWon(_cap!),
+                    '예상 중개보수': MoneyFormatter.formatWithWon(_fee!),
+                  }),
+                ),
                 const SizedBox(height: 12),
                 Row(
                   children: [

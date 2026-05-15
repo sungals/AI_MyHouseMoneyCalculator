@@ -1,4 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:screenshot/screenshot.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
@@ -24,6 +27,7 @@ class ScenarioCompareScreen extends StatefulWidget {
 
 class _ScenarioCompareScreenState extends State<ScenarioCompareScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _resultScreenshotController = ScreenshotController();
   final _jeonseDeposit = TextEditingController();
   final _jeonseLoan = TextEditingController();
   final _rentDeposit = TextEditingController();
@@ -120,10 +124,13 @@ class _ScenarioCompareScreenState extends State<ScenarioCompareScreen> {
   Future<void> _exportPdf() async {
     if (_results.isEmpty) return;
 
+    final imageBytes = await _captureResultImage();
+    if (!mounted) return;
     await CalculationPdfExporter.share(
       context,
       title: '복수 시나리오 비교 결과',
       summary: _results.first.result.recommendationText,
+      resultImageBytes: imageBytes,
       input: {
         '전세 보증금': MoneyFormatter.formatWithWon(
             MoneyFormatter.parse(_jeonseDeposit.text)),
@@ -143,6 +150,11 @@ class _ScenarioCompareScreenState extends State<ScenarioCompareScreen> {
               '${scenario.result.recommendationText} / 전세 월 ${MoneyFormatter.formatWithWon(scenario.result.jeonseMonthlyCost)}',
       },
     );
+  }
+
+  Future<Uint8List?> _captureResultImage() async {
+    await Future<void>.delayed(const Duration(milliseconds: 80));
+    return _resultScreenshotController.capture(pixelRatio: 3.0);
   }
 
   @override
@@ -268,7 +280,10 @@ class _ScenarioCompareScreenState extends State<ScenarioCompareScreen> {
             PrimaryButton(label: '시나리오 비교하기', onPressed: _calculate),
             if (_results.isNotEmpty) ...[
               const SizedBox(height: 24),
-              _ScenarioResultTable(results: _results),
+              Screenshot(
+                controller: _resultScreenshotController,
+                child: _ScenarioResultTable(results: _results),
+              ),
               const SizedBox(height: 12),
               const DisclaimerBox(),
               const SizedBox(height: 16),

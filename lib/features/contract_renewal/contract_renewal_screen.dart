@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:screenshot/screenshot.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
@@ -27,6 +30,7 @@ class ContractRenewalScreen extends ConsumerStatefulWidget {
 
 class _ContractRenewalScreenState extends ConsumerState<ContractRenewalScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _resultScreenshotController = ScreenshotController();
   final _currentDeposit = TextEditingController();
   final _currentMonthlyRent = TextEditingController();
   final _increaseRate = TextEditingController(text: '5.0');
@@ -112,10 +116,13 @@ ${result.summaryText}
     final result = ref.read(contractRenewalControllerProvider);
     if (result == null) return;
 
+    final imageBytes = await _captureResultImage();
+    if (!mounted) return;
     await CalculationPdfExporter.share(
       context,
       title: '계약 갱신 계산 결과',
       summary: result.summaryText,
+      resultImageBytes: imageBytes,
       input: {
         '현재 보증금': MoneyFormatter.formatWithWon(result.currentDeposit),
         '현재 월세': MoneyFormatter.formatWithWon(result.currentMonthlyRent),
@@ -128,6 +135,11 @@ ${result.summaryText}
         '월세 증액분': MoneyFormatter.formatWithWon(result.monthlyRentIncrease),
       },
     );
+  }
+
+  Future<Uint8List?> _captureResultImage() async {
+    await Future<void>.delayed(const Duration(milliseconds: 80));
+    return _resultScreenshotController.capture(pixelRatio: 3.0);
   }
 
   @override
@@ -186,8 +198,20 @@ ${result.summaryText}
             PrimaryButton(label: '계산하기', onPressed: _calculate),
             if (result != null) ...[
               const SizedBox(height: 24),
-              _ResultCard(
-                result: result,
+              Screenshot(
+                controller: _resultScreenshotController,
+                child: _ResultCard(
+                  result: result,
+                  onShare: _share,
+                  onSave: _save,
+                  onExportPdf: _exportPdf,
+                  showActions: false,
+                ),
+              ),
+              const SizedBox(height: 12),
+              const DisclaimerBox(),
+              const SizedBox(height: 16),
+              _ResultActions(
                 onShare: _share,
                 onSave: _save,
                 onExportPdf: _exportPdf,
@@ -230,12 +254,14 @@ class _ResultCard extends StatelessWidget {
   final VoidCallback onShare;
   final VoidCallback onSave;
   final VoidCallback onExportPdf;
+  final bool showActions;
 
   const _ResultCard({
     required this.result,
     required this.onShare,
     required this.onSave,
     required this.onExportPdf,
+    this.showActions = true,
   });
 
   @override
@@ -275,9 +301,36 @@ class _ResultCard extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 12),
-        const DisclaimerBox(),
-        const SizedBox(height: 16),
+        if (showActions) ...[
+          const SizedBox(height: 12),
+          const DisclaimerBox(),
+          const SizedBox(height: 16),
+          _ResultActions(
+            onShare: onShare,
+            onSave: onSave,
+            onExportPdf: onExportPdf,
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _ResultActions extends StatelessWidget {
+  final VoidCallback onShare;
+  final VoidCallback onSave;
+  final VoidCallback onExportPdf;
+
+  const _ResultActions({
+    required this.onShare,
+    required this.onSave,
+    required this.onExportPdf,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
         Row(
           children: [
             Expanded(

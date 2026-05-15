@@ -140,8 +140,9 @@ class _RentCompareScreenState extends ConsumerState<RentCompareScreen> {
   }
 
   Future<void> _shareImage() async {
+    await Future<void>.delayed(const Duration(milliseconds: 80));
     final Uint8List? imageBytes =
-        await _screenshotController.capture(pixelRatio: 2.0);
+        await _screenshotController.capture(pixelRatio: 3.0);
     if (imageBytes == null) return;
 
     final dir = await getTemporaryDirectory();
@@ -167,10 +168,15 @@ class _RentCompareScreenState extends ConsumerState<RentCompareScreen> {
     final result = ref.read(rentCompareControllerProvider);
     if (result == null) return;
 
+    await Future<void>.delayed(const Duration(milliseconds: 80));
+    final imageBytes = await _screenshotController.capture(pixelRatio: 3.0);
+    if (!mounted) return;
+
     await CalculationPdfExporter.share(
       context,
       title: '전세 vs 월세 비교 결과',
       summary: result.recommendationText,
+      resultImageBytes: imageBytes,
       input: {
         '전세 보증금': MoneyFormatter.formatWithWon(
             MoneyFormatter.parse(_jeonseDeposit.text)),
@@ -338,9 +344,42 @@ class _RentCompareScreenState extends ConsumerState<RentCompareScreen> {
                 controller: _screenshotController,
                 child: RentCompareResultCard(
                   result: result,
-                  onSave: _save,
-                  onShare: _shareImage,
-                  onExportPdf: _exportPdf,
+                  showActions: false,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: _shareImage,
+                      icon: const Icon(Icons.image_outlined, size: 18),
+                      label: const Text('이미지 공유'),
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size(0, 48),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: _save,
+                      icon: const Icon(Icons.bookmark_add_outlined, size: 18),
+                      label: const Text('저장'),
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(0, 48),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              OutlinedButton.icon(
+                onPressed: _exportPdf,
+                icon: const Icon(Icons.picture_as_pdf_outlined, size: 18),
+                label: const Text('PDF 내보내기'),
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 48),
                 ),
               ),
             ] else ...[

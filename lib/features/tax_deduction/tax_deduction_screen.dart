@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:screenshot/screenshot.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/extensions/number_format_extension.dart';
 import '../../core/theme/app_colors.dart';
@@ -23,6 +26,7 @@ class TaxDeductionScreen extends ConsumerStatefulWidget {
 
 class _TaxDeductionScreenState extends ConsumerState<TaxDeductionScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _resultScreenshotController = ScreenshotController();
 
   final _annualSalary = TextEditingController();
   final _monthlyRent = TextEditingController();
@@ -63,10 +67,13 @@ class _TaxDeductionScreenState extends ConsumerState<TaxDeductionScreen> {
     final result = ref.read(taxDeductionControllerProvider);
     if (result == null) return;
 
+    final imageBytes = await _captureResultImage();
+    if (!mounted) return;
     await CalculationPdfExporter.share(
       context,
       title: '연말정산 세액공제 결과',
       summary: result.message,
+      resultImageBytes: imageBytes,
       input: {
         '연간 총급여': MoneyFormatter.formatWithWon(
             MoneyFormatter.parse(_annualSalary.text)),
@@ -86,6 +93,11 @@ class _TaxDeductionScreenState extends ConsumerState<TaxDeductionScreen> {
         '연간 총 절세 혜택': result.totalTaxBenefit.wonFormat,
       },
     );
+  }
+
+  Future<Uint8List?> _captureResultImage() async {
+    await Future<void>.delayed(const Duration(milliseconds: 80));
+    return _resultScreenshotController.capture(pixelRatio: 3.0);
   }
 
   @override
@@ -168,83 +180,87 @@ class _TaxDeductionScreenState extends ConsumerState<TaxDeductionScreen> {
             PrimaryButton(label: '계산하기', onPressed: _calculate),
             if (result != null) ...[
               const SizedBox(height: 24),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppColors.cardBorder),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      result.message,
-                      style: AppTextStyles.heading3.copyWith(
-                        color: result.totalTaxBenefit > 0
-                            ? AppColors.positive
-                            : AppColors.textSecondary,
+              Screenshot(
+                controller: _resultScreenshotController,
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: AppColors.cardBorder),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        result.message,
+                        style: AppTextStyles.heading3.copyWith(
+                          color: result.totalTaxBenefit > 0
+                              ? AppColors.positive
+                              : AppColors.textSecondary,
+                        ),
                       ),
-                    ),
-                    if (result.rentTaxCredit > 0) ...[
-                      const SizedBox(height: 20),
-                      const Divider(),
-                      const SizedBox(height: 16),
-                      const _ResultSectionTitle('월세 세액공제'),
-                      const SizedBox(height: 10),
-                      _Row(
-                        label: '공제율',
-                        value: '${result.rentDeductionRate}%',
-                      ),
-                      const SizedBox(height: 8),
-                      _Row(
-                        label: '공제 대상 연 월세',
-                        value: result.eligibleAnnualRent.wonFormat,
-                      ),
-                      const SizedBox(height: 8),
-                      _Row(
-                        label: '세액공제액',
-                        value: result.rentTaxCredit.wonFormat,
-                        valueColor: AppColors.positive,
-                        isBold: true,
-                      ),
+                      if (result.rentTaxCredit > 0) ...[
+                        const SizedBox(height: 20),
+                        const Divider(),
+                        const SizedBox(height: 16),
+                        const _ResultSectionTitle('월세 세액공제'),
+                        const SizedBox(height: 10),
+                        _Row(
+                          label: '공제율',
+                          value: '${result.rentDeductionRate}%',
+                        ),
+                        const SizedBox(height: 8),
+                        _Row(
+                          label: '공제 대상 연 월세',
+                          value: result.eligibleAnnualRent.wonFormat,
+                        ),
+                        const SizedBox(height: 8),
+                        _Row(
+                          label: '세액공제액',
+                          value: result.rentTaxCredit.wonFormat,
+                          valueColor: AppColors.positive,
+                          isBold: true,
+                        ),
+                      ],
+                      if (result.loanTaxSaving > 0) ...[
+                        const SizedBox(height: 20),
+                        const Divider(),
+                        const SizedBox(height: 16),
+                        const _ResultSectionTitle('전세대출 소득공제'),
+                        const SizedBox(height: 10),
+                        _Row(
+                          label: '공제 대상 상환액',
+                          value: result.eligibleRepayment.wonFormat,
+                        ),
+                        const SizedBox(height: 8),
+                        _Row(
+                          label: '소득공제액 (40%)',
+                          value: result.incomeDeductionAmount.wonFormat,
+                        ),
+                        const SizedBox(height: 8),
+                        _Row(
+                          label:
+                              '절세액 (세율 ${_incomeTaxRate.toStringAsFixed(0)}%)',
+                          value: result.loanTaxSaving.wonFormat,
+                          valueColor: AppColors.positive,
+                          isBold: true,
+                        ),
+                      ],
+                      if (result.totalTaxBenefit > 0) ...[
+                        const SizedBox(height: 20),
+                        const Divider(),
+                        const SizedBox(height: 16),
+                        _Row(
+                          label: '연간 총 절세 혜택',
+                          value: result.totalTaxBenefit.wonFormat,
+                          valueColor: AppColors.primary,
+                          isBold: true,
+                        ),
+                      ],
                     ],
-                    if (result.loanTaxSaving > 0) ...[
-                      const SizedBox(height: 20),
-                      const Divider(),
-                      const SizedBox(height: 16),
-                      const _ResultSectionTitle('전세대출 소득공제'),
-                      const SizedBox(height: 10),
-                      _Row(
-                        label: '공제 대상 상환액',
-                        value: result.eligibleRepayment.wonFormat,
-                      ),
-                      const SizedBox(height: 8),
-                      _Row(
-                        label: '소득공제액 (40%)',
-                        value: result.incomeDeductionAmount.wonFormat,
-                      ),
-                      const SizedBox(height: 8),
-                      _Row(
-                        label: '절세액 (세율 ${_incomeTaxRate.toStringAsFixed(0)}%)',
-                        value: result.loanTaxSaving.wonFormat,
-                        valueColor: AppColors.positive,
-                        isBold: true,
-                      ),
-                    ],
-                    if (result.totalTaxBenefit > 0) ...[
-                      const SizedBox(height: 20),
-                      const Divider(),
-                      const SizedBox(height: 16),
-                      _Row(
-                        label: '연간 총 절세 혜택',
-                        value: result.totalTaxBenefit.wonFormat,
-                        valueColor: AppColors.primary,
-                        isBold: true,
-                      ),
-                    ],
-                  ],
+                  ),
                 ),
               ),
               const SizedBox(height: 12),

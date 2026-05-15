@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:screenshot/screenshot.dart';
 
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
@@ -24,6 +27,7 @@ class AcquisitionTaxScreen extends ConsumerStatefulWidget {
 
 class _AcquisitionTaxScreenState extends ConsumerState<AcquisitionTaxScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _resultScreenshotController = ScreenshotController();
   final _price = TextEditingController();
   String _houseCount = 'one';
   bool _regulatedArea = false;
@@ -88,10 +92,13 @@ class _AcquisitionTaxScreenState extends ConsumerState<AcquisitionTaxScreen> {
     final rate = _rate;
     if (tax == null || rate == null) return;
 
+    final imageBytes = await _captureResultImage();
+    if (!mounted) return;
     await CalculationPdfExporter.share(
       context,
       title: '취득세 계산 결과',
       summary: '예상 취득세 ${MoneyFormatter.formatWithWon(tax)}',
+      resultImageBytes: imageBytes,
       input: {
         '주택 취득가액':
             MoneyFormatter.formatWithWon(MoneyFormatter.parse(_price.text)),
@@ -107,6 +114,11 @@ class _AcquisitionTaxScreenState extends ConsumerState<AcquisitionTaxScreen> {
         '예상 취득세': MoneyFormatter.formatWithWon(tax),
       },
     );
+  }
+
+  Future<Uint8List?> _captureResultImage() async {
+    await Future<void>.delayed(const Duration(milliseconds: 80));
+    return _resultScreenshotController.capture(pixelRatio: 3.0);
   }
 
   HouseCountType get _houseCountType {
@@ -165,10 +177,13 @@ class _AcquisitionTaxScreenState extends ConsumerState<AcquisitionTaxScreen> {
               PrimaryButton(label: '계산하기', onPressed: _calculate),
               if (_tax != null && _rate != null) ...[
                 const SizedBox(height: 24),
-                _ResultCard(rows: {
-                  '적용 세율': '${(_rate! * 100).toStringAsFixed(2)}%',
-                  '예상 취득세': MoneyFormatter.formatWithWon(_tax!),
-                }),
+                Screenshot(
+                  controller: _resultScreenshotController,
+                  child: _ResultCard(rows: {
+                    '적용 세율': '${(_rate! * 100).toStringAsFixed(2)}%',
+                    '예상 취득세': MoneyFormatter.formatWithWon(_tax!),
+                  }),
+                ),
                 const SizedBox(height: 12),
                 Row(
                   children: [

@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:screenshot/screenshot.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
@@ -26,6 +29,7 @@ class JeonseRiskScreen extends ConsumerStatefulWidget {
 
 class _JeonseRiskScreenState extends ConsumerState<JeonseRiskScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _resultScreenshotController = ScreenshotController();
   final _marketPrice = TextEditingController();
   final _deposit = TextEditingController();
   final _seniorDebt = TextEditingController();
@@ -124,10 +128,13 @@ $warnings
     final result = ref.read(jeonseRiskControllerProvider);
     if (result == null) return;
 
+    final imageBytes = await _captureResultImage();
+    if (!mounted) return;
     await CalculationPdfExporter.share(
       context,
       title: '전세사기 위험도 체크 결과',
       summary: result.summaryText,
+      resultImageBytes: imageBytes,
       input: {
         '주택 예상 시세': MoneyFormatter.formatWithWon(
             MoneyFormatter.parse(_marketPrice.text)),
@@ -151,6 +158,11 @@ $warnings
             : result.warnings.join(' / '),
       },
     );
+  }
+
+  Future<Uint8List?> _captureResultImage() async {
+    await Future<void>.delayed(const Duration(milliseconds: 80));
+    return _resultScreenshotController.capture(pixelRatio: 3.0);
   }
 
   Map<String, dynamic> _inputForHistory() {
@@ -264,8 +276,20 @@ $warnings
             PrimaryButton(label: '위험도 체크하기', onPressed: _calculate),
             if (result != null) ...[
               const SizedBox(height: 24),
-              _ResultCard(
-                result: result,
+              Screenshot(
+                controller: _resultScreenshotController,
+                child: _ResultCard(
+                  result: result,
+                  onShare: _share,
+                  onSave: _save,
+                  onExportPdf: _exportPdf,
+                  showActions: false,
+                ),
+              ),
+              const SizedBox(height: 12),
+              const DisclaimerBox(),
+              const SizedBox(height: 16),
+              _ResultActions(
                 onShare: _share,
                 onSave: _save,
                 onExportPdf: _exportPdf,
@@ -331,12 +355,14 @@ class _ResultCard extends StatelessWidget {
   final VoidCallback onShare;
   final VoidCallback onSave;
   final VoidCallback onExportPdf;
+  final bool showActions;
 
   const _ResultCard({
     required this.result,
     required this.onShare,
     required this.onSave,
     required this.onExportPdf,
+    this.showActions = true,
   });
 
   @override
@@ -405,9 +431,36 @@ class _ResultCard extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 12),
-        const DisclaimerBox(),
-        const SizedBox(height: 16),
+        if (showActions) ...[
+          const SizedBox(height: 12),
+          const DisclaimerBox(),
+          const SizedBox(height: 16),
+          _ResultActions(
+            onShare: onShare,
+            onSave: onSave,
+            onExportPdf: onExportPdf,
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _ResultActions extends StatelessWidget {
+  final VoidCallback onShare;
+  final VoidCallback onSave;
+  final VoidCallback onExportPdf;
+
+  const _ResultActions({
+    required this.onShare,
+    required this.onSave,
+    required this.onExportPdf,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
         Row(
           children: [
             Expanded(

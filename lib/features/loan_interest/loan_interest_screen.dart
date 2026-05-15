@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:screenshot/screenshot.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/calculation_pdf_exporter.dart';
@@ -25,6 +28,7 @@ class LoanInterestScreen extends ConsumerStatefulWidget {
 
 class _LoanInterestScreenState extends ConsumerState<LoanInterestScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _resultScreenshotController = ScreenshotController();
   final _loanAmount = TextEditingController();
   final _interestRate = TextEditingController();
   final _months = TextEditingController();
@@ -107,10 +111,13 @@ ${result.months}개월 총 이자: ${MoneyFormatter.formatWithWon(result.totalIn
     final result = ref.read(loanInterestControllerProvider);
     if (result == null) return;
 
+    final imageBytes = await _captureResultImage();
+    if (!mounted) return;
     await CalculationPdfExporter.share(
       context,
       title: '대출이자 계산 결과',
       summary: '월 이자 ${MoneyFormatter.formatWithWon(result.monthlyInterest)}',
+      resultImageBytes: imageBytes,
       input: {
         '대출금': MoneyFormatter.formatWithWon(result.loanAmount),
         '연이율': '${_interestRate.text}%',
@@ -122,6 +129,11 @@ ${result.months}개월 총 이자: ${MoneyFormatter.formatWithWon(result.totalIn
             MoneyFormatter.formatWithWon(result.totalInterest),
       },
     );
+  }
+
+  Future<Uint8List?> _captureResultImage() async {
+    await Future<void>.delayed(const Duration(milliseconds: 80));
+    return _resultScreenshotController.capture(pixelRatio: 3.0);
   }
 
   @override
@@ -187,38 +199,42 @@ ${result.months}개월 총 이자: ${MoneyFormatter.formatWithWon(result.totalIn
             PrimaryButton(label: '계산하기', onPressed: _calculate),
             if (result != null) ...[
               const SizedBox(height: 24),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppColors.cardBorder),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('계산 결과',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textSecondary,
-                        )),
-                    const SizedBox(height: 16),
-                    _ResultRow(
-                      label: '월 이자',
-                      value:
-                          MoneyFormatter.formatWithWon(result.monthlyInterest),
-                      isBold: true,
-                      valueColor: AppColors.primary,
-                    ),
-                    const SizedBox(height: 10),
-                    _ResultRow(
-                      label: '${result.months}개월 총 이자',
-                      value: MoneyFormatter.formatWithWon(result.totalInterest),
-                      isBold: true,
-                      valueColor: AppColors.danger,
-                    ),
-                  ],
+              Screenshot(
+                controller: _resultScreenshotController,
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: AppColors.cardBorder),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('계산 결과',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: AppColors.textSecondary,
+                          )),
+                      const SizedBox(height: 16),
+                      _ResultRow(
+                        label: '월 이자',
+                        value: MoneyFormatter.formatWithWon(
+                            result.monthlyInterest),
+                        isBold: true,
+                        valueColor: AppColors.primary,
+                      ),
+                      const SizedBox(height: 10),
+                      _ResultRow(
+                        label: '${result.months}개월 총 이자',
+                        value:
+                            MoneyFormatter.formatWithWon(result.totalInterest),
+                        isBold: true,
+                        valueColor: AppColors.danger,
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 12),

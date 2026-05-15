@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:screenshot/screenshot.dart';
 
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
@@ -23,6 +26,7 @@ class DsrDtiScreen extends ConsumerStatefulWidget {
 
 class _DsrDtiScreenState extends ConsumerState<DsrDtiScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _resultScreenshotController = ScreenshotController();
   final _annualIncome = TextEditingController();
   final _housingDebt = TextEditingController();
   final _otherDebt = TextEditingController();
@@ -90,10 +94,13 @@ class _DsrDtiScreenState extends ConsumerState<DsrDtiScreen> {
     final dti = _dti;
     if (dsr == null || dti == null) return;
 
+    final imageBytes = await _captureResultImage();
+    if (!mounted) return;
     await CalculationPdfExporter.share(
       context,
       title: 'DSR/DTI 계산 결과',
       summary: 'DSR ${dsr.toStringAsFixed(1)}%, DTI ${dti.toStringAsFixed(1)}%',
+      resultImageBytes: imageBytes,
       input: {
         '연소득': MoneyFormatter.formatWithWon(
             MoneyFormatter.parse(_annualIncome.text)),
@@ -107,6 +114,11 @@ class _DsrDtiScreenState extends ConsumerState<DsrDtiScreen> {
         'DTI': '${dti.toStringAsFixed(1)}%',
       },
     );
+  }
+
+  Future<Uint8List?> _captureResultImage() async {
+    await Future<void>.delayed(const Duration(milliseconds: 80));
+    return _resultScreenshotController.capture(pixelRatio: 3.0);
   }
 
   @override
@@ -149,10 +161,13 @@ class _DsrDtiScreenState extends ConsumerState<DsrDtiScreen> {
               PrimaryButton(label: '계산하기', onPressed: _calculate),
               if (_dsr != null && _dti != null) ...[
                 const SizedBox(height: 24),
-                _ResultCard(rows: {
-                  'DSR': '${_dsr!.toStringAsFixed(1)}%',
-                  'DTI': '${_dti!.toStringAsFixed(1)}%',
-                }),
+                Screenshot(
+                  controller: _resultScreenshotController,
+                  child: _ResultCard(rows: {
+                    'DSR': '${_dsr!.toStringAsFixed(1)}%',
+                    'DTI': '${_dti!.toStringAsFixed(1)}%',
+                  }),
+                ),
                 const SizedBox(height: 12),
                 Row(
                   children: [
