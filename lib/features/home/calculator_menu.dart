@@ -45,6 +45,13 @@ class CalculatorMenus {
       route: '/contract-renewal',
     ),
     CalculatorMenuItem(
+      title: '전세사기 위험도 체크',
+      description: '전세가율과 근저당, 확정일자를 점검해요',
+      icon: Icons.health_and_safety_outlined,
+      color: Color(0xFFDC2626),
+      route: '/jeonse-risk',
+    ),
+    CalculatorMenuItem(
       title: '반전세 계산',
       description: '전월세 전환율로 월세 적정성을 확인해요',
       icon: Icons.swap_horiz_rounded,
@@ -119,6 +126,13 @@ class CalculatorMenus {
       icon: Icons.update_rounded,
       color: Color(0xFFEA580C),
       route: '/contract-renewal',
+    ),
+    CalculatorMenuItem(
+      title: '전세사기 위험도 체크',
+      description: '전세가율과 근저당, 확정일자를 점검해요',
+      icon: Icons.health_and_safety_outlined,
+      color: Color(0xFFDC2626),
+      route: '/jeonse-risk',
     ),
     CalculatorMenuItem(
       title: '대출이자 계산',

@@ -22,6 +22,7 @@ import '../features/advanced_calculators/acquisition_tax_screen.dart';
 import '../features/advanced_calculators/brokerage_fee_screen.dart';
 import '../features/advanced_calculators/dsr_dti_screen.dart';
 import '../features/contract_renewal/contract_renewal_screen.dart';
+import '../features/jeonse_risk/jeonse_risk_screen.dart';
 import '../features/scenario_compare/scenario_compare_screen.dart';
 import '../core/constants/legal_texts.dart';
 import '../features/auth/login_screen.dart';
@@ -116,6 +117,10 @@ class AppRouter {
       GoRoute(
         path: '/contract-renewal',
         builder: (context, state) => const ContractRenewalScreen(),
+      ),
+      GoRoute(
+        path: '/jeonse-risk',
+        builder: (context, state) => const JeonseRiskScreen(),
       ),
       GoRoute(
         path: '/semi-rent',

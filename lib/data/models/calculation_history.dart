@@ -12,6 +12,7 @@ enum CalculationType {
   brokerageFee,
   acquisitionTax,
   contractRenewal,
+  jeonseRisk,
 }
 
 extension CalculationTypeLabel on CalculationType {
@@ -35,6 +36,8 @@ extension CalculationTypeLabel on CalculationType {
         return '취득세 계산';
       case CalculationType.contractRenewal:
         return '계약 갱신 계산';
+      case CalculationType.jeonseRisk:
+        return '전세사기 위험도 체크';
     }
   }
 }
@@ -137,6 +140,7 @@ class CalculationHistory extends HiveObject {
       'brokerage_fee',
       'acquisition_tax',
       'contract_renewal',
+      'jeonse_risk',
     ];
     return types[typeIndex];
   }
@@ -168,6 +172,7 @@ class CalculationHistory extends HiveObject {
       'brokerage_fee': 6,
       'acquisition_tax': 7,
       'contract_renewal': 8,
+      'jeonse_risk': 9,
     };
     final createdAt = DateTime.parse(json['created_at'] as String);
     return CalculationHistory(

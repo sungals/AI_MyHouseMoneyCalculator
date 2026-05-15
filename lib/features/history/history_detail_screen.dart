@@ -289,6 +289,20 @@ class _HistoryDetailScreenState extends ConsumerState<HistoryDetailScreen> {
       'maxMonthlyRent': '갱신 월세 상한',
       'depositIncrease': '보증금 증액분',
       'monthlyRentIncrease': '월세 증액분',
+      'marketPrice': '주택 예상 시세',
+      'deposit': '전세 보증금',
+      'seniorDebt': '선순위채권/근저당',
+      'checkedRegistry': '등기부 확인',
+      'ownerMatched': '소유자 일치',
+      'checkedTaxArrears': '세금 체납 확인',
+      'canJoinGuaranteeInsurance': '보증보험 가능',
+      'willReportMoveIn': '전입신고 예정',
+      'willGetFixedDate': '확정일자 예정',
+      'riskScore': '위험 점수',
+      'riskLevel': '위험 등급',
+      'jeonseRatio': '전세가율',
+      'seniorDebtRatio': '선순위채권 비율',
+      'combinedDebtRatio': '보증금+선순위채권 비율',
     };
     return labels[key] ?? key;
   }
