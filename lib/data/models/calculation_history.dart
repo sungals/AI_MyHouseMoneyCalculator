@@ -11,6 +11,7 @@ enum CalculationType {
   dsrDti,
   brokerageFee,
   acquisitionTax,
+  contractRenewal,
 }
 
 extension CalculationTypeLabel on CalculationType {
@@ -32,6 +33,8 @@ extension CalculationTypeLabel on CalculationType {
         return '중개보수 계산';
       case CalculationType.acquisitionTax:
         return '취득세 계산';
+      case CalculationType.contractRenewal:
+        return '계약 갱신 계산';
     }
   }
 }
@@ -133,6 +136,7 @@ class CalculationHistory extends HiveObject {
       'dsr_dti',
       'brokerage_fee',
       'acquisition_tax',
+      'contract_renewal',
     ];
     return types[typeIndex];
   }
@@ -163,6 +167,7 @@ class CalculationHistory extends HiveObject {
       'dsr_dti': 5,
       'brokerage_fee': 6,
       'acquisition_tax': 7,
+      'contract_renewal': 8,
     };
     final createdAt = DateTime.parse(json['created_at'] as String);
     return CalculationHistory(

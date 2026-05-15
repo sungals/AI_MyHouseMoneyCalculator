@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/calculation_pdf_exporter.dart';
 import '../../core/utils/money_formatter.dart';
 import '../../core/utils/share_helper.dart';
 import '../../core/utils/validators.dart';
@@ -99,6 +100,27 @@ ${result.months}개월 총 이자: ${MoneyFormatter.formatWithWon(result.totalIn
       text: text,
       subject: '대출이자 계산 결과',
       title: '대출이자 계산 결과',
+    );
+  }
+
+  Future<void> _exportPdf() async {
+    final result = ref.read(loanInterestControllerProvider);
+    if (result == null) return;
+
+    await CalculationPdfExporter.share(
+      context,
+      title: '대출이자 계산 결과',
+      summary: '월 이자 ${MoneyFormatter.formatWithWon(result.monthlyInterest)}',
+      input: {
+        '대출금': MoneyFormatter.formatWithWon(result.loanAmount),
+        '연이율': '${_interestRate.text}%',
+        '대출 기간': '${result.months}개월',
+      },
+      result: {
+        '월 이자': MoneyFormatter.formatWithWon(result.monthlyInterest),
+        '${result.months}개월 총 이자':
+            MoneyFormatter.formatWithWon(result.totalInterest),
+      },
     );
   }
 
@@ -224,6 +246,15 @@ ${result.months}개월 총 이자: ${MoneyFormatter.formatWithWon(result.totalIn
                     ),
                   ),
                 ],
+              ),
+              const SizedBox(height: 10),
+              OutlinedButton.icon(
+                onPressed: _exportPdf,
+                icon: const Icon(Icons.picture_as_pdf_outlined, size: 18),
+                label: const Text('PDF 내보내기'),
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 48),
+                ),
               ),
             ] else ...[
               const SizedBox(height: 24),

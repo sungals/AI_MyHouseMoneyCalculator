@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/calculation_pdf_exporter.dart';
 import '../../core/utils/money_formatter.dart';
 import '../../core/utils/share_helper.dart';
 import '../../core/utils/validators.dart';
@@ -127,6 +128,33 @@ ${result.summaryText}
     );
   }
 
+  Future<void> _exportPdf() async {
+    final result = ref.read(semiRentControllerProvider);
+    if (result == null) return;
+
+    await CalculationPdfExporter.share(
+      context,
+      title: '반전세 계산 결과',
+      summary: result.summaryText,
+      input: {
+        '기준 전세 보증금': MoneyFormatter.formatWithWon(
+            MoneyFormatter.parse(_baseDeposit.text)),
+        '전환 후 보증금': MoneyFormatter.formatWithWon(
+            MoneyFormatter.parse(_convertedDeposit.text)),
+        '월세': MoneyFormatter.formatWithWon(
+            MoneyFormatter.parse(_monthlyRent.text)),
+        '전월세 전환율': '${_conversionRate.text}%',
+        '거주 기간': '${_months.text}개월',
+      },
+      result: {
+        '전환율 기준 적정 월세': MoneyFormatter.formatWithWon(result.fairMonthlyRent),
+        '실제 월세': MoneyFormatter.formatWithWon(result.actualMonthlyRent),
+        '월 차이': MoneyFormatter.formatWithWon(result.monthlyDifference.abs()),
+        '전체 기간 차이': MoneyFormatter.formatWithWon(result.totalDifference.abs()),
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final result = ref.watch(semiRentControllerProvider);
@@ -230,7 +258,12 @@ ${result.summaryText}
             PrimaryButton(label: '계산하기', onPressed: _calculate),
             if (result != null) ...[
               const SizedBox(height: 24),
-              _ResultCard(result: result, onSave: _save, onShare: _share),
+              _ResultCard(
+                result: result,
+                onSave: _save,
+                onShare: _share,
+                onExportPdf: _exportPdf,
+              ),
             ] else ...[
               const SizedBox(height: 24),
               const DisclaimerBox(),
@@ -275,11 +308,13 @@ class _ResultCard extends StatelessWidget {
   final dynamic result;
   final VoidCallback onSave;
   final VoidCallback onShare;
+  final VoidCallback onExportPdf;
 
   const _ResultCard({
     required this.result,
     required this.onSave,
     required this.onShare,
+    required this.onExportPdf,
   });
 
   @override
@@ -351,6 +386,15 @@ class _ResultCard extends StatelessWidget {
               ),
             ),
           ],
+        ),
+        const SizedBox(height: 10),
+        OutlinedButton.icon(
+          onPressed: onExportPdf,
+          icon: const Icon(Icons.picture_as_pdf_outlined, size: 18),
+          label: const Text('PDF 내보내기'),
+          style: OutlinedButton.styleFrom(
+            minimumSize: const Size(double.infinity, 48),
+          ),
         ),
       ],
     );

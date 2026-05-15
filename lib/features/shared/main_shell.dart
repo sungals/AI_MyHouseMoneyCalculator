@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../history/history_screen.dart';
+import '../home/calculator_category_screen.dart';
+import '../home/calculator_menu.dart';
 import '../home/home_screen.dart';
 import '../settings/settings_screen.dart';
 
@@ -20,7 +22,7 @@ class _MainShellState extends State<MainShell> {
     setState(() {
       _selectedIndex = index;
       _visitedIndexes.add(index);
-      if (index == 1) {
+      if (index == 3) {
         _historyRefreshKey++;
       }
     });
@@ -34,6 +36,18 @@ class _MainShellState extends State<MainShell> {
         visitedIndexes: _visitedIndexes,
         children: [
           const HomeScreen(),
+          const CalculatorCategoryScreen(
+            title: '주거',
+            headline: '계약과 임대료를\n비교하세요',
+            description: '전세, 월세, 반전세, 계약 갱신처럼 집 계약에 직접 연결되는 계산입니다.',
+            items: CalculatorMenus.housing,
+          ),
+          const CalculatorCategoryScreen(
+            title: '금융',
+            headline: '대출과 세금을\n따져보세요',
+            description: '대출 부담, 월 고정비, 세액공제, 거래 비용을 한곳에 모았습니다.',
+            items: CalculatorMenus.finance,
+          ),
           HistoryScreen(key: ValueKey(_historyRefreshKey)),
           const SettingsScreen(),
         ],
@@ -48,6 +62,16 @@ class _MainShellState extends State<MainShell> {
             icon: Icon(Icons.home_outlined),
             selectedIcon: Icon(Icons.home, color: AppColors.primary),
             label: '홈',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.apartment_outlined),
+            selectedIcon: Icon(Icons.apartment, color: AppColors.primary),
+            label: '주거',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.calculate_outlined),
+            selectedIcon: Icon(Icons.calculate, color: AppColors.primary),
+            label: '금융',
           ),
           NavigationDestination(
             icon: Icon(Icons.history_outlined),

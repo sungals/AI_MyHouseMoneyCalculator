@@ -5,16 +5,25 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import 'calculator_menu.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+class CalculatorCategoryScreen extends StatelessWidget {
+  final String title;
+  final String headline;
+  final String description;
+  final List<CalculatorMenuItem> items;
+
+  const CalculatorCategoryScreen({
+    super.key,
+    required this.title,
+    required this.headline,
+    required this.description,
+    required this.items,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text(AppConstants.appName),
-      ),
+      appBar: AppBar(title: Text(title)),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(AppConstants.horizontalPadding),
@@ -22,19 +31,11 @@ class HomeScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 8),
-              const Text(
-                '자주 쓰는 계산을\n빠르게 시작하세요',
-                style: AppTextStyles.heading1,
-              ),
+              Text(headline, style: AppTextStyles.heading1),
               const SizedBox(height: 8),
-              const Text(
-                '전체 기능은 하단의 주거, 금융 탭에서 분류별로 볼 수 있어요.',
-                style: AppTextStyles.bodySecondary,
-              ),
+              Text(description, style: AppTextStyles.bodySecondary),
               const SizedBox(height: 24),
-              const Text('추천 계산', style: AppTextStyles.label),
-              const SizedBox(height: 12),
-              for (final item in CalculatorMenus.featured) ...[
+              for (final item in items) ...[
                 CalculatorMenuCard(
                   item: item,
                   onTap: () => context.push(item.route),

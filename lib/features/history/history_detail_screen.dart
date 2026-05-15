@@ -282,6 +282,13 @@ class _HistoryDetailScreenState extends ConsumerState<HistoryDetailScreen> {
       'rentTaxCredit': '월세 세액공제',
       'loanDeduction': '전세대출 공제',
       'totalDeduction': '총 공제 예상액',
+      'currentDeposit': '현재 보증금',
+      'currentMonthlyRent': '현재 월세',
+      'increaseRate': '증액 상한율',
+      'maxDeposit': '갱신 보증금 상한',
+      'maxMonthlyRent': '갱신 월세 상한',
+      'depositIncrease': '보증금 증액분',
+      'monthlyRentIncrease': '월세 증액분',
     };
     return labels[key] ?? key;
   }

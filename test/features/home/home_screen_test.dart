@@ -34,7 +34,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('오늘 어떤 비용을\n계산할까요?'), findsOneWidget);
+    expect(find.text('자주 쓰는 계산을\n빠르게 시작하세요'), findsOneWidget);
     expect(find.text('방금 저장한 계산'), findsNothing);
 
     await tester.tap(find.text('전세 vs 월세 비교'));

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/calculation_pdf_exporter.dart';
 import '../../core/utils/money_formatter.dart';
 import '../../core/utils/share_helper.dart';
 import '../../providers/calculation_history_provider.dart';
@@ -120,6 +121,26 @@ $breakdown
       text: text,
       subject: '월 고정비 계산 결과',
       title: '월 고정비 계산 결과',
+    );
+  }
+
+  Future<void> _exportPdf() async {
+    final result = ref.read(monthlyExpenseControllerProvider);
+    if (result == null) return;
+
+    await CalculationPdfExporter.share(
+      context,
+      title: '월 고정비 계산 결과',
+      summary: '월 합계 ${MoneyFormatter.formatWithWon(result.totalMonthly)}',
+      input: {
+        for (final entry in result.breakdown.entries)
+          if (entry.value > 0)
+            entry.key: MoneyFormatter.formatWithWon(entry.value),
+      },
+      result: {
+        '월 합계': MoneyFormatter.formatWithWon(result.totalMonthly),
+        '연간 합계': MoneyFormatter.formatWithWon(result.totalAnnual),
+      },
     );
   }
 
@@ -297,6 +318,15 @@ $breakdown
                     ),
                   ),
                 ],
+              ),
+              const SizedBox(height: 10),
+              OutlinedButton.icon(
+                onPressed: _exportPdf,
+                icon: const Icon(Icons.picture_as_pdf_outlined, size: 18),
+                label: const Text('PDF 내보내기'),
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 48),
+                ),
               ),
             ] else ...[
               const SizedBox(height: 24),

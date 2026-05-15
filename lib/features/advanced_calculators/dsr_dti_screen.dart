@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/calculation_pdf_exporter.dart';
 import '../../core/utils/money_formatter.dart';
 import '../../core/utils/validators.dart';
 import '../../data/models/calculation_history.dart';
@@ -84,6 +85,30 @@ class _DsrDtiScreenState extends ConsumerState<DsrDtiScreen> {
     );
   }
 
+  Future<void> _exportPdf() async {
+    final dsr = _dsr;
+    final dti = _dti;
+    if (dsr == null || dti == null) return;
+
+    await CalculationPdfExporter.share(
+      context,
+      title: 'DSR/DTI 계산 결과',
+      summary: 'DSR ${dsr.toStringAsFixed(1)}%, DTI ${dti.toStringAsFixed(1)}%',
+      input: {
+        '연소득': MoneyFormatter.formatWithWon(
+            MoneyFormatter.parse(_annualIncome.text)),
+        '주택담보대출 연간 원리금': MoneyFormatter.formatWithWon(
+            MoneyFormatter.parse(_housingDebt.text)),
+        '기타대출 연간 원리금':
+            MoneyFormatter.formatWithWon(MoneyFormatter.parse(_otherDebt.text)),
+      },
+      result: {
+        'DSR': '${dsr.toStringAsFixed(1)}%',
+        'DTI': '${dti.toStringAsFixed(1)}%',
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -129,10 +154,31 @@ class _DsrDtiScreenState extends ConsumerState<DsrDtiScreen> {
                   'DTI': '${_dti!.toStringAsFixed(1)}%',
                 }),
                 const SizedBox(height: 12),
-                ElevatedButton.icon(
-                  onPressed: _save,
-                  icon: const Icon(Icons.bookmark_add_outlined),
-                  label: const Text('저장'),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: _exportPdf,
+                        icon:
+                            const Icon(Icons.picture_as_pdf_outlined, size: 18),
+                        label: const Text('PDF'),
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(0, 48),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: _save,
+                        icon: const Icon(Icons.bookmark_add_outlined, size: 18),
+                        label: const Text('저장'),
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: const Size(0, 48),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
               const SizedBox(height: 12),

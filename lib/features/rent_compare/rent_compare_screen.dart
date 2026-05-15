@@ -8,6 +8,7 @@ import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/calculation_pdf_exporter.dart';
 import '../../core/utils/money_formatter.dart';
 import '../../core/utils/share_helper.dart';
 import '../../core/utils/validators.dart';
@@ -162,6 +163,40 @@ class _RentCompareScreenState extends ConsumerState<RentCompareScreen> {
     );
   }
 
+  Future<void> _exportPdf() async {
+    final result = ref.read(rentCompareControllerProvider);
+    if (result == null) return;
+
+    await CalculationPdfExporter.share(
+      context,
+      title: '전세 vs 월세 비교 결과',
+      summary: result.recommendationText,
+      input: {
+        '전세 보증금': MoneyFormatter.formatWithWon(
+            MoneyFormatter.parse(_jeonseDeposit.text)),
+        '전세대출 금액': MoneyFormatter.formatWithWon(
+            MoneyFormatter.parse(_jeonseLoan.text)),
+        '전세대출 연이율': '${_interestRate.text}%',
+        '월세 보증금': MoneyFormatter.formatWithWon(
+            MoneyFormatter.parse(_rentDeposit.text)),
+        '월세': MoneyFormatter.formatWithWon(
+            MoneyFormatter.parse(_monthlyRent.text)),
+        '관리비': MoneyFormatter.formatWithWon(
+            MoneyFormatter.parse(_maintenance.text)),
+        '거주 기간': '${_months.text}개월',
+        '기회비용 예금이율': '${_depositInterestRate.toStringAsFixed(1)}%',
+      },
+      result: {
+        '전세 월 비용': MoneyFormatter.formatWithWon(result.jeonseMonthlyCost),
+        '월세 + 관리비': MoneyFormatter.formatWithWon(result.rentMonthlyCost),
+        '실질 월세 월 비용':
+            MoneyFormatter.formatWithWon(result.adjustedRentMonthlyCost),
+        '월 차이': MoneyFormatter.formatWithWon(result.monthlyDifference.abs()),
+        '전체 기간 차이': MoneyFormatter.formatWithWon(result.totalDifference.abs()),
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final result = ref.watch(rentCompareControllerProvider);
@@ -305,6 +340,7 @@ class _RentCompareScreenState extends ConsumerState<RentCompareScreen> {
                   result: result,
                   onSave: _save,
                   onShare: _shareImage,
+                  onExportPdf: _exportPdf,
                 ),
               ),
             ] else ...[

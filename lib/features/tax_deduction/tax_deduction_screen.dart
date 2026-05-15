@@ -4,6 +4,7 @@ import '../../core/constants/app_constants.dart';
 import '../../core/extensions/number_format_extension.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
+import '../../core/utils/calculation_pdf_exporter.dart';
 import '../../core/utils/money_formatter.dart';
 import '../../core/utils/validators.dart';
 import '../../domain/entities/tax_deduction_input.dart';
@@ -56,6 +57,35 @@ class _TaxDeductionScreenState extends ConsumerState<TaxDeductionScreen> {
 
     ref.read(taxDeductionControllerProvider.notifier).calculate(input);
     FocusScope.of(context).unfocus();
+  }
+
+  Future<void> _exportPdf() async {
+    final result = ref.read(taxDeductionControllerProvider);
+    if (result == null) return;
+
+    await CalculationPdfExporter.share(
+      context,
+      title: '연말정산 세액공제 결과',
+      summary: result.message,
+      input: {
+        '연간 총급여': MoneyFormatter.formatWithWon(
+            MoneyFormatter.parse(_annualSalary.text)),
+        '소득세율': '${_incomeTaxRate.toStringAsFixed(0)}%',
+        '월세': MoneyFormatter.formatWithWon(
+            MoneyFormatter.parse(_monthlyRent.text)),
+        '연간 원리금 상환액': MoneyFormatter.formatWithWon(
+          MoneyFormatter.parse(_annualLoanRepayment.text),
+        ),
+      },
+      result: {
+        '월세 공제율': '${result.rentDeductionRate}%',
+        '공제 대상 연 월세': result.eligibleAnnualRent.wonFormat,
+        '월세 세액공제': result.rentTaxCredit.wonFormat,
+        '공제 대상 상환액': result.eligibleRepayment.wonFormat,
+        '전세대출 절세액': result.loanTaxSaving.wonFormat,
+        '연간 총 절세 혜택': result.totalTaxBenefit.wonFormat,
+      },
+    );
   }
 
   @override
@@ -215,6 +245,15 @@ class _TaxDeductionScreenState extends ConsumerState<TaxDeductionScreen> {
                       ),
                     ],
                   ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: _exportPdf,
+                icon: const Icon(Icons.picture_as_pdf_outlined, size: 18),
+                label: const Text('PDF 내보내기'),
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 48),
                 ),
               ),
             ],
