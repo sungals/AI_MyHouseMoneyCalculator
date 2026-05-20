@@ -16,6 +16,7 @@ import '../../providers/calculation_history_provider.dart';
 import '../../shared/widgets/disclaimer_box.dart';
 import '../../shared/widgets/money_input_field.dart';
 import '../../shared/widgets/primary_button.dart';
+import '../../shared/widgets/result_action_buttons.dart';
 
 class BrokerageFeeScreen extends ConsumerStatefulWidget {
   const BrokerageFeeScreen({super.key});
@@ -162,31 +163,10 @@ class _BrokerageFeeScreenState extends ConsumerState<BrokerageFeeScreen> {
                   }),
                 ),
                 const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: _exportPdf,
-                        icon:
-                            const Icon(Icons.picture_as_pdf_outlined, size: 18),
-                        label: const Text('PDF'),
-                        style: OutlinedButton.styleFrom(
-                          minimumSize: const Size(0, 48),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: _save,
-                        icon: const Icon(Icons.bookmark_add_outlined, size: 18),
-                        label: const Text('저장'),
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: const Size(0, 48),
-                        ),
-                      ),
-                    ),
-                  ],
+                ResultActionButtons(
+                  onSave: _save,
+                  onExportPdf: _exportPdf,
+                  pdfLabel: 'PDF',
                 ),
               ],
               const SizedBox(height: 12),

@@ -18,6 +18,7 @@ import '../../shared/widgets/disclaimer_box.dart';
 import '../../shared/widgets/help_icon.dart';
 import '../../shared/widgets/money_input_field.dart';
 import '../../shared/widgets/primary_button.dart';
+import '../../shared/widgets/result_action_buttons.dart';
 import 'jeonse_risk_controller.dart';
 
 class JeonseRiskScreen extends ConsumerStatefulWidget {
@@ -114,6 +115,9 @@ ${result.summaryText}
 
 $warnings
 
+권장 조치
+${result.actionItems.map((item) => '- $item').join('\n')}
+
 ※ 본 체크는 참고용입니다. 계약 전 등기부, 세금 체납, 보증보험, 전문가 확인이 필요합니다.''';
 
     ShareHelper.shareText(
@@ -156,6 +160,7 @@ $warnings
         '주요 경고': result.warnings.isEmpty
             ? '큰 위험 신호 없음'
             : result.warnings.join(' / '),
+        '권장 조치': result.actionItems.join(' / '),
       },
     );
   }
@@ -289,7 +294,7 @@ $warnings
               const SizedBox(height: 12),
               const DisclaimerBox(),
               const SizedBox(height: 16),
-              _ResultActions(
+              ResultActionButtons(
                 onShare: _share,
                 onSave: _save,
                 onExportPdf: _exportPdf,
@@ -397,6 +402,11 @@ class _ResultCard extends StatelessWidget {
                   _ScoreCircle(score: result.score, color: color),
                 ],
               ),
+              const SizedBox(height: 10),
+              Text(
+                result.levelDescription,
+                style: AppTextStyles.bodySecondary,
+              ),
               const SizedBox(height: 20),
               _RatioBar(
                 label: '전세가율',
@@ -421,6 +431,12 @@ class _ResultCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 ...result.warnings.map((item) => _Bullet(item, color: color)),
               ],
+              const SizedBox(height: 12),
+              const Text('권장 조치', style: AppTextStyles.label),
+              const SizedBox(height: 8),
+              ...result.actionItems.map(
+                (item) => _Bullet(item, color: AppColors.primary),
+              ),
               if (result.checklist.isNotEmpty) ...[
                 const SizedBox(height: 12),
                 const Text('추가 확인', style: AppTextStyles.label),
@@ -428,6 +444,12 @@ class _ResultCard extends StatelessWidget {
                 ...result.checklist.map(
                     (item) => _Bullet(item, color: AppColors.textSecondary)),
               ],
+              const SizedBox(height: 12),
+              const Text('보호 절차 체크리스트', style: AppTextStyles.label),
+              const SizedBox(height: 8),
+              ...result.protectionChecklist.map(
+                (item) => _Bullet(item, color: AppColors.positive),
+              ),
             ],
           ),
         ),
@@ -435,62 +457,12 @@ class _ResultCard extends StatelessWidget {
           const SizedBox(height: 12),
           const DisclaimerBox(),
           const SizedBox(height: 16),
-          _ResultActions(
+          ResultActionButtons(
             onShare: onShare,
             onSave: onSave,
             onExportPdf: onExportPdf,
           ),
         ],
-      ],
-    );
-  }
-}
-
-class _ResultActions extends StatelessWidget {
-  final VoidCallback onShare;
-  final VoidCallback onSave;
-  final VoidCallback onExportPdf;
-
-  const _ResultActions({
-    required this.onShare,
-    required this.onSave,
-    required this.onExportPdf,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: onShare,
-                icon: const Icon(Icons.share_outlined, size: 18),
-                label: const Text('공유'),
-                style: OutlinedButton.styleFrom(minimumSize: const Size(0, 48)),
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: ElevatedButton.icon(
-                onPressed: onSave,
-                icon: const Icon(Icons.bookmark_add_outlined, size: 18),
-                label: const Text('저장'),
-                style: ElevatedButton.styleFrom(minimumSize: const Size(0, 48)),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        OutlinedButton.icon(
-          onPressed: onExportPdf,
-          icon: const Icon(Icons.picture_as_pdf_outlined, size: 18),
-          label: const Text('PDF 내보내기'),
-          style: OutlinedButton.styleFrom(
-            minimumSize: const Size(double.infinity, 48),
-          ),
-        ),
       ],
     );
   }

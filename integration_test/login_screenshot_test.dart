@@ -11,11 +11,16 @@ void main() {
     await Hive.initFlutter();
     final box = await Hive.openBox('app_settings');
     await box.put('onboarding_done', true);
-    await box.delete('login_skipped'); // 로그인 화면이 뜨도록 강제
+    await box.put('login_skipped', true); // 스테일 값이 있어도 로그인으로 가야 함
 
-    app.main();
+    await app.bootstrap(
+      initializeNotifications: false,
+      cleanupStalePushToken: false,
+      clearPersistedSession: true,
+    );
     await tester.pump(const Duration(seconds: 3));
     await tester.pumpAndSettle();
+    expect(find.byType(TextFormField), findsNWidgets(2));
 
     debugPrint('SNAP:00_login');
     await tester.pump(const Duration(milliseconds: 1500));

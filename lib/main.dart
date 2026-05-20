@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app.dart';
@@ -34,23 +35,47 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   );
 }
 
-void main() async {
+void main() {
+  bootstrap();
+}
+
+Future<void> bootstrap({
+  bool initializeAds = true,
+  bool initializeNotifications = true,
+  bool cleanupStalePushToken = true,
+  bool resetLoginSkipOnNoSession = true,
+  bool clearPersistedSession = false,
+}) async {
   WidgetsFlutterBinding.ensureInitialized();
+  if (initializeAds) {
+    await MobileAds.instance.initialize();
+  }
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
   await Hive.initFlutter();
-  Hive.registerAdapter(CalculationHistoryAdapter());
+  if (!Hive.isAdapterRegistered(0)) {
+    Hive.registerAdapter(CalculationHistoryAdapter());
+  }
   await Hive.openBox('app_settings');
   await Hive.openBox<CalculationHistory>(CalculationHistoryStore.boxName);
-
   await Supabase.initialize(
     url: SupabaseConfig.url,
     anonKey: SupabaseConfig.anonKey,
   );
 
+  if (clearPersistedSession) {
+    await Supabase.instance.client.auth.signOut();
+  }
+
+  if (resetLoginSkipOnNoSession &&
+      Supabase.instance.client.auth.currentSession == null) {
+    await Hive.box('app_settings').put('login_skipped', false);
+  }
+
   // 미인증 상태에서 이전 세션에서 등록된 stale 토큰을 DB에서 제거
-  if (Supabase.instance.client.auth.currentSession == null) {
+  if (cleanupStalePushToken &&
+      Supabase.instance.client.auth.currentSession == null) {
     try {
       final token = await FirebaseMessaging.instance.getToken();
       if (token != null) {
@@ -64,7 +89,9 @@ void main() async {
   }
 
   final notificationService = LocalNotificationService();
-  await notificationService.initialize();
+  if (initializeNotifications) {
+    await notificationService.initialize();
+  }
 
   runApp(
     ProviderScope(

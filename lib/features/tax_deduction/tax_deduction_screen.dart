@@ -14,6 +14,7 @@ import '../../domain/entities/tax_deduction_input.dart';
 import '../../shared/widgets/disclaimer_box.dart';
 import '../../shared/widgets/money_input_field.dart';
 import '../../shared/widgets/primary_button.dart';
+import '../../shared/widgets/result_action_buttons.dart';
 import '../../shared/widgets/slider_rate_field.dart';
 import 'tax_deduction_controller.dart';
 
@@ -264,13 +265,8 @@ class _TaxDeductionScreenState extends ConsumerState<TaxDeductionScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-              OutlinedButton.icon(
-                onPressed: _exportPdf,
-                icon: const Icon(Icons.picture_as_pdf_outlined, size: 18),
-                label: const Text('PDF 내보내기'),
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 48),
-                ),
+              ResultActionButtons(
+                onExportPdf: _exportPdf,
               ),
             ],
             const SizedBox(height: 16),

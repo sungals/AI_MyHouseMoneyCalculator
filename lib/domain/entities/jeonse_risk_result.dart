@@ -25,6 +25,9 @@ class JeonseRiskResult {
   final JeonseRiskLevel level;
   final List<String> warnings;
   final List<String> checklist;
+  final List<String> actionItems;
+  final List<String> protectionChecklist;
+  final String levelDescription;
   final String summaryText;
 
   const JeonseRiskResult({
@@ -35,6 +38,9 @@ class JeonseRiskResult {
     required this.level,
     required this.warnings,
     required this.checklist,
+    required this.actionItems,
+    required this.protectionChecklist,
+    required this.levelDescription,
     required this.summaryText,
   });
 }

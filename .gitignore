@@ -53,6 +53,7 @@ android/app/*.keystore
 
 # App Store credentials
 .appstore_credentials
+appstore_credentials
 
 # Certificates & Keys
 Cer/

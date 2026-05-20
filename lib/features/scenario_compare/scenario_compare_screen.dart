@@ -16,6 +16,7 @@ import '../../shared/widgets/disclaimer_box.dart';
 import '../../shared/widgets/money_input_field.dart';
 import '../../shared/widgets/percent_input_field.dart';
 import '../../shared/widgets/primary_button.dart';
+import '../../shared/widgets/result_action_buttons.dart';
 import '../../shared/widgets/slider_rate_field.dart';
 
 class ScenarioCompareScreen extends StatefulWidget {
@@ -287,22 +288,10 @@ class _ScenarioCompareScreenState extends State<ScenarioCompareScreen> {
               const SizedBox(height: 12),
               const DisclaimerBox(),
               const SizedBox(height: 16),
-              OutlinedButton.icon(
-                onPressed: _share,
-                icon: const Icon(Icons.share_outlined, size: 18),
-                label: const Text('결과 공유'),
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 48),
-                ),
-              ),
-              const SizedBox(height: 10),
-              OutlinedButton.icon(
-                onPressed: _exportPdf,
-                icon: const Icon(Icons.picture_as_pdf_outlined, size: 18),
-                label: const Text('PDF 내보내기'),
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 48),
-                ),
+              ResultActionButtons(
+                onShare: _share,
+                onExportPdf: _exportPdf,
+                shareLabel: '결과 공유',
               ),
             ] else ...[
               const SizedBox(height: 24),

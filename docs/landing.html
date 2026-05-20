@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>어떤비용 — 주거비 계산기</title>
+  <style>
+    :root {
+      --primary: #1F4FFF;
+      --primary-light: #3b82f6;
+      --bg: #F7F8FA;
+      --text: #111827;
+      --text-secondary: #6b7280;
+      --card-bg: #ffffff;
+      --border: #e5e7eb;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: var(--text); background: var(--bg); }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(145deg, #1a3fd4 0%, #2563eb 50%, #3b82f6 100%);
+      color: #fff; text-align: center; padding: 80px 20px 72px;
+    }
+    .hero-icon { font-size: 64px; line-height: 1; margin-bottom: 20px; }
+    .hero h1 { font-size: 42px; font-weight: 800; letter-spacing: -1px; margin-bottom: 12px; }
+    .hero p { font-size: 18px; opacity: 0.88; margin-bottom: 36px; line-height: 1.6; }
+    .hero-cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 28px; border-radius: 12px; font-size: 16px; font-weight: 600;
+      text-decoration: none; transition: opacity 0.15s;
+    }
+    .btn:hover { opacity: 0.88; }
+    .btn-white { background: #fff; color: var(--primary); }
+    .btn-outline { background: transparent; color: #fff; border: 2px solid rgba(255,255,255,0.6); }
+
+    /* Section */
+    section { max-width: 960px; margin: 0 auto; padding: 64px 20px; }
+    .section-label { font-size: 13px; font-weight: 700; letter-spacing: 1px; color: var(--primary); text-transform: uppercase; margin-bottom: 8px; }
+    .section-title { font-size: 30px; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.5px; }
+    .section-desc { font-size: 16px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 40px; }
+
+    /* Feature Grid */
+    .feature-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .feature-card {
+      background: var(--card-bg); border-radius: 16px; padding: 24px 20px;
+      border: 1px solid var(--border); cursor: pointer;
+      transition: box-shadow 0.2s, transform 0.2s;
+      position: relative;
+    }
+    .feature-card:hover { box-shadow: 0 8px 32px rgba(31,79,255,0.13); transform: translateY(-3px); }
+    .feature-card .icon { font-size: 32px; margin-bottom: 12px; line-height: 1; }
+    .feature-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+    .feature-card p { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+    .feature-card .more-hint {
+      margin-top: 12px; font-size: 12px; font-weight: 600;
+      color: var(--primary); display: flex; align-items: center; gap: 4px;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+      z-index: 1000; align-items: center; justify-content: center; padding: 20px;
+      backdrop-filter: blur(4px);
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: #fff; border-radius: 24px; width: 100%; max-width: 580px;
+      max-height: 88vh; overflow-y: auto; box-shadow: 0 24px 80px rgba(0,0,0,0.2);
+      animation: modalIn 0.22s ease;
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.94) translateY(12px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .modal-header {
+      padding: 24px 24px 0;
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+    }
+    .modal-header-left { display: flex; align-items: center; gap: 12px; }
+    .modal-header .big-icon { font-size: 36px; line-height: 1; }
+    .modal-header h2 { font-size: 20px; font-weight: 800; }
+    .modal-header .subtitle { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+    .modal-close {
+      width: 32px; height: 32px; border-radius: 50%; border: none; cursor: pointer;
+      background: var(--bg); color: var(--text-secondary); font-size: 18px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      transition: background 0.15s;
+    }
+    .modal-close:hover { background: #e5e7eb; }
+    .modal-body { padding: 20px 24px 28px; }
+
+    /* Diagram common */
+    .diagram { background: #f8faff; border-radius: 16px; padding: 20px; margin: 16px 0; }
+    .diagram-title { font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--primary); margin-bottom: 14px; }
+    .formula-box {
+      background: linear-gradient(135deg, #eef2ff, #dbeafe);
+      border-radius: 12px; padding: 14px 18px; text-align: center;
+      font-size: 15px; font-weight: 700; color: #1e3a8a; margin: 14px 0;
+      line-height: 1.6; border: 1px solid #c7d2fe;
+    }
+    .formula-box .op { color: #6366f1; font-weight: 400; margin: 0 4px; }
+    .example-box {
+      background: #fff; border: 1px solid var(--border); border-radius: 12px;
+      padding: 14px 18px; margin: 14px 0;
+    }
+    .example-box .ex-label { font-size: 11px; font-weight: 700; color: var(--text-secondary); margin-bottom: 10px; letter-spacing: 0.5px; }
+    .ex-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid #f3f4f6; }
+    .ex-row:last-child { border-bottom: none; }
+    .ex-row .ex-key { font-size: 13px; color: var(--text-secondary); }
+    .ex-row .ex-val { font-size: 13px; font-weight: 600; color: var(--text); }
+    .ex-row .ex-val.highlight { color: var(--primary); font-size: 15px; }
+    .ex-row .ex-val.danger { color: #dc2626; font-size: 15px; }
+
+    /* compare columns */
+    .compare-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 14px 0; }
+    .compare-col { background: #fff; border-radius: 12px; padding: 14px; border: 1px solid var(--border); }
+    .compare-col .col-title { font-size: 12px; font-weight: 700; text-align: center; padding: 4px 10px; border-radius: 20px; margin-bottom: 10px; }
+    .compare-col.jeonse .col-title { background: #dbeafe; color: #1d4ed8; }
+    .compare-col.rent .col-title { background: #fce7f3; color: #be185d; }
+    .compare-col .cost-item { display: flex; justify-content: space-between; font-size: 12px; padding: 4px 0; border-bottom: 1px dashed #f3f4f6; }
+    .compare-col .cost-item:last-child { border-bottom: none; font-weight: 700; padding-top: 8px; }
+    .compare-arrow { display: flex; align-items: center; justify-content: center; font-size: 22px; }
+
+    /* bar chart */
+    .bar-group { margin: 8px 0; }
+    .bar-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; }
+    .bar-track { height: 10px; background: #e5e7eb; border-radius: 99px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 99px; transition: width 0.6s ease; }
+
+    /* table */
+    .info-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .info-table th { background: #f8faff; font-weight: 700; padding: 8px 12px; text-align: left; color: var(--primary); border-bottom: 2px solid #e0e7ff; }
+    .info-table td { padding: 8px 12px; border-bottom: 1px solid #f3f4f6; color: var(--text); }
+    .info-table tr:last-child td { border-bottom: none; }
+    .info-table td.rate { font-weight: 700; color: #dc2626; }
+    .info-table td.rate-ok { font-weight: 700; color: #059669; }
+
+    /* category list */
+    .cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 14px 0; }
+    .cat-item { background: #fff; border-radius: 10px; padding: 10px 8px; text-align: center; border: 1px solid var(--border); }
+    .cat-item .cat-icon { font-size: 20px; margin-bottom: 4px; }
+    .cat-item .cat-name { font-size: 11px; font-weight: 600; color: var(--text); }
+
+    /* disclaimer */
+    .disclaimer { font-size: 11px; color: #9ca3af; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); line-height: 1.6; }
+
+    /* Screenshot Gallery */
+    .gallery-section { background: linear-gradient(180deg, #eef2ff 0%, #f7f8fa 100%); padding: 64px 0 48px; }
+    .gallery-inner { max-width: 960px; margin: 0 auto; padding: 0 20px; }
+    .gallery-track {
+      display: flex; gap: 20px;
+      overflow-x: auto; padding: 16px 24px 28px;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .gallery-track::-webkit-scrollbar { display: none; }
+    .gallery-item {
+      scroll-snap-align: center; flex-shrink: 0;
+      display: flex; flex-direction: column; align-items: center; gap: 14px;
+      width: 178px; cursor: pointer;
+    }
+    .gallery-item:hover .phone-frame { transform: translateY(-6px); box-shadow: 0 32px 80px rgba(0,0,0,0.32); }
+
+    /* Phone frame */
+    .phone-frame {
+      width: 178px; height: 368px;
+      background: #18182e; border-radius: 32px;
+      border: 3px solid #2c2c44;
+      box-shadow: 0 20px 56px rgba(0,0,0,0.22), inset 0 0 0 1px rgba(255,255,255,0.06);
+      overflow: hidden; position: relative;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .phone-notch {
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 68px; height: 18px; background: #18182e; border-radius: 0 0 12px 12px; z-index: 10;
+    }
+    .phone-screen {
+      position: absolute; inset: 5px;
+      background: #F7F8FA; border-radius: 28px; overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    .ps-bar {
+      background: #1F4FFF; padding: 20px 10px 4px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .ps-bar .ps-time { color: #fff; font-size: 8px; font-weight: 700; }
+    .ps-bar .ps-icons { color: rgba(255,255,255,0.75); font-size: 7px; letter-spacing: 1px; }
+    .ps-appbar {
+      background: #fff; padding: 6px 10px;
+      font-size: 11px; font-weight: 700; color: #111827;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .ps-body { flex: 1; padding: 7px; overflow: hidden; display: flex; flex-direction: column; gap: 5px; }
+
+    .ps-input { background: #fff; border-radius: 7px; padding: 5px 8px; border: 1px solid #e5e7eb; font-size: 8px; }
+    .ps-input .ps-label { color: #6b7280; margin-bottom: 1px; }
+    .ps-input .ps-val { font-weight: 700; color: #111827; font-size: 10px; }
+    .ps-input .ps-btns { display: flex; gap: 3px; margin-top: 3px; }
+    .ps-btn-q { background: #eff6ff; border-radius: 3px; padding: 1px 5px; font-size: 7px; color: #1d4ed8; }
+
+    .ps-result { background: #fff; border-radius: 7px; padding: 6px 8px; border: 1px solid #e0e7ff; }
+    .ps-result .ps-r-title { font-size: 7px; color: #6b7280; margin-bottom: 4px; font-weight: 600; }
+    .ps-rrow { display: flex; justify-content: space-between; align-items: center; margin: 2px 0; }
+    .ps-rrow .rk { font-size: 7px; color: #6b7280; }
+    .ps-rrow .rv { font-size: 9px; font-weight: 700; color: #111827; }
+    .rv.blue { color: #1F4FFF; } .rv.red { color: #dc2626; } .rv.green { color: #059669; }
+
+    .ps-cta { background: linear-gradient(135deg,#1F4FFF,#3b82f6); color:#fff; border-radius:7px; padding:6px; text-align:center; font-size:9px; font-weight:700; }
+    .ps-badge { border-radius:5px; padding:3px 7px; font-size:8px; font-weight:700; text-align:center; }
+    .ps-badge.ok { background:#f0fdf4; color:#166534; }
+    .ps-badge.warn { background:#fffbeb; color:#92400e; }
+    .ps-badge.err { background:#fef2f2; color:#991b1b; }
+
+    .ps-cat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 3px; }
+    .ps-cat { background: #fff; border-radius: 5px; padding: 4px 2px; text-align: center; border: 1px solid #e5e7eb; }
+    .ps-cat .ci { font-size: 11px; line-height: 1; }
+    .ps-cat .cn { font-size: 6px; color: #374151; font-weight: 600; margin-top: 1px; }
+
+    .ps-bar-row { margin: 2px 0; }
+    .ps-bar-lbl { display: flex; justify-content: space-between; font-size: 7px; color: #6b7280; margin-bottom: 2px; }
+    .ps-bar-track { height: 5px; background: #e5e7eb; border-radius: 99px; overflow: hidden; }
+    .ps-bar-fill { height: 100%; border-radius: 99px; }
+
+    .ps-table { width: 100%; font-size: 7px; border-collapse: collapse; }
+    .ps-table th { background: #eef2ff; padding: 3px 5px; color: #1d4ed8; font-weight: 700; text-align: left; }
+    .ps-table td { padding: 3px 5px; border-bottom: 1px solid #f3f4f6; }
+    .ps-table .rt { color: #dc2626; font-weight: 700; }
+    .ps-table .rg { color: #059669; font-weight: 700; }
+
+    /* Gallery caption */
+    .gc { text-align: center; }
+    .gc .gc-icon { font-size: 18px; margin-bottom: 3px; }
+    .gc .gc-title { font-size: 12px; font-weight: 700; color: #111827; margin-bottom: 2px; }
+    .gc .gc-desc { font-size: 10px; color: #6b7280; line-height: 1.4; max-width: 160px; }
+
+    /* Highlights */
+    .highlights { background: var(--card-bg); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .highlights-inner { max-width: 960px; margin: 0 auto; padding: 64px 20px; }
+    .highlight-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+    .highlight-item { display: flex; gap: 16px; align-items: flex-start; }
+    .highlight-item .hi-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: linear-gradient(135deg, #e8eeff 0%, #dbeafe 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; flex-shrink: 0;
+    }
+    .highlight-item h4 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+    .highlight-item p { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+    /* FAQ */
+    .faq-list { display: flex; flex-direction: column; gap: 16px; }
+    .faq-item { background: var(--card-bg); border-radius: 14px; padding: 24px; border: 1px solid var(--border); }
+    .faq-item h4 { font-size: 15px; font-weight: 700; margin-bottom: 8px; color: var(--primary); }
+    .faq-item p { font-size: 14px; color: var(--text-secondary); line-height: 1.7; }
+    .faq-item a { color: var(--primary); text-decoration: none; }
+
+    /* Contact */
+    .contact-strip { background: #111827; color: #fff; text-align: center; padding: 56px 20px; }
+    .contact-strip h2 { font-size: 26px; font-weight: 800; margin-bottom: 10px; }
+    .contact-strip p { font-size: 16px; opacity: 0.7; margin-bottom: 24px; }
+    .contact-strip a {
+      display: inline-block; padding: 14px 32px; border-radius: 12px;
+      background: var(--primary); color: #fff; text-decoration: none;
+      font-size: 16px; font-weight: 600; transition: opacity 0.15s;
+    }
+    .contact-strip a:hover { opacity: 0.85; }
+
+    /* Footer */
+    footer { text-align: center; padding: 28px 20px; font-size: 13px; color: #9ca3af; border-top: 1px solid var(--border); }
+    footer a { color: var(--primary); text-decoration: none; margin: 0 8px; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 30px; }
+      .hero p { font-size: 16px; }
+      .feature-grid { grid-template-columns: repeat(2, 1fr); }
+      .highlight-list { grid-template-columns: 1fr; }
+      .compare-cols { grid-template-columns: 1fr; }
+      .cat-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (max-width: 480px) {
+      .feature-grid { grid-template-columns: repeat(2, 1fr); }
+      .hero { padding: 56px 20px 52px; }
+      .cat-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-icon">🏠</div>
+    <h1>어떤비용</h1>
+    <p>전세·월세·대출·생활비, 내 주거 비용을<br>한 번에 계산하세요.</p>
+    <div class="hero-cta">
+      <a href="https://apps.apple.com/app/id6745007268" class="btn btn-white">
+        <span>🍎</span> App Store
+      </a>
+      <a href="https://play.google.com/store/apps/details?id=com.sungals.houseMoneyCalculator" class="btn btn-outline">
+        <span>▶</span> Google Play
+      </a>
+    </div>
+  </div>
+
+  <!-- Screenshot Gallery -->
+  <div class="gallery-section">
+    <div class="gallery-inner">
+      <div class="section-label">앱 미리보기</div>
+      <div class="section-title">화면으로 보는 기능</div>
+      <div class="section-desc" style="margin-bottom:0">스크롤하여 각 계산기 화면을 확인하세요.</div>
+    </div>
+    <div class="gallery-track">
+
+      <!-- 1. 전세 vs 월세 -->
+      <div class="gallery-item" onclick="openModal('modal-jeonse-rent')">
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="ps-bar"><span class="ps-time">9:41</span><span class="ps-icons">▌▌▌ ●</span></div>
+            <div class="ps-appbar">전세 vs 월세 비교</div>
+            <div class="ps-body">
+              <div class="ps-input">
+                <div class="ps-label">전세 보증금</div>
+                <div class="ps-val">3억원</div>
+                <div class="ps-btns"><span class="ps-btn-q">-1억</span><span class="ps-btn-q">+1억</span><span class="ps-btn-q">+5천</span></div>
+              </div>
+              <div class="ps-input">
+                <div class="ps-label">월세 보증금</div>
+                <div class="ps-val">5,000만원</div>
+              </div>
+              <div class="ps-input">
+                <div class="ps-label">월세</div>
+                <div class="ps-val">100만원</div>
+              </div>
+              <div class="ps-cta">계산하기</div>
+              <div class="ps-result">
+                <div class="ps-r-title">계산 결과</div>
+                <div class="ps-rrow"><span class="rk">전세 월비용</span><span class="rv blue">91.7만원</span></div>
+                <div class="ps-rrow"><span class="rk">월세 월비용</span><span class="rv red">110만원+</span></div>
+              </div>
+              <div class="ps-badge ok">✓ 전세가 더 유리해요</div>
+            </div>
+          </div>
+        </div>
+        <div class="gc">
+          <div class="gc-icon">⚖️</div>
+          <div class="gc-title">전세 vs 월세 비교</div>
+          <div class="gc-desc">기회비용 포함 실질 월 비용 비교</div>
+        </div>
+      </div>
+
+      <!-- 2. 반전세 -->
+      <div class="gallery-item" onclick="openModal('modal-semi-rent')">
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="ps-bar"><span class="ps-time">9:41</span><span class="ps-icons">▌▌▌ ●</span></div>
+            <div class="ps-appbar">반전세 계산</div>
+            <div class="ps-body">
+              <div class="ps-input">
+                <div class="ps-label">전세 보증금</div>
+                <div class="ps-val">5억원</div>
+              </div>
+              <div class="ps-input">
+                <div class="ps-label">반전세 보증금</div>
+                <div class="ps-val">2억원</div>
+              </div>
+              <div class="ps-input">
+                <div class="ps-label">전환율</div>
+                <div class="ps-val">5.0%</div>
+              </div>
+              <div class="ps-cta">계산하기</div>
+              <div class="ps-result">
+                <div class="ps-r-title">계산 결과</div>
+                <div class="ps-rrow"><span class="rk">적정 월세 상한</span><span class="rv blue">125만원</span></div>
+                <div class="ps-rrow"><span class="rk">보증금 차액</span><span class="rv">3억원</span></div>
+              </div>
+              <div class="ps-badge warn">월세가 125만 초과면 전환율 초과</div>
+            </div>
+          </div>
+        </div>
+        <div class="gc">
+          <div class="gc-icon">🔄</div>
+          <div class="gc-title">반전세 계산</div>
+          <div class="gc-desc">전월세 전환율로 적정 월세 확인</div>
+        </div>
+      </div>
+
+      <!-- 3. 대출이자 -->
+      <div class="gallery-item" onclick="openModal('modal-loan')">
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="ps-bar"><span class="ps-time">9:41</span><span class="ps-icons">▌▌▌ ●</span></div>
+            <div class="ps-appbar">대출이자 계산</div>
+            <div class="ps-body">
+              <div class="ps-input">
+                <div class="ps-label">대출금</div>
+                <div class="ps-val">2억원</div>
+                <div class="ps-btns"><span class="ps-btn-q">-1억</span><span class="ps-btn-q">+1억</span></div>
+              </div>
+              <div class="ps-input">
+                <div class="ps-label">연이율</div>
+                <div class="ps-val">4.5%</div>
+              </div>
+              <div class="ps-input">
+                <div class="ps-label">대출 기간</div>
+                <div class="ps-val">24개월</div>
+              </div>
+              <div class="ps-cta">계산하기</div>
+              <div class="ps-result">
+                <div class="ps-r-title">계산 결과</div>
+                <div class="ps-rrow"><span class="rk">월 이자</span><span class="rv blue">75만원</span></div>
+                <div class="ps-rrow"><span class="rk">24개월 총 이자</span><span class="rv red">1,800만원</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="gc">
+          <div class="gc-icon">🏦</div>
+          <div class="gc-title">대출이자 계산</div>
+          <div class="gc-desc">월 이자 · 총 이자 빠른 계산</div>
+        </div>
+      </div>
+
+      <!-- 4. 월 고정비 -->
+      <div class="gallery-item" onclick="openModal('modal-monthly')">
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="ps-bar"><span class="ps-time">9:41</span><span class="ps-icons">▌▌▌ ●</span></div>
+            <div class="ps-appbar">월 고정비 계산</div>
+            <div class="ps-body">
+              <div class="ps-cat-grid">
+                <div class="ps-cat"><div class="ci">🏠</div><div class="cn">주거비</div></div>
+                <div class="ps-cat"><div class="ci">🔧</div><div class="cn">관리비</div></div>
+                <div class="ps-cat"><div class="ci">📱</div><div class="cn">통신비</div></div>
+                <div class="ps-cat"><div class="ci">🚌</div><div class="cn">교통비</div></div>
+                <div class="ps-cat"><div class="ci">🛡️</div><div class="cn">보험료</div></div>
+                <div class="ps-cat"><div class="ci">📺</div><div class="cn">구독료</div></div>
+                <div class="ps-cat"><div class="ci">🍽️</div><div class="cn">식비</div></div>
+                <div class="ps-cat"><div class="ci">📦</div><div class="cn">기타</div></div>
+              </div>
+              <div class="ps-cta" style="margin-top:4px">계산하기</div>
+              <div class="ps-result">
+                <div class="ps-r-title">계산 결과</div>
+                <div class="ps-rrow"><span class="rk">월 합계</span><span class="rv blue">170만원</span></div>
+                <div class="ps-rrow"><span class="rk">연간 지출</span><span class="rv red">2,040만원</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="gc">
+          <div class="gc-icon">📊</div>
+          <div class="gc-title">월 고정비 계산</div>
+          <div class="gc-desc">8가지 지출 항목 합산 · 연간 환산</div>
+        </div>
+      </div>
+
+      <!-- 5. 연말정산 -->
+      <div class="gallery-item" onclick="openModal('modal-tax')">
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="ps-bar"><span class="ps-time">9:41</span><span class="ps-icons">▌▌▌ ●</span></div>
+            <div class="ps-appbar">연말정산 세액공제</div>
+            <div class="ps-body">
+              <div class="ps-input">
+                <div class="ps-label">총 급여</div>
+                <div class="ps-val">4,500만원</div>
+              </div>
+              <div class="ps-input">
+                <div class="ps-label">연 월세액</div>
+                <div class="ps-val">720만원</div>
+              </div>
+              <div class="ps-cta">계산하기</div>
+              <div class="ps-result">
+                <div class="ps-r-title">세액공제 결과</div>
+                <div class="ps-rrow"><span class="rk">공제율</span><span class="rv green">17%</span></div>
+                <div class="ps-rrow"><span class="rk">환급 예상</span><span class="rv blue">약 122만원</span></div>
+              </div>
+              <table class="ps-table" style="margin-top:4px">
+                <tr><th>총급여 구간</th><th>공제율</th></tr>
+                <tr><td>~5,500만</td><td class="rg">17%</td></tr>
+                <tr><td>~8,000만</td><td class="rg">15%</td></tr>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="gc">
+          <div class="gc-icon">💰</div>
+          <div class="gc-title">연말정산 세액공제</div>
+          <div class="gc-desc">월세 · 전세대출 절세 혜택 계산</div>
+        </div>
+      </div>
+
+      <!-- 6. DSR/DTI -->
+      <div class="gallery-item" onclick="openModal('modal-dsr')">
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="ps-bar"><span class="ps-time">9:41</span><span class="ps-icons">▌▌▌ ●</span></div>
+            <div class="ps-appbar">DSR / DTI 계산</div>
+            <div class="ps-body">
+              <div class="ps-input">
+                <div class="ps-label">연 소득</div>
+                <div class="ps-val">6,000만원</div>
+              </div>
+              <div class="ps-input">
+                <div class="ps-label">연간 원리금 합계</div>
+                <div class="ps-val">2,100만원</div>
+              </div>
+              <div class="ps-cta">계산하기</div>
+              <div class="ps-result">
+                <div class="ps-r-title">계산 결과</div>
+                <div class="ps-bar-row">
+                  <div class="ps-bar-lbl"><span>DSR</span><span style="color:#059669;font-weight:700">35%</span></div>
+                  <div class="ps-bar-track"><div class="ps-bar-fill" style="width:35%;background:linear-gradient(90deg,#34d399,#059669)"></div></div>
+                </div>
+                <div class="ps-bar-row" style="margin-top:4px">
+                  <div class="ps-bar-lbl"><span>DTI</span><span style="color:#f59e0b;font-weight:700">48%</span></div>
+                  <div class="ps-bar-track"><div class="ps-bar-fill" style="width:48%;background:linear-gradient(90deg,#34d399,#fbbf24)"></div></div>
+                </div>
+              </div>
+              <div class="ps-badge ok">✅ DSR 안전 구간 (~40%)</div>
+            </div>
+          </div>
+        </div>
+        <div class="gc">
+          <div class="gc-icon">📉</div>
+          <div class="gc-title">DSR / DTI 계산</div>
+          <div class="gc-desc">소득 대비 대출 상환 부담 비율</div>
+        </div>
+      </div>
+
+      <!-- 7. 중개보수 -->
+      <div class="gallery-item" onclick="openModal('modal-broker')">
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="ps-bar"><span class="ps-time">9:41</span><span class="ps-icons">▌▌▌ ●</span></div>
+            <div class="ps-appbar">중개보수 계산</div>
+            <div class="ps-body">
+              <div class="ps-input">
+                <div class="ps-label">거래 유형</div>
+                <div class="ps-val">매매</div>
+              </div>
+              <div class="ps-input">
+                <div class="ps-label">거래 금액</div>
+                <div class="ps-val">5억원</div>
+              </div>
+              <div class="ps-cta">계산하기</div>
+              <div class="ps-result">
+                <div class="ps-r-title">계산 결과</div>
+                <div class="ps-rrow"><span class="rk">적용 요율</span><span class="rv">0.4%</span></div>
+                <div class="ps-rrow"><span class="rk">중개보수 상한</span><span class="rv red">200만원</span></div>
+              </div>
+              <table class="ps-table" style="margin-top:4px">
+                <tr><th>거래금액</th><th>요율</th></tr>
+                <tr><td>2억~9억</td><td class="rt">0.4%</td></tr>
+                <tr><td>9억~12억</td><td class="rt">0.5%</td></tr>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="gc">
+          <div class="gc-icon">🏢</div>
+          <div class="gc-title">중개보수 계산</div>
+          <div class="gc-desc">법정 상한 요율로 보수 즉시 확인</div>
+        </div>
+      </div>
+
+      <!-- 8. 취득세 -->
+      <div class="gallery-item" onclick="openModal('modal-acquire')">
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="ps-bar"><span class="ps-time">9:41</span><span class="ps-icons">▌▌▌ ●</span></div>
+            <div class="ps-appbar">취득세 계산</div>
+            <div class="ps-body">
+              <div class="ps-input">
+                <div class="ps-label">취득 가액</div>
+                <div class="ps-val">6억원</div>
+              </div>
+              <div class="ps-input">
+                <div class="ps-label">보유 주택 수</div>
+                <div class="ps-val">1주택 (무주택 → 취득)</div>
+              </div>
+              <div class="ps-cta">계산하기</div>
+              <div class="ps-result">
+                <div class="ps-r-title">계산 결과</div>
+                <div class="ps-rrow"><span class="rk">취득세 (1%)</span><span class="rv blue">600만원</span></div>
+                <div class="ps-rrow"><span class="rk">지방교육세</span><span class="rv">60만원</span></div>
+                <div class="ps-rrow"><span class="rk">총 납부세액</span><span class="rv red">660만원</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="gc">
+          <div class="gc-icon">🧾</div>
+          <div class="gc-title">취득세 계산</div>
+          <div class="gc-desc">주택 수 · 가액별 취득세 즉시 계산</div>
+        </div>
+      </div>
+
+    </div><!-- /gallery-track -->
+  </div><!-- /gallery-section -->
+
+  <!-- Features -->
+  <section>
+    <div class="section-label">기능</div>
+    <div class="section-title">8가지 주거비 계산기</div>
+    <div class="section-desc">복잡한 부동산 비용을 공식 없이 계산하세요. 카드를 눌러 계산 방법을 확인하세요.</div>
+    <div class="feature-grid">
+      <div class="feature-card" onclick="openModal('modal-jeonse-rent')">
+        <div class="icon">⚖️</div>
+        <h3>전세 vs 월세 비교</h3>
+        <p>대출 이자·기회비용까지 고려한 실질 월 비용을 비교해요.</p>
+        <div class="more-hint">자세히 보기 →</div>
+      </div>
+      <div class="feature-card" onclick="openModal('modal-semi-rent')">
+        <div class="icon">🔄</div>
+        <h3>반전세 계산</h3>
+        <p>전월세 전환율로 월세 적정성을 확인해요.</p>
+        <div class="more-hint">자세히 보기 →</div>
+      </div>
+      <div class="feature-card" onclick="openModal('modal-loan')">
+        <div class="icon">🏦</div>
+        <h3>대출이자 계산</h3>
+        <p>월 이자와 총 이자를 빠르게 계산해요.</p>
+        <div class="more-hint">자세히 보기 →</div>
+      </div>
+      <div class="feature-card" onclick="openModal('modal-monthly')">
+        <div class="icon">📊</div>
+        <h3>월 고정비 계산</h3>
+        <p>주거비·관리비·통신비 등 8개 항목을 한눈에 정리해요.</p>
+        <div class="more-hint">자세히 보기 →</div>
+      </div>
+      <div class="feature-card" onclick="openModal('modal-tax')">
+        <div class="icon">💰</div>
+        <h3>연말정산 세액공제</h3>
+        <p>월세 공제·전세대출 절세 혜택을 간이 계산해요.</p>
+        <div class="more-hint">자세히 보기 →</div>
+      </div>
+      <div class="feature-card" onclick="openModal('modal-dsr')">
+        <div class="icon">📉</div>
+        <h3>DSR/DTI 계산</h3>
+        <p>소득 대비 대출 상환 부담을 비율로 확인해요.</p>
+        <div class="more-hint">자세히 보기 →</div>
+      </div>
+      <div class="feature-card" onclick="openModal('modal-broker')">
+        <div class="icon">🏢</div>
+        <h3>중개보수 계산</h3>
+        <p>매매·임대차 중개보수 상한을 빠르게 확인해요.</p>
+        <div class="more-hint">자세히 보기 →</div>
+      </div>
+      <div class="feature-card" onclick="openModal('modal-acquire')">
+        <div class="icon">🧾</div>
+        <h3>취득세 계산</h3>
+        <p>취득가액·보유 주택 수로 간이 취득세를 계산해요.</p>
+        <div class="more-hint">자세히 보기 →</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────────── MODALS ──────────────── -->
+
+  <!-- 1. 전세 vs 월세 비교 -->
+  <div class="modal-overlay" id="modal-jeonse-rent" onclick="closeOnOverlay(event, this)">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-header-left">
+          <div class="big-icon">⚖️</div>
+          <div>
+            <h2>전세 vs 월세 비교</h2>
+            <div class="subtitle">기회비용까지 반영한 실질 월 비용 비교</div>
+          </div>
+        </div>
+        <button class="modal-close" onclick="closeModal('modal-jeonse-rent')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="diagram">
+          <div class="diagram-title">계산 구조</div>
+          <div class="compare-cols">
+            <div class="compare-col jeonse">
+              <div class="col-title">🏠 전세 월 비용</div>
+              <div class="cost-item"><span>대출 이자</span><span>대출금 × 연이율 ÷ 12</span></div>
+              <div class="cost-item"><span>자기자본 기회비용</span><span>자기자본 × 예금이율 ÷ 12</span></div>
+              <div class="cost-item"><span>=</span><span style="color:#1d4ed8">실질 월 비용</span></div>
+            </div>
+            <div class="compare-col rent">
+              <div class="col-title">🏢 월세 월 비용</div>
+              <div class="cost-item"><span>월세</span><span>납부 월세</span></div>
+              <div class="cost-item"><span>관리비</span><span>월 관리비</span></div>
+              <div class="cost-item"><span>보증금 기회비용</span><span>보증금 × 예금이율 ÷ 12</span></div>
+              <div class="cost-item"><span>=</span><span style="color:#be185d">실질 월 비용</span></div>
+            </div>
+          </div>
+          <div style="text-align:center; font-size:13px; color:var(--text-secondary); margin-top:8px;">두 값을 비교하여 더 유리한 선택을 안내합니다</div>
+        </div>
+        <div class="example-box">
+          <div class="ex-label">예시 — 전세 3억 (대출 1억 4%), 월세 보증금 5천만 + 월세 100만</div>
+          <div class="ex-row"><span class="ex-key">전세 대출이자 (월)</span><span class="ex-val">333,333원</span></div>
+          <div class="ex-row"><span class="ex-key">전세 자기자본 기회비용 (월, 예금 3.5%)</span><span class="ex-val">583,333원</span></div>
+          <div class="ex-row"><span class="ex-key">전세 실질 월 비용</span><span class="ex-val highlight">916,667원</span></div>
+          <div class="ex-row" style="margin-top:8px"><span class="ex-key">월세 + 관리비 + 보증금 기회비용</span><span class="ex-val">1,000,000 + α원</span></div>
+          <div class="ex-row"><span class="ex-key">→ 이 조건에서는</span><span class="ex-val highlight">전세가 유리</span></div>
+        </div>
+        <div class="disclaimer">※ 결과는 참고용입니다. 실제 계약 전 전문가에게 확인하세요.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. 반전세 계산 -->
+  <div class="modal-overlay" id="modal-semi-rent" onclick="closeOnOverlay(event, this)">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-header-left">
+          <div class="big-icon">🔄</div>
+          <div>
+            <h2>반전세 계산</h2>
+            <div class="subtitle">전월세 전환율로 월세 적정성 확인</div>
+          </div>
+        </div>
+        <button class="modal-close" onclick="closeModal('modal-semi-rent')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="diagram">
+          <div class="diagram-title">계산 원리</div>
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
+            <div style="background:#fff; border:1px solid var(--border); border-radius:10px; padding:10px 14px; font-size:13px; font-weight:600;">전세 보증금<br><span style="font-size:18px; color:#1d4ed8">5억</span></div>
+            <div style="font-size:20px; color:#6b7280">→</div>
+            <div style="background:#fff; border:1px solid var(--border); border-radius:10px; padding:10px 14px; font-size:13px; font-weight:600;">반전세 보증금<br><span style="font-size:18px; color:#be185d">2억</span></div>
+            <div style="font-size:20px; color:#6b7280">+</div>
+            <div style="background:#fce7f3; border:1px solid #fbcfe8; border-radius:10px; padding:10px 14px; font-size:13px; font-weight:600;">월세<br><span style="font-size:18px; color:#be185d">?</span></div>
+          </div>
+          <div class="formula-box">
+            적정 월세 <span class="op">=</span> (전세보증금 − 월세보증금) <span class="op">×</span> 전환율 <span class="op">÷</span> 12
+          </div>
+          <div style="font-size:12px; color:var(--text-secondary); text-align:center;">전환율: 법정 상한 = 기준금리 + 2%p (현재 약 5~6%)</div>
+        </div>
+        <div class="example-box">
+          <div class="ex-label">예시 — 전세 5억 → 반전세 보증금 2억, 전환율 5%</div>
+          <div class="ex-row"><span class="ex-key">보증금 차액</span><span class="ex-val">3억원</span></div>
+          <div class="ex-row"><span class="ex-key">적정 월세</span><span class="ex-val highlight">3억 × 5% ÷ 12 = 125만원</span></div>
+          <div class="ex-row"><span class="ex-key">실제 요구 월세가 125만 초과라면</span><span class="ex-val danger">전환율 초과</span></div>
+        </div>
+        <div class="disclaimer">※ 전환율 상한은 「주택임대차보호법」 기준이며 주기적으로 변경될 수 있습니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. 대출이자 계산 -->
+  <div class="modal-overlay" id="modal-loan" onclick="closeOnOverlay(event, this)">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-header-left">
+          <div class="big-icon">🏦</div>
+          <div>
+            <h2>대출이자 계산</h2>
+            <div class="subtitle">단리 방식 월 이자 · 총 이자 계산</div>
+          </div>
+        </div>
+        <button class="modal-close" onclick="closeModal('modal-loan')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="diagram">
+          <div class="diagram-title">계산 공식 (단리 · 이자만 납부)</div>
+          <div class="formula-box">
+            월 이자 <span class="op">=</span> 대출금 <span class="op">×</span> 연이율 <span class="op">÷</span> 12
+          </div>
+          <div class="formula-box" style="margin-top:8px">
+            총 이자 <span class="op">=</span> 월 이자 <span class="op">×</span> 대출 기간(개월)
+          </div>
+          <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:10px; padding:12px 14px; margin-top:12px; font-size:12px; color:#92400e; line-height:1.6;">
+            💡 이 계산기는 <b>이자만 납부</b>하는 방식(거치식)입니다.<br>
+            원리금 균등 상환(원금+이자를 함께 갚는 방식)과는 결과가 다릅니다.
+          </div>
+        </div>
+        <div class="example-box">
+          <div class="ex-label">예시 — 대출금 2억, 연이율 4.5%, 24개월</div>
+          <div class="ex-row"><span class="ex-key">월 이자</span><span class="ex-val highlight">200,000,000 × 4.5% ÷ 12 = 750,000원</span></div>
+          <div class="ex-row"><span class="ex-key">24개월 총 이자</span><span class="ex-val danger">750,000 × 24 = 18,000,000원</span></div>
+        </div>
+        <div class="disclaimer">※ 실제 대출 조건에 따라 결과가 다를 수 있습니다. 계약 전 금융기관에 확인하세요.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. 월 고정비 계산 -->
+  <div class="modal-overlay" id="modal-monthly" onclick="closeOnOverlay(event, this)">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-header-left">
+          <div class="big-icon">📊</div>
+          <div>
+            <h2>월 고정비 계산</h2>
+            <div class="subtitle">8가지 지출 항목 합계 · 연간 환산</div>
+          </div>
+        </div>
+        <button class="modal-close" onclick="closeModal('modal-monthly')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="diagram">
+          <div class="diagram-title">입력 항목</div>
+          <div class="cat-grid">
+            <div class="cat-item"><div class="cat-icon">🏠</div><div class="cat-name">주거비</div></div>
+            <div class="cat-item"><div class="cat-icon">🔧</div><div class="cat-name">관리비</div></div>
+            <div class="cat-item"><div class="cat-icon">📱</div><div class="cat-name">통신비</div></div>
+            <div class="cat-item"><div class="cat-icon">🚌</div><div class="cat-name">교통비</div></div>
+            <div class="cat-item"><div class="cat-icon">🛡️</div><div class="cat-name">보험료</div></div>
+            <div class="cat-item"><div class="cat-icon">📺</div><div class="cat-name">구독료</div></div>
+            <div class="cat-item"><div class="cat-icon">🍽️</div><div class="cat-name">식비</div></div>
+            <div class="cat-item"><div class="cat-icon">📦</div><div class="cat-name">기타</div></div>
+          </div>
+          <div class="formula-box" style="margin-top:4px">
+            월 합계 <span class="op">=</span> 8개 항목 합산 &nbsp;|&nbsp; 연간 <span class="op">=</span> 월 합계 <span class="op">×</span> 12
+          </div>
+        </div>
+        <div class="example-box">
+          <div class="ex-label">예시 입력값</div>
+          <div class="ex-row"><span class="ex-key">주거비 (전세이자 등)</span><span class="ex-val">750,000원</span></div>
+          <div class="ex-row"><span class="ex-key">관리비 + 통신비 + 교통비</span><span class="ex-val">300,000원</span></div>
+          <div class="ex-row"><span class="ex-key">보험료 + 구독료 + 식비 + 기타</span><span class="ex-val">650,000원</span></div>
+          <div class="ex-row"><span class="ex-key">월 합계</span><span class="ex-val highlight">1,700,000원</span></div>
+          <div class="ex-row"><span class="ex-key">연간 총 지출</span><span class="ex-val danger">20,400,000원</span></div>
+        </div>
+        <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:12px 14px; font-size:12px; color:#166534; margin-top:12px; line-height:1.6;">
+          💡 빠른 입력 버튼으로 +100만 / -100만 / +10만 단위로 빠르게 조정할 수 있어요.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. 연말정산 세액공제 -->
+  <div class="modal-overlay" id="modal-tax" onclick="closeOnOverlay(event, this)">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-header-left">
+          <div class="big-icon">💰</div>
+          <div>
+            <h2>연말정산 세액공제</h2>
+            <div class="subtitle">월세 · 전세대출 절세 혜택 간이 계산</div>
+          </div>
+        </div>
+        <button class="modal-close" onclick="closeModal('modal-tax')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="diagram">
+          <div class="diagram-title">월세 세액공제</div>
+          <table class="info-table" style="margin-bottom:0">
+            <tr><th>총급여</th><th>공제율</th><th>한도 (연 750만)</th></tr>
+            <tr><td>5,500만원 이하</td><td class="rate-ok">17%</td><td>최대 127.5만원 환급</td></tr>
+            <tr><td>5,500만 ~ 8,000만원</td><td class="rate-ok">15%</td><td>최대 112.5만원 환급</td></tr>
+            <tr><td>8,000만원 초과</td><td class="rate">공제 불가</td><td>—</td></tr>
+          </table>
+        </div>
+        <div class="diagram" style="margin-top:0">
+          <div class="diagram-title">전세대출 소득공제</div>
+          <div class="formula-box">
+            공제금액 <span class="op">=</span> 원리금 상환액 <span class="op">×</span> 40%  (한도 연 300만원)
+          </div>
+          <div style="font-size:12px; color:var(--text-secondary); text-align:center;">무주택 세대주 · 국민주택 규모(85㎡) 이하 조건 충족 시</div>
+        </div>
+        <div class="example-box">
+          <div class="ex-label">예시 — 총급여 4,500만, 월세 60만 × 12개월 = 720만</div>
+          <div class="ex-row"><span class="ex-key">공제 대상 금액 (한도 750만)</span><span class="ex-val">7,200,000원</span></div>
+          <div class="ex-row"><span class="ex-key">세액공제 (17%)</span><span class="ex-val highlight">1,224,000원 환급</span></div>
+        </div>
+        <div class="disclaimer">※ 공제 요건(무주택, 주택 규모, 소득 기준 등)에 따라 결과가 달라집니다. 국세청 홈택스에서 최종 확인하세요.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. DSR/DTI -->
+  <div class="modal-overlay" id="modal-dsr" onclick="closeOnOverlay(event, this)">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-header-left">
+          <div class="big-icon">📉</div>
+          <div>
+            <h2>DSR / DTI 계산</h2>
+            <div class="subtitle">소득 대비 대출 상환 부담 비율</div>
+          </div>
+        </div>
+        <button class="modal-close" onclick="closeModal('modal-dsr')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="diagram">
+          <div class="diagram-title">계산 공식</div>
+          <div class="formula-box">
+            DSR <span class="op">=</span> 모든 대출 연간 원리금 <span class="op">÷</span> 연소득 <span class="op">×</span> 100%
+          </div>
+          <div class="formula-box" style="margin-top:8px">
+            DTI <span class="op">=</span> (주담대 원리금 + 기타 이자) <span class="op">÷</span> 연소득 <span class="op">×</span> 100%
+          </div>
+          <div style="margin-top:14px;">
+            <div class="bar-group">
+              <div class="bar-label"><span>안전 구간</span><span style="color:#059669; font-weight:700">~40%</span></div>
+              <div class="bar-track"><div class="bar-fill" style="width:40%; background:linear-gradient(90deg,#34d399,#059669)"></div></div>
+            </div>
+            <div class="bar-group" style="margin-top:8px">
+              <div class="bar-label"><span>주의 구간</span><span style="color:#f59e0b; font-weight:700">40~60%</span></div>
+              <div class="bar-track"><div class="bar-fill" style="width:60%; background:linear-gradient(90deg,#34d399,#fbbf24)"></div></div>
+            </div>
+            <div class="bar-group" style="margin-top:8px">
+              <div class="bar-label"><span>위험 구간 (금융규제 초과)</span><span style="color:#dc2626; font-weight:700">60%+</span></div>
+              <div class="bar-track"><div class="bar-fill" style="width:80%; background:linear-gradient(90deg,#34d399,#fbbf24,#ef4444)"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="example-box">
+          <div class="ex-label">예시 — 연소득 6,000만, 주담대 연 상환 1,800만 + 신용대출 이자 300만</div>
+          <div class="ex-row"><span class="ex-key">DSR</span><span class="ex-val highlight">(1,800 + 300) ÷ 6,000 = 35%</span></div>
+          <div class="ex-row"><span class="ex-key">판정</span><span class="ex-val" style="color:#059669">✅ 안전 구간</span></div>
+        </div>
+        <div class="disclaimer">※ DSR 규제 기준(40%, 60%)은 금융당국 정책에 따라 변경될 수 있습니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. 중개보수 -->
+  <div class="modal-overlay" id="modal-broker" onclick="closeOnOverlay(event, this)">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-header-left">
+          <div class="big-icon">🏢</div>
+          <div>
+            <h2>중개보수 계산</h2>
+            <div class="subtitle">매매 · 임대차 법정 상한 요율</div>
+          </div>
+        </div>
+        <button class="modal-close" onclick="closeModal('modal-broker')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="diagram">
+          <div class="diagram-title">매매 중개보수 상한 요율</div>
+          <table class="info-table">
+            <tr><th>거래금액</th><th>상한 요율</th><th>한도액</th></tr>
+            <tr><td>5,000만원 미만</td><td class="rate">0.6%</td><td>25만원</td></tr>
+            <tr><td>5,000만 ~ 2억 미만</td><td class="rate">0.5%</td><td>80만원</td></tr>
+            <tr><td>2억 ~ 9억 미만</td><td class="rate">0.4%</td><td>없음</td></tr>
+            <tr><td>9억 ~ 12억 미만</td><td class="rate">0.5%</td><td>없음</td></tr>
+            <tr><td>12억 ~ 15억 미만</td><td class="rate">0.6%</td><td>없음</td></tr>
+            <tr><td>15억 이상</td><td class="rate">0.7%</td><td>없음</td></tr>
+          </table>
+        </div>
+        <div class="diagram" style="margin-top:8px">
+          <div class="diagram-title">임대차 중개보수 상한 요율</div>
+          <table class="info-table">
+            <tr><th>거래금액</th><th>상한 요율</th><th>한도액</th></tr>
+            <tr><td>5,000만원 미만</td><td class="rate">0.5%</td><td>20만원</td></tr>
+            <tr><td>5,000만 ~ 1억 미만</td><td class="rate">0.4%</td><td>30만원</td></tr>
+            <tr><td>1억 ~ 6억 미만</td><td class="rate">0.3%</td><td>없음</td></tr>
+            <tr><td>6억 ~ 12억 미만</td><td class="rate">0.4%</td><td>없음</td></tr>
+            <tr><td>12억 이상</td><td class="rate">0.5%</td><td>없음</td></tr>
+          </table>
+        </div>
+        <div class="formula-box" style="margin-top:4px">
+          중개보수 <span class="op">=</span> 거래금액 <span class="op">×</span> 요율 &nbsp;(한도액 초과 시 한도액 적용)
+        </div>
+        <div class="disclaimer">※ 2021년 10월 개정 기준입니다. 지자체 조례에 따라 달라질 수 있습니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. 취득세 -->
+  <div class="modal-overlay" id="modal-acquire" onclick="closeOnOverlay(event, this)">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-header-left">
+          <div class="big-icon">🧾</div>
+          <div>
+            <h2>취득세 계산</h2>
+            <div class="subtitle">주택 수 · 취득가액 · 지역별 세율</div>
+          </div>
+        </div>
+        <button class="modal-close" onclick="closeModal('modal-acquire')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="diagram">
+          <div class="diagram-title">취득세율 (주택 수 기준)</div>
+          <table class="info-table">
+            <tr><th>구분</th><th>취득가액</th><th>세율</th></tr>
+            <tr><td rowspan="3">1주택</td><td>6억 이하</td><td class="rate-ok">1%</td></tr>
+            <tr><td>6억 ~ 9억</td><td class="rate-ok">1 ~ 3% 구간</td></tr>
+            <tr><td>9억 초과</td><td class="rate">3%</td></tr>
+            <tr><td>2주택 (조정지역)</td><td>—</td><td class="rate">8%</td></tr>
+            <tr><td>2주택 (비조정)</td><td>—</td><td class="rate-ok">1 ~ 3%</td></tr>
+            <tr><td>3주택 이상 (조정)</td><td>—</td><td class="rate">12%</td></tr>
+            <tr><td>3주택 이상 (비조정)</td><td>—</td><td class="rate">8%</td></tr>
+            <tr><td>법인</td><td>—</td><td class="rate">12%</td></tr>
+          </table>
+        </div>
+        <div class="example-box">
+          <div class="ex-label">예시 — 무주택 → 6억 아파트 취득</div>
+          <div class="ex-row"><span class="ex-key">취득세 (1%)</span><span class="ex-val highlight">6,000,000원</span></div>
+          <div class="ex-row"><span class="ex-key">지방교육세 (취득세의 10%)</span><span class="ex-val">600,000원</span></div>
+          <div class="ex-row"><span class="ex-key">총 납부세액</span><span class="ex-val danger">6,600,000원</span></div>
+        </div>
+        <div class="disclaimer">※ 감면·중과 등 예외 규정이 있으며, 세법 개정으로 세율이 변경될 수 있습니다. 실제 계약 전 세무사에게 확인하세요.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ──────────────── END MODALS ──────────────── -->
+
+  <!-- Highlights -->
+  <div class="highlights">
+    <div class="highlights-inner">
+      <div class="section-label">부가 기능</div>
+      <div class="section-title">더 편리한 사용 경험</div>
+      <div class="section-desc">계산 결과를 저장하고, 공유하고, 언제든 다시 확인하세요.</div>
+      <div class="highlight-list">
+        <div class="highlight-item">
+          <div class="hi-icon">💾</div>
+          <div>
+            <h4>계산 결과 저장 &amp; 메모</h4>
+            <p>계산 후 저장하고 메모를 추가할 수 있어요. 최근계산 탭에서 언제든 다시 확인하세요.</p>
+          </div>
+        </div>
+        <div class="highlight-item">
+          <div class="hi-icon">📄</div>
+          <div>
+            <h4>PDF 내보내기 &amp; 공유</h4>
+            <p>계산 결과를 PDF 또는 이미지로 내보내 공유할 수 있어요.</p>
+          </div>
+        </div>
+        <div class="highlight-item">
+          <div class="hi-icon">🔔</div>
+          <div>
+            <h4>공지사항 푸시 알림</h4>
+            <p>새로운 기능이나 중요 공지를 푸시 알림으로 받아볼 수 있어요.</p>
+          </div>
+        </div>
+        <div class="highlight-item">
+          <div class="hi-icon">👤</div>
+          <div>
+            <h4>로그인 없이 사용 가능</h4>
+            <p>모든 계산 기능은 회원가입 없이 바로 사용할 수 있어요.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <section>
+    <div class="section-label">FAQ</div>
+    <div class="section-title">자주 묻는 질문</div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <h4>계산 결과는 정확한가요?</h4>
+        <p>모든 계산은 공개된 공식과 법령 기준을 따르지만, 결과는 참고용입니다. 실제 계약 전 전문가에게 확인하시기 바랍니다.</p>
+      </div>
+      <div class="faq-item">
+        <h4>로그인 없이 사용할 수 있나요?</h4>
+        <p>네. 모든 계산 기능은 비로그인으로도 이용할 수 있습니다. 계산 결과 클라우드 저장 및 기기 간 동기화는 로그인이 필요합니다.</p>
+      </div>
+      <div class="faq-item">
+        <h4>개인정보가 저장되나요?</h4>
+        <p>입력한 금액 등 계산 데이터는 기본적으로 기기 내에만 저장됩니다. 로그인 후 동기화 기능을 사용할 경우 서버에 저장될 수 있습니다. 자세한 내용은 <a href="privacy.html">개인정보처리방침</a>을 확인하세요.</p>
+      </div>
+      <div class="faq-item">
+        <h4>iOS와 Android 모두 지원하나요?</h4>
+        <p>네. iOS 14 이상과 Android API 21 이상 기기에서 사용할 수 있습니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <div class="contact-strip">
+    <h2>문의하기</h2>
+    <p>버그 신고, 기능 제안, 기타 문의는 이메일로 보내주세요.</p>
+    <a href="mailto:sungals@gmail.com">✉️ sungals@gmail.com</a>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>
+      © 2026 어떤비용. All rights reserved.
+      <a href="index.html">고객 지원</a>
+      <a href="privacy.html">개인정보처리방침</a>
+    </p>
+  </footer>
+
+  <script>
+    function openModal(id) {
+      document.getElementById(id).classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+      document.body.style.overflow = '';
+    }
+    function closeOnOverlay(e, overlay) {
+      if (e.target === overlay) {
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    }
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay.active').forEach(function(m) {
+          m.classList.remove('active');
+        });
+        document.body.style.overflow = '';
+      }
+    });
+  </script>
+</body>
+</html>

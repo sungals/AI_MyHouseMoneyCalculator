@@ -18,6 +18,7 @@ import '../../shared/widgets/help_icon.dart';
 import '../../shared/widgets/money_input_field.dart';
 import '../../shared/widgets/percent_input_field.dart';
 import '../../shared/widgets/primary_button.dart';
+import '../../shared/widgets/result_action_buttons.dart';
 import 'contract_renewal_controller.dart';
 
 class ContractRenewalScreen extends ConsumerStatefulWidget {
@@ -211,7 +212,7 @@ ${result.summaryText}
               const SizedBox(height: 12),
               const DisclaimerBox(),
               const SizedBox(height: 16),
-              _ResultActions(
+              ResultActionButtons(
                 onShare: _share,
                 onSave: _save,
                 onExportPdf: _exportPdf,
@@ -305,62 +306,12 @@ class _ResultCard extends StatelessWidget {
           const SizedBox(height: 12),
           const DisclaimerBox(),
           const SizedBox(height: 16),
-          _ResultActions(
+          ResultActionButtons(
             onShare: onShare,
             onSave: onSave,
             onExportPdf: onExportPdf,
           ),
         ],
-      ],
-    );
-  }
-}
-
-class _ResultActions extends StatelessWidget {
-  final VoidCallback onShare;
-  final VoidCallback onSave;
-  final VoidCallback onExportPdf;
-
-  const _ResultActions({
-    required this.onShare,
-    required this.onSave,
-    required this.onExportPdf,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: onShare,
-                icon: const Icon(Icons.share_outlined, size: 18),
-                label: const Text('공유'),
-                style: OutlinedButton.styleFrom(minimumSize: const Size(0, 48)),
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: ElevatedButton.icon(
-                onPressed: onSave,
-                icon: const Icon(Icons.bookmark_add_outlined, size: 18),
-                label: const Text('저장'),
-                style: ElevatedButton.styleFrom(minimumSize: const Size(0, 48)),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        OutlinedButton.icon(
-          onPressed: onExportPdf,
-          icon: const Icon(Icons.picture_as_pdf_outlined, size: 18),
-          label: const Text('PDF 내보내기'),
-          style: OutlinedButton.styleFrom(
-            minimumSize: const Size(double.infinity, 48),
-          ),
-        ),
       ],
     );
   }

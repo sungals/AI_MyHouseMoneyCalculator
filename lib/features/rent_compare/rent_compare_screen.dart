@@ -20,6 +20,7 @@ import '../../shared/widgets/help_icon.dart';
 import '../../shared/widgets/money_input_field.dart';
 import '../../shared/widgets/percent_input_field.dart';
 import '../../shared/widgets/primary_button.dart';
+import '../../shared/widgets/result_action_buttons.dart';
 import '../../shared/widgets/slider_rate_field.dart';
 import 'rent_compare_controller.dart';
 import 'widgets/rent_compare_result_card.dart';
@@ -348,39 +349,12 @@ class _RentCompareScreenState extends ConsumerState<RentCompareScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: _shareImage,
-                      icon: const Icon(Icons.image_outlined, size: 18),
-                      label: const Text('이미지 공유'),
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size(0, 48),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: _save,
-                      icon: const Icon(Icons.bookmark_add_outlined, size: 18),
-                      label: const Text('저장'),
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(0, 48),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              OutlinedButton.icon(
-                onPressed: _exportPdf,
-                icon: const Icon(Icons.picture_as_pdf_outlined, size: 18),
-                label: const Text('PDF 내보내기'),
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 48),
-                ),
+              ResultActionButtons(
+                onShare: _shareImage,
+                onSave: _save,
+                onExportPdf: _exportPdf,
+                shareLabel: '이미지 공유',
+                shareIcon: Icons.image_outlined,
               ),
             ] else ...[
               const SizedBox(height: 24),

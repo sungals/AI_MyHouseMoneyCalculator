@@ -15,6 +15,7 @@ import '../../shared/widgets/disclaimer_box.dart';
 import '../../shared/widgets/help_icon.dart';
 import '../../shared/widgets/money_input_field.dart';
 import '../../shared/widgets/primary_button.dart';
+import '../../shared/widgets/result_action_buttons.dart';
 import 'monthly_expense_controller.dart';
 
 class MonthlyExpenseScreen extends ConsumerStatefulWidget {
@@ -312,37 +313,10 @@ $breakdown
               const SizedBox(height: 12),
               const DisclaimerBox(),
               const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: _share,
-                      icon: const Icon(Icons.share_outlined, size: 18),
-                      label: const Text('공유'),
-                      style: OutlinedButton.styleFrom(
-                          minimumSize: const Size(0, 48)),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: _save,
-                      icon: const Icon(Icons.bookmark_add_outlined, size: 18),
-                      label: const Text('저장'),
-                      style: ElevatedButton.styleFrom(
-                          minimumSize: const Size(0, 48)),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              OutlinedButton.icon(
-                onPressed: _exportPdf,
-                icon: const Icon(Icons.picture_as_pdf_outlined, size: 18),
-                label: const Text('PDF 내보내기'),
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 48),
-                ),
+              ResultActionButtons(
+                onShare: _share,
+                onSave: _save,
+                onExportPdf: _exportPdf,
               ),
             ] else ...[
               const SizedBox(height: 24),

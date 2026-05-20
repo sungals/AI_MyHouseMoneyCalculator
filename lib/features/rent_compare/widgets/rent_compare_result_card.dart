@@ -5,6 +5,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../domain/entities/rent_compare_result.dart';
 import '../../../shared/widgets/disclaimer_box.dart';
+import '../../../shared/widgets/result_action_buttons.dart';
 
 class RentCompareResultCard extends StatelessWidget {
   final RentCompareResult result;
@@ -188,44 +189,13 @@ class RentCompareResultCard extends StatelessWidget {
         if (showActions &&
             (onSave != null || onShare != null || onExportPdf != null)) ...[
           const SizedBox(height: 16),
-          Row(
-            children: [
-              if (onShare != null)
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: onShare,
-                    icon: const Icon(Icons.image_outlined, size: 18),
-                    label: const Text('이미지 공유'),
-                    style: OutlinedButton.styleFrom(
-                      minimumSize: const Size(0, 48),
-                    ),
-                  ),
-                ),
-              if (onSave != null && onShare != null) const SizedBox(width: 10),
-              if (onSave != null)
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: onSave,
-                    icon: const Icon(Icons.bookmark_add_outlined, size: 18),
-                    label: const Text('저장'),
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(0, 48),
-                    ),
-                  ),
-                ),
-            ],
+          ResultActionButtons(
+            onShare: onShare,
+            onSave: onSave,
+            onExportPdf: onExportPdf,
+            shareLabel: '이미지 공유',
+            shareIcon: Icons.image_outlined,
           ),
-          if (onExportPdf != null) ...[
-            const SizedBox(height: 10),
-            OutlinedButton.icon(
-              onPressed: onExportPdf,
-              icon: const Icon(Icons.picture_as_pdf_outlined, size: 18),
-              label: const Text('PDF 내보내기'),
-              style: OutlinedButton.styleFrom(
-                minimumSize: const Size(double.infinity, 48),
-              ),
-            ),
-          ],
         ],
       ],
     );
