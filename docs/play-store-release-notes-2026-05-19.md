@@ -1,6 +1,6 @@
 # Play Store Release Notes
 
-Version: `1.0.1+12`
+Version: `1.0.1+13`
 
 ## Highlights
 
@@ -9,6 +9,7 @@ Version: `1.0.1+12`
 - Added jeonse fraud risk report with recommended actions and protection checklist.
 - Added AdMob test banner placement after result actions.
 - Added iOS/Android integration coverage for calculator flows and login gate behavior.
+- Updated onboarding tutorial screens with visual previews for advanced calculators.
 
 ## QA
 
