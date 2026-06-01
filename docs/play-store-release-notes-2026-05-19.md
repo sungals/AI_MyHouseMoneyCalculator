@@ -1,6 +1,6 @@
 # Play Store Release Notes
 
-Version: `1.0.1+13`
+Version: `1.0.1+15`
 
 ## Highlights
 
