@@ -30,6 +30,7 @@ class CalculationPdfExporter {
     Map<String, String> result = const {},
     Uint8List? resultImageBytes,
   }) async {
+    // PDF 패키지의 기본 폰트는 한글을 안정적으로 렌더링하지 못하므로 NanumGothic을 사용한다.
     final font = await PdfGoogleFonts.nanumGothicRegular();
     final bold = await PdfGoogleFonts.nanumGothicBold();
     final doc = pw.Document();
@@ -44,6 +45,7 @@ class CalculationPdfExporter {
         ),
         build: (context) {
           if (resultImageBytes != null) {
+            // 차트/복잡한 결과 화면은 key-value 재구성 대신 캡처 이미지를 그대로 넣는다.
             return [
               _header(title, bold),
               pw.SizedBox(height: 14),
@@ -89,6 +91,7 @@ class CalculationPdfExporter {
     await file.writeAsBytes(await doc.save(), flush: true);
     if (!context.mounted) return;
 
+    // share_plus는 파일 경로 기반 공유가 가장 호환성이 좋아 임시 파일로 저장한 뒤 전달한다.
     await ShareHelper.shareFiles(
       context,
       files: [

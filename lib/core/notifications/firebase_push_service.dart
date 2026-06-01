@@ -57,6 +57,7 @@ class FirebasePushService {
 
     try {
       _debugLog('Starting Firebase push service.');
+      // iOS는 권한 요청이 필요하고, Android도 OS 버전에 따라 런타임 권한이 필요할 수 있다.
       await _messaging.requestPermission(
         alert: true,
         badge: true,
@@ -78,6 +79,7 @@ class FirebasePushService {
 
       _tokenRefreshSub = _messaging.onTokenRefresh.listen(_registerToken);
       _onMessageSub = FirebaseMessaging.onMessage.listen((message) {
+        // foreground 수신은 시스템 알림으로 자동 표시되지 않으므로 로컬 알림으로 재표시한다.
         showRemoteMessage(message, notificationService: _notificationService);
       });
       _onMessageOpenedAppSub = FirebaseMessaging.onMessageOpenedApp.listen(
@@ -101,6 +103,7 @@ class FirebasePushService {
   Future<void> stop() async {
     _started = false;
 
+    // 계정 전환/로그아웃 후 중복 리스너가 남지 않도록 stream 구독을 모두 정리한다.
     await _tokenRefreshSub?.cancel();
     _tokenRefreshSub = null;
     await _onMessageSub?.cancel();
@@ -150,6 +153,7 @@ class FirebasePushService {
       _debugLog('Firebase push token registered.');
     } on PostgrestException catch (error, stackTrace) {
       if (error.code == '23505') {
+        // 같은 기기 토큰이 이미 있으면 user/platform/updated_at만 최신 상태로 갱신한다.
         await _client
             .from('push_tokens')
             .update(values)

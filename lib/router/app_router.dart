@@ -45,6 +45,8 @@ class AppRouter {
   static final router = GoRouter(
     initialLocation: '/',
     redirect: (context, state) {
+      // redirect는 앱 시작, 라우팅, refresh 때마다 호출된다.
+      // 여기서 사용하는 Hive box는 main.bootstrap에서 미리 열려 있어야 한다.
       final box = Hive.box('app_settings');
       final done = box.get('onboarding_done', defaultValue: false) as bool;
 
@@ -58,6 +60,7 @@ class AppRouter {
         final hasSession = Supabase.instance.client.auth.currentSession != null;
         final loc = state.matchedLocation;
 
+        // 관리자 화면은 클라이언트 라우팅과 Supabase RLS 양쪽에서 보호한다.
         if (loc.startsWith('/admin')) {
           if (!hasSession) return '/login';
           final email = Supabase.instance.client.auth.currentUser?.email;
@@ -89,6 +92,7 @@ class AppRouter {
             final container = ProviderScope.containerOf(context);
             final biometricEnabled =
                 container.read(biometricAuthServiceProvider).isEnabled;
+            // PIN/생체인증 성공 뒤 원래 접근하려던 상세 화면으로 복귀하기 위한 임시 저장소.
             _pendingRouteAfterUnlock = state.uri.toString();
             return biometricEnabled ? '/biometric-login' : '/pin-login';
           }

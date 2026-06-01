@@ -42,6 +42,8 @@ extension CalculationTypeLabel on CalculationType {
   }
 }
 
+// Hive type/field 번호는 기존 사용자 로컬 데이터와 호환된다.
+// 새 필드를 추가할 때 기존 번호를 바꾸거나 재사용하면 저장된 이력을 읽지 못할 수 있다.
 @HiveType(typeId: 0)
 class CalculationHistory extends HiveObject {
   @HiveField(0)
@@ -130,6 +132,8 @@ class CalculationHistory extends HiveObject {
   }
 
   String get featureType {
+    // Supabase에는 enum index 대신 안정적인 문자열 key를 저장한다.
+    // enum 순서가 바뀌는 리팩터링이 필요하면 이 매핑도 함께 migration해야 한다.
     const types = [
       'rent_compare',
       'semi_rent',
@@ -146,6 +150,7 @@ class CalculationHistory extends HiveObject {
   }
 
   Map<String, dynamic> toSupabaseJson() {
+    // user_id는 현재 Supabase 세션에서 결정되므로 RemoteStore에서 주입한다.
     return {
       'id': id,
       'feature_type': featureType,
@@ -162,6 +167,7 @@ class CalculationHistory extends HiveObject {
   }
 
   factory CalculationHistory.fromSupabaseJson(Map<String, dynamic> json) {
+    // 원격 DB의 feature_type 문자열을 앱 내부 enum index로 되돌린다.
     const featureTypeMap = {
       'rent_compare': 0,
       'semi_rent': 1,

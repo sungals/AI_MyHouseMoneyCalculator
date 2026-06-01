@@ -17,6 +17,7 @@ class PinNotifier extends StateNotifier<PinState> {
     final enabled = box.get(_keyEnabled, defaultValue: false) as bool;
     final requireAuthOnLaunch =
         box.get(_keyRequireAuthOnLaunch, defaultValue: true) as bool;
+    // 앱 재시작 보호가 켜져 있으면 초기 상태를 locked로 만들어 router가 PIN 화면으로 보낸다.
     return enabled
         ? PinEnabled(
             isUnlocked: !requireAuthOnLaunch,
@@ -26,6 +27,7 @@ class PinNotifier extends StateNotifier<PinState> {
   }
 
   static String _hash(String pin) {
+    // PIN 원문은 저장하지 않는다. 현재 앱 로컬 잠금용 단방향 해시만 보관한다.
     final bytes = utf8.encode(pin);
     return sha256.convert(bytes).toString();
   }
@@ -68,6 +70,7 @@ class PinNotifier extends StateNotifier<PinState> {
   void lockForLaunch() {
     final current = state;
     if (current is PinEnabled && current.requireAuthOnLaunch) {
+      // 실제 라우팅 전환은 AppRouter.redirect가 처리한다.
       state = current.copyWith(isUnlocked: false);
     }
   }

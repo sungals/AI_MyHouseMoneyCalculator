@@ -17,6 +17,8 @@ import 'router/app_router.dart';
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
 
+  // Background isolate는 main isolate의 Supabase/Hive 초기화 상태를 공유하지 않는다.
+  // 알림 표시 여부를 세션 기준으로 판단하기 위해 여기서 Supabase만 최소 초기화한다.
   await Supabase.initialize(
     url: SupabaseConfig.url,
     anonKey: SupabaseConfig.anonKey,
@@ -53,6 +55,8 @@ Future<void> bootstrap({
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
+  // Hive box는 router redirect, PIN, 설정 화면, 계산 이력에서 즉시 접근하므로
+  // runApp 전에 모두 열어 둔다.
   await Hive.initFlutter();
   if (!Hive.isAdapterRegistered(0)) {
     Hive.registerAdapter(CalculationHistoryAdapter());

@@ -41,12 +41,14 @@ class _AppState extends ConsumerState<App> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     switch (state) {
       case AppLifecycleState.resumed:
+        // 세션/PIN 상태가 바뀐 뒤 앱으로 돌아왔을 수 있으므로 redirect를 재평가한다.
         AppRouter.router.refresh();
       case AppLifecycleState.inactive:
         break;
       case AppLifecycleState.hidden:
       case AppLifecycleState.paused:
       case AppLifecycleState.detached:
+        // 백그라운드 진입 후 재개할 때 PIN/생체인증 게이트가 다시 동작하도록 잠근다.
         ref.read(pinNotifierProvider.notifier).lockForLaunch();
     }
   }

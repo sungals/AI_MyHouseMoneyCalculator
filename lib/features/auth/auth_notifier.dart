@@ -53,6 +53,8 @@ class AuthNotifier extends StateNotifier<AppAuthState> {
       }
 
       try {
+        // 로그인 직후 로컬에서 누적된 계산 이력을 서버와 맞춘다.
+        // 실패해도 로그인 자체는 유지되어야 하므로 에러를 삼킨다.
         await _repo.syncWithRemote();
       } catch (_) {
         // 동기화 실패가 로그인을 막지 않도록 로컬 데이터는 유지합니다.
@@ -113,6 +115,7 @@ class AuthNotifier extends StateNotifier<AppAuthState> {
 
   Future<void> signOut() async {
     try {
+      // 로그아웃 전에 FCM 토큰을 제거해서 다른 계정으로 공지가 섞이지 않게 한다.
       await _beforeSignOut?.call();
       await _client.auth.signOut();
       state = const AppAuthUnauthenticated();
@@ -125,6 +128,7 @@ class AuthNotifier extends StateNotifier<AppAuthState> {
     final previous = state;
     state = const AppAuthLoading();
     try {
+      // 계정 삭제는 Supabase RPC에서 auth 사용자와 관련 서버 데이터를 정리한다.
       await _beforeSignOut?.call();
       await _client.rpc('delete_account');
       await _repo.clearLocal();

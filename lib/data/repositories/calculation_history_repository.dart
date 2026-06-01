@@ -68,6 +68,7 @@ class CalculationHistoryRepository {
   Future<void> syncUnsynced() async {
     if (remoteStore == null) return;
     try {
+      // 삭제 tombstone을 먼저 원격에 반영해야 이후 fetch에서 되살아나지 않는다.
       final unsynced = localStore.getAllUnsynced();
       if (unsynced.isEmpty) return;
       final deleted = unsynced.where((item) => item.isDeleted).toList();
@@ -104,6 +105,7 @@ class CalculationHistoryRepository {
       final remoteItems = await remoteStore!.fetchAll();
       for (final remote in remoteItems) {
         final local = localStore.getById(remote.id);
+        // 단순 last-write-wins 정책. 충돌 UI는 두지 않고 updatedAt이 최신인 쪽을 채택한다.
         if (local == null || remote.updatedAt.isAfter(local.updatedAt)) {
           await localStore.save(
             remote.copyWith(syncedAt: DateTime.now(), clearDeletedAt: true),

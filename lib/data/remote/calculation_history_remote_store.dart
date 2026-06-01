@@ -6,6 +6,7 @@ class CalculationHistoryRemoteStore {
   static const _table = 'calculation_history';
 
   Future<List<CalculationHistory>> fetchAll() async {
+    // 미로그인 상태에서는 원격 저장소가 없는 것처럼 동작한다.
     final userId = _client.auth.currentUser?.id;
     if (userId == null) return [];
 
@@ -39,6 +40,7 @@ class CalculationHistoryRemoteStore {
     if (userId == null) return;
     if (items.isEmpty) return;
 
+    // 삭제 tombstone은 upsert하지 않는다. Repository.syncUnsynced에서 delete로 처리한다.
     final rows = items
         .where((h) => !h.isDeleted)
         .map((h) => {
