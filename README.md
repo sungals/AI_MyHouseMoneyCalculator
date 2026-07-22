@@ -71,6 +71,22 @@ flutter build appbundle --release
 build/app/outputs/bundle/release/app-release.aab
 ```
 
+AdMob 연결 후 광고를 활성화하려면 Android 릴리스 빌드 시 실제 광고 ID를 함께 전달합니다.
+
+```bash
+flutter build appbundle --release \
+  --dart-define=ADMOB_ANDROID_APP_ID=ca-app-pub-xxxxxxxxxxxxxxxx~yyyyyyyyyy \
+  --dart-define=ADMOB_ANDROID_RESULT_BANNER_ID=ca-app-pub-xxxxxxxxxxxxxxxx/yyyyyyyyyy
+```
+
+iOS 릴리스에서 광고를 활성화하려면 `ios/Flutter/Release.xcconfig`의
+`GAD_APPLICATION_IDENTIFIER`에 실제 iOS AdMob App ID를 넣고, 빌드 시 다음 값을 함께 전달합니다.
+
+```bash
+flutter build ipa --release \
+  --dart-define=ADMOB_IOS_RESULT_BANNER_ID=ca-app-pub-xxxxxxxxxxxxxxxx/yyyyyyyyyy
+```
+
 ## 프로젝트 구조
 
 ```text

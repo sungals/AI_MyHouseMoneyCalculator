@@ -20,6 +20,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   String _query = '';
   CalculationType? _selectedType;
   bool _favoritesOnly = false;
+  bool _isSyncing = false;
 
   @override
   void initState() {
@@ -56,6 +57,17 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     }
   }
 
+  Future<void> _retrySync() async {
+    setState(() => _isSyncing = true);
+    final repo = ref.read(calculationHistoryRepositoryProvider);
+    await repo.syncWithRemote();
+    if (!mounted) return;
+    setState(() {
+      _items = repo.getAll();
+      _isSyncing = false;
+    });
+  }
+
   List<CalculationHistory> get _filteredItems {
     final normalizedQuery = _query.trim().toLowerCase();
     return _items.where((item) {
@@ -74,108 +86,155 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final syncStatus = ref.watch(calculationHistorySyncStatusProvider);
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(title: const Text('최근계산')),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _items.isEmpty
-              ? const Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.bookmark_outline,
-                          size: 48, color: AppColors.textSecondary),
-                      SizedBox(height: 12),
-                      Text('저장된 계산이 없어요.', style: AppTextStyles.bodySecondary),
-                    ],
-                  ),
-                )
-              : Column(
+      body: Column(
+        children: [
+          if (syncStatus.state == HistorySyncState.failed)
+            Material(
+              color: AppColors.warning.withOpacity(0.12),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppConstants.horizontalPadding,
+                  vertical: 8,
+                ),
+                child: Row(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(
-                        AppConstants.horizontalPadding,
-                        8,
-                        AppConstants.horizontalPadding,
-                        10,
-                      ),
-                      child: TextField(
-                        onChanged: (value) => setState(() => _query = value),
-                        decoration: const InputDecoration(
-                          prefixIcon: Icon(Icons.search),
-                          hintText: '제목, 요약, 메모 검색',
-                        ),
+                    const Icon(
+                      Icons.cloud_off_outlined,
+                      size: 18,
+                      color: AppColors.warning,
+                    ),
+                    const SizedBox(width: 8),
+                    const Expanded(
+                      child: Text(
+                        '서버 동기화가 지연되고 있습니다. 로컬 저장은 완료되었습니다.',
+                        style: AppTextStyles.caption,
                       ),
                     ),
-                    SizedBox(
-                      height: 44,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppConstants.horizontalPadding,
-                        ),
-                        children: [
-                          FilterChip(
-                            label: const Text('즐겨찾기'),
-                            selected: _favoritesOnly,
-                            onSelected: (selected) =>
-                                setState(() => _favoritesOnly = selected),
-                          ),
-                          const SizedBox(width: 8),
-                          ChoiceChip(
-                            label: const Text('전체'),
-                            selected: _selectedType == null,
-                            onSelected: (_) =>
-                                setState(() => _selectedType = null),
-                          ),
-                          const SizedBox(width: 8),
-                          ...CalculationType.values.map(
-                            (type) => Padding(
-                              padding: const EdgeInsets.only(right: 8),
-                              child: ChoiceChip(
-                                label: Text(type.label),
-                                selected: _selectedType == type,
-                                onSelected: (_) =>
-                                    setState(() => _selectedType = type),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: _filteredItems.isEmpty
-                          ? const Center(
-                              child: Text(
-                                '조건에 맞는 저장 기록이 없습니다.',
-                                style: AppTextStyles.bodySecondary,
-                              ),
+                    TextButton(
+                      onPressed: _isSyncing ? null : _retrySync,
+                      child: _isSyncing
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
                             )
-                          : ListView.separated(
-                              padding: const EdgeInsets.all(
-                                AppConstants.horizontalPadding,
-                              ),
-                              itemCount: _filteredItems.length,
-                              separatorBuilder: (_, __) =>
-                                  const SizedBox(height: 10),
-                              itemBuilder: (context, index) {
-                                final item = _filteredItems[index];
-                                return _HistoryCard(
-                                  item: item,
-                                  onTap: () async {
-                                    await context.push('/history/${item.id}');
-                                    _load();
-                                  },
-                                  onDelete: () => _delete(item.id),
-                                  onToggleFavorite: () =>
-                                      _toggleFavorite(item.id),
-                                );
-                              },
-                            ),
+                          : const Text('다시 시도'),
                     ),
                   ],
                 ),
+              ),
+            ),
+          Expanded(
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : _items.isEmpty
+                    ? const Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.bookmark_outline,
+                                size: 48, color: AppColors.textSecondary),
+                            SizedBox(height: 12),
+                            Text('저장된 계산이 없어요.',
+                                style: AppTextStyles.bodySecondary),
+                          ],
+                        ),
+                      )
+                    : Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(
+                              AppConstants.horizontalPadding,
+                              8,
+                              AppConstants.horizontalPadding,
+                              10,
+                            ),
+                            child: TextField(
+                              onChanged: (value) =>
+                                  setState(() => _query = value),
+                              decoration: const InputDecoration(
+                                prefixIcon: Icon(Icons.search),
+                                hintText: '제목, 요약, 메모 검색',
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 44,
+                            child: ListView(
+                              scrollDirection: Axis.horizontal,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: AppConstants.horizontalPadding,
+                              ),
+                              children: [
+                                FilterChip(
+                                  label: const Text('즐겨찾기'),
+                                  selected: _favoritesOnly,
+                                  onSelected: (selected) =>
+                                      setState(() => _favoritesOnly = selected),
+                                ),
+                                const SizedBox(width: 8),
+                                ChoiceChip(
+                                  label: const Text('전체'),
+                                  selected: _selectedType == null,
+                                  onSelected: (_) =>
+                                      setState(() => _selectedType = null),
+                                ),
+                                const SizedBox(width: 8),
+                                ...CalculationType.values.map(
+                                  (type) => Padding(
+                                    padding: const EdgeInsets.only(right: 8),
+                                    child: ChoiceChip(
+                                      label: Text(type.label),
+                                      selected: _selectedType == type,
+                                      onSelected: (_) =>
+                                          setState(() => _selectedType = type),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: _filteredItems.isEmpty
+                                ? const Center(
+                                    child: Text(
+                                      '조건에 맞는 저장 기록이 없습니다.',
+                                      style: AppTextStyles.bodySecondary,
+                                    ),
+                                  )
+                                : ListView.separated(
+                                    padding: const EdgeInsets.all(
+                                      AppConstants.horizontalPadding,
+                                    ),
+                                    itemCount: _filteredItems.length,
+                                    separatorBuilder: (_, __) =>
+                                        const SizedBox(height: 10),
+                                    itemBuilder: (context, index) {
+                                      final item = _filteredItems[index];
+                                      return _HistoryCard(
+                                        item: item,
+                                        onTap: () async {
+                                          await context
+                                              .push('/history/${item.id}');
+                                          _load();
+                                        },
+                                        onDelete: () => _delete(item.id),
+                                        onToggleFavorite: () =>
+                                            _toggleFavorite(item.id),
+                                      );
+                                    },
+                                  ),
+                          ),
+                        ],
+                      ),
+          ),
+        ],
+      ),
     );
   }
 }

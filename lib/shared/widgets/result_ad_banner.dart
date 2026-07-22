@@ -25,7 +25,11 @@ class _ResultAdBannerState extends State<ResultAdBanner> {
   bool _isLoaded = false;
 
   bool get _canLoadAds =>
-      widget.enabled && !kIsWeb && (Platform.isAndroid || Platform.isIOS);
+      widget.enabled &&
+      !kIsWeb &&
+      (Platform.isAndroid || Platform.isIOS) &&
+      AdUnitIds.hasApplicationId &&
+      AdUnitIds.hasResultBannerId;
 
   @override
   void initState() {

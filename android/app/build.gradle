@@ -12,10 +12,34 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
 
+def dartDefines = [:]
+if (project.hasProperty('dart-defines')) {
+    project.property('dart-defines')
+        .split(',')
+        .each { encoded ->
+            def decoded = new String(Base64.decoder.decode(encoded), 'UTF-8')
+            def separatorIndex = decoded.indexOf('=')
+            if (separatorIndex > 0) {
+                dartDefines[decoded.substring(0, separatorIndex)] =
+                    decoded.substring(separatorIndex + 1)
+            }
+        }
+}
+
+def adMobApplicationId =
+    project.findProperty('ADMOB_ANDROID_APP_ID')
+        ?: dartDefines['ADMOB_ANDROID_APP_ID']
+        ?: ''
+if (!adMobApplicationId) {
+    // The Google Mobile Ads content provider starts before Dart. A blank app ID
+    // crashes the process even when ad requests are disabled in Flutter.
+    adMobApplicationId = 'ca-app-pub-3940256099942544~3347511713'
+}
+
 android {
     namespace = "com.sungals.houseMoneyCalculator"
     compileSdk = 35
-    ndkVersion = "25.1.8937393"
+    ndkVersion = "26.1.10909125"
 
     compileOptions {
         coreLibraryDesugaringEnabled true
@@ -42,13 +66,20 @@ android {
         targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        ndk {
+            debugSymbolLevel 'SYMBOL_TABLE'
+        }
+        manifestPlaceholders += [
+            adMobApplicationId: adMobApplicationId
+        ]
     }
 
     buildTypes {
         release {
             signingConfig = signingConfigs.release
-            minifyEnabled false
-            shrinkResources false
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 }

@@ -6,6 +6,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app.dart';
+import 'core/ads/ad_unit_ids.dart';
 import 'core/config/supabase_config.dart';
 import 'core/notifications/firebase_push_service.dart';
 import 'core/notifications/local_notification_service.dart';
@@ -49,7 +50,7 @@ Future<void> bootstrap({
   bool clearPersistedSession = false,
 }) async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (initializeAds) {
+  if (initializeAds && AdUnitIds.hasApplicationId) {
     await MobileAds.instance.initialize();
   }
   await Firebase.initializeApp();
