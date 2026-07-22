@@ -331,8 +331,8 @@ iOS는 인증서/프로비저닝 환경이 맞는 개발 머신에서 IPA archiv
 현재 Android 설정:
 
 - applicationId: `com.sungals.houseMoneyCalculator`
-- compileSdk: `35`
-- targetSdk: `35`
+- compileSdk: `36`
+- targetSdk: `36`
 - Java/Kotlin target: `17`
 - release signing: `android/key.properties` 기반
 

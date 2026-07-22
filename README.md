@@ -199,7 +199,7 @@ flutter pub run build_runner build --delete-conflicting-outputs
 Android:
 
 - applicationId: `com.sungals.houseMoneyCalculator`
-- compileSdk/targetSdk: `35`
+- compileSdk/targetSdk: `36`
 - release signing: `android/key.properties`
 - 체크리스트: `docs/play-console-checklist.md`
 

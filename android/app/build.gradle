@@ -38,7 +38,7 @@ if (!adMobApplicationId) {
 
 android {
     namespace = "com.sungals.houseMoneyCalculator"
-    compileSdk = 35
+    compileSdk = 36
     ndkVersion = "26.1.10909125"
 
     compileOptions {
@@ -63,7 +63,7 @@ android {
     defaultConfig {
         applicationId = "com.sungals.houseMoneyCalculator"
         minSdk = flutter.minSdkVersion
-        targetSdk = 35
+        targetSdk = 36
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         ndk {
