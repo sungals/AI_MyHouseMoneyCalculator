@@ -34,7 +34,7 @@
 | 상태 관리 | Riverpod |
 | 라우팅 | go_router |
 | 로컬 저장 | Hive |
-| 백엔드 | Firebase Authentication, Cloud Firestore, Cloud Storage |
+| 백엔드 | Firebase Authentication, Cloud Firestore |
 | 푸시 | Firebase Cloud Messaging, flutter_local_notifications |
 | 광고 | Google Mobile Ads |
 | 공유/PDF | share_plus, pdf, printing, screenshot |
@@ -122,7 +122,7 @@ lib/
 ```text
 test/                               # 단위/위젯 테스트
 integration_test/                   # 기기 기반 smoke/screenshot 테스트
-firebase/                           # Firestore/Storage 보안 규칙
+firebase/                           # Firestore 보안 규칙과 인덱스
 docs/                               # 배포/인수인계/스토어 문서
 scripts/                            # 배포, 스크린샷 보조 스크립트
 ```
@@ -193,16 +193,16 @@ flutter pub run build_runner build --delete-conflicting-outputs
 - 삭제는 원격 삭제 성공 시 로컬에서도 완전 삭제합니다.
 - 오프라인 삭제는 `deletedAt`으로 표시하고 다음 sync에서 처리합니다.
 
-Firestore/Storage 보안 규칙 배포:
+Firestore 보안 규칙 배포:
 
 ```bash
-firebase deploy --only firestore:rules,storage
+firebase deploy --only firestore:rules
 ```
 
 공지 목록 인덱스까지 함께 배포하려면 다음 명령을 사용합니다.
 
 ```bash
-firebase deploy --only firestore,storage
+firebase deploy --only firestore
 ```
 
 ## 배포
@@ -244,7 +244,7 @@ iOS:
 - App Store Connect API private key
 - `.appstore_credentials` 또는 `appstore_credentials`
 - Firebase/Google 콘솔 관리자 권한
-- Firestore/Storage 보안 규칙 관리 권한
+- Firestore 보안 규칙 관리 권한
 
 ## 릴리스 전 권장 체크
 

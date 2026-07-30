@@ -1,8 +1,5 @@
-import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 
 import '../models/notice.dart';
 
@@ -10,14 +7,11 @@ class NoticeRepository {
   NoticeRepository({
     FirebaseAuth? auth,
     FirebaseFirestore? firestore,
-    FirebaseStorage? storage,
   })  : _auth = auth ?? FirebaseAuth.instance,
-        _firestore = firestore ?? FirebaseFirestore.instance,
-        _storage = storage ?? FirebaseStorage.instance;
+        _firestore = firestore ?? FirebaseFirestore.instance;
 
   final FirebaseAuth _auth;
   final FirebaseFirestore _firestore;
-  final FirebaseStorage _storage;
 
   CollectionReference<Map<String, dynamic>> get _notices =>
       _firestore.collection('notices');
@@ -136,22 +130,5 @@ class NoticeRepository {
 
   Future<void> deleteNotice(String id) async {
     await _notices.doc(id).delete();
-  }
-
-  Future<String> uploadNoticeImage(String fileName, Uint8List bytes) async {
-    final path = 'notices/$fileName';
-    final ref = _storage.ref(path);
-    await ref.putData(
-      bytes,
-      SettableMetadata(contentType: _contentTypeFor(fileName)),
-    );
-    return ref.getDownloadURL();
-  }
-
-  String _contentTypeFor(String fileName) {
-    final lower = fileName.toLowerCase();
-    if (lower.endsWith('.png')) return 'image/png';
-    if (lower.endsWith('.webp')) return 'image/webp';
-    return 'image/jpeg';
   }
 }

@@ -36,7 +36,7 @@
 | 상태 관리 | Riverpod `StateNotifierProvider`, `Provider`, `FutureProvider`, `StreamProvider` |
 | 라우팅 | `go_router` |
 | 로컬 저장 | Hive |
-| 원격 백엔드 | Firebase Authentication, Cloud Firestore, Cloud Storage |
+| 원격 백엔드 | Firebase Authentication, Cloud Firestore |
 | 푸시 | Firebase Cloud Messaging, `flutter_local_notifications` |
 | 광고 | Google Mobile Ads |
 | 공유/문서 | `share_plus`, `pdf`, `printing`, `screenshot` |
@@ -114,7 +114,7 @@ lib/
 ```text
 test/                               # 단위/위젯 테스트
 integration_test/                   # 기기 기반 smoke/screenshot 테스트
-firebase/                           # Firestore/Storage 보안 규칙
+firebase/                           # Firestore 보안 규칙과 인덱스
 ```
 
 ## 5. 앱 초기화 흐름
@@ -230,7 +230,7 @@ Firestore 주요 컬렉션:
 - `users/{uid}/calculation_history`
 - `users/{uid}/notice_reads`
 
-Firestore/Storage 보안 규칙은 Firebase Console에서 관리한다.
+Firestore 보안 규칙과 인덱스는 Firebase Console 또는 `firebase deploy --only firestore`로 관리한다.
 
 ## 9. 인증, PIN, 생체인증
 
@@ -268,7 +268,7 @@ PIN은 [pin_notifier.dart](../lib/features/auth/pin/pin_notifier.dart)에서 관
 
 - 관리자 이메일은 [app_constants.dart](../lib/core/constants/app_constants.dart)의 `adminEmail`이다.
 - `/admin/notices`에서 공지 목록, 생성, 수정, 삭제를 처리한다.
-- 공지 이미지는 Firebase Storage의 `notices/` 경로를 사용한다.
+- 공지 본문 이미지는 별도 외부 URL을 HTML에 직접 넣는 방식으로 처리한다. Firebase Storage는 Spark 무료 플랜 유지를 위해 사용하지 않는다.
 
 푸시:
 
@@ -369,7 +369,7 @@ bash scripts/distribute.sh
 
 ## 15. 환경/비밀값
 
-Firebase 클라이언트 설정은 Android/iOS Firebase 설정 파일에 포함되어 있다. 클라이언트 설정은 공개 키 성격이므로 실제 접근 제어는 Firestore/Storage 보안 규칙으로 보호해야 한다.
+Firebase 클라이언트 설정은 Android/iOS Firebase 설정 파일에 포함되어 있다. 클라이언트 설정은 공개 키 성격이므로 실제 접근 제어는 Firestore 보안 규칙으로 보호해야 한다.
 
 로컬에만 있어야 하는 값:
 
@@ -387,7 +387,7 @@ Firebase 클라이언트 설정은 Android/iOS Firebase 설정 파일에 포함�
 - 계산 로직은 가능한 `domain/calculators`에 순수 함수처럼 유지한다.
 - 화면에서 계산식을 직접 구현하지 않는다.
 - Hive 모델 필드 번호는 변경/재사용하지 않는다.
-- Firestore/Storage 구조 변경 시 보안 규칙과 인덱스를 함께 점검한다.
+- Firestore 구조 변경 시 보안 규칙과 인덱스를 함께 점검한다.
 - 로그인/비회원/오프라인 상태 모두에서 계산 저장이 막히지 않아야 한다.
 - 관리자 기능은 `adminEmail`과 Firebase 보안 규칙 양쪽에서 보호되어야 한다.
 - 새 기능 추가 시 사용자 가이드와 README의 기능 목록도 같이 갱신한다.
@@ -430,8 +430,8 @@ iOS export 오류:
 공지 관리가 막힐 때:
 
 - 로그인 이메일이 `AppConstants.adminEmail`과 같은지 확인
-- Firestore/Storage admin rule 확인
-- `notices`, Storage `notices/` 권한 확인
+- Firestore admin rule 확인
+- `notices` 권한 확인
 
 ## 18. 새 개발자 추천 온보딩 순서
 
@@ -440,5 +440,5 @@ iOS export 오류:
 3. `lib/main.dart`, `lib/app.dart`, `lib/router/app_router.dart`를 읽어 앱 시작 흐름을 파악한다.
 4. `lib/domain/calculators`의 계산 로직과 테스트를 함께 읽는다.
 5. `CalculationHistoryRepository`를 읽어 로컬/원격 저장 방식을 이해한다.
-6. Firebase Console에서 Firestore/Storage 구조와 보안 규칙을 확인한다.
+6. Firebase Console에서 Firestore 구조와 보안 규칙을 확인한다.
 7. 작은 계산기 기능 하나를 기준으로 `input -> calculator -> controller -> screen -> history save` 흐름을 따라간다.

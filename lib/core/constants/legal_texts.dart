@@ -112,7 +112,7 @@ class LegalTexts {
       LegalSection(
         title: '5. 제3자 서비스',
         paragraphs: [
-          'Firebase Authentication, Cloud Firestore, Cloud Storage: 계정 인증, 계산 기록 동기화, 공지 데이터와 이미지 저장을 위해 사용합니다.',
+          'Firebase Authentication, Cloud Firestore: 계정 인증, 계산 기록 동기화, 공지 데이터 저장을 위해 사용합니다.',
           'Firebase Cloud Messaging: 푸시 알림 토큰 발급 및 공지 알림 발송을 위해 사용합니다.',
         ],
       ),

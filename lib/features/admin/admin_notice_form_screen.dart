@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart'
     hide ImageSource;
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:uuid/uuid.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
@@ -72,48 +70,6 @@ class _AdminNoticeFormScreenState extends ConsumerState<AdminNoticeFormScreen>
       _isPublished = notice.isPublished;
       _publishedAt = notice.publishedAt;
     });
-  }
-
-  Future<void> _pickAndInsertImage() async {
-    final picker = ImagePicker();
-    final file = await picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 85,
-    );
-    if (file == null) return;
-
-    setState(() => _loading = true);
-    try {
-      final bytes = await file.readAsBytes();
-      final ext = file.name.split('.').last;
-      final fileName = '${const Uuid().v4()}.$ext';
-      final url = await ref
-          .read(noticeRepositoryProvider)
-          .uploadNoticeImage(fileName, bytes);
-
-      final tag = '\n<img src="$url" style="max-width:100%;" />\n';
-      final text = _htmlCtrl.text.trim().isEmpty
-          ? _plainTextToHtml(_bodyCtrl.text)
-          : _htmlCtrl.text;
-      final rawOffset = _htmlCtrl.selection.baseOffset;
-      final insertOffset =
-          rawOffset < 0 ? text.length : rawOffset.clamp(0, text.length);
-      final nextText =
-          text.substring(0, insertOffset) + tag + text.substring(insertOffset);
-
-      _htmlCtrl.value = TextEditingValue(
-        text: nextText,
-        selection: TextSelection.collapsed(offset: insertOffset + tag.length),
-      );
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('이미지 업로드 실패: $e')),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _loading = false);
-    }
   }
 
   Future<void> _pickDate() async {
@@ -245,20 +201,12 @@ class _AdminNoticeFormScreenState extends ConsumerState<AdminNoticeFormScreen>
                 (v == null || v.trim().isEmpty) ? '요약을 입력하세요' : null,
           ),
           const SizedBox(height: 16),
-          Row(
-            children: [
-              _sectionLabel('HTML 본문'),
-              const Spacer(),
-              TextButton.icon(
-                onPressed: _loading ? null : _pickAndInsertImage,
-                icon: const Icon(Icons.image_outlined, size: 18),
-                label: const Text('이미지 삽입'),
-              ),
-            ],
-          ),
+          _sectionLabel('HTML 본문'),
           TextFormField(
             controller: _htmlCtrl,
-            decoration: _inputDecoration('<p>내용을 입력하세요...</p>'),
+            decoration: _inputDecoration(
+              '<p>내용을 입력하세요...</p>\n<img src="https://..." />',
+            ),
             maxLines: 12,
             style: const TextStyle(fontFamily: 'monospace', fontSize: 13),
           ),
