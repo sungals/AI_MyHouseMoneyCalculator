@@ -192,7 +192,7 @@ void main() {
         expect(authNotifier.state, isA<AppAuthError>());
         expect(
           (authNotifier.state as AppAuthError).message,
-          'Invalid login credentials',
+          '이메일 또는 비밀번호를 확인해주세요.',
         );
       });
 
@@ -209,7 +209,7 @@ void main() {
         expect(authNotifier.state, isA<AppAuthError>());
         expect(
           (authNotifier.state as AppAuthError).message,
-          contains('Network error'),
+          '네트워크 연결을 확인한 뒤 다시 시도해주세요.',
         );
       });
 
@@ -229,7 +229,7 @@ void main() {
         expect(authNotifier.state, isA<AppAuthError>());
         expect(
           (authNotifier.state as AppAuthError).message,
-          'Sign in failed: No user ID returned',
+          '로그인을 완료할 수 없습니다. 잠시 후 다시 시도해주세요.',
         );
       });
 
@@ -339,7 +339,7 @@ void main() {
         expect(authNotifier.state, isA<AppAuthError>());
         expect(
           (authNotifier.state as AppAuthError).message,
-          'User already registered',
+          '이미 가입된 이메일입니다. 로그인하거나 비밀번호 찾기를 이용해주세요.',
         );
       });
 
@@ -363,7 +363,7 @@ void main() {
         expect(authNotifier.state, isA<AppAuthError>());
         expect(
           (authNotifier.state as AppAuthError).message,
-          'Sign up failed: No user returned',
+          '회원가입을 완료할 수 없습니다. 잠시 후 다시 시도해주세요.',
         );
       });
 

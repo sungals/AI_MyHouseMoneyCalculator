@@ -48,7 +48,7 @@ class AuthNotifier extends StateNotifier<AppAuthState> {
 
       final userId = response.user?.id;
       if (userId == null) {
-        state = const AppAuthError('Sign in failed: No user ID returned');
+        state = const AppAuthError('로그인을 완료할 수 없습니다. 잠시 후 다시 시도해주세요.');
         return;
       }
 
@@ -62,9 +62,9 @@ class AuthNotifier extends StateNotifier<AppAuthState> {
 
       state = AppAuthAuthenticated(userId);
     } on AuthException catch (e) {
-      state = AppAuthError(e.message);
+      state = AppAuthError(_messageForSignInError(e));
     } catch (e) {
-      state = AppAuthError(e.toString());
+      state = const AppAuthError('네트워크 연결을 확인한 뒤 다시 시도해주세요.');
     }
   }
 
@@ -80,7 +80,7 @@ class AuthNotifier extends StateNotifier<AppAuthState> {
 
       final user = response.user;
       if (user == null) {
-        state = const AppAuthError('Sign up failed: No user returned');
+        state = const AppAuthError('회원가입을 완료할 수 없습니다. 잠시 후 다시 시도해주세요.');
         return;
       }
 
@@ -96,9 +96,9 @@ class AuthNotifier extends StateNotifier<AppAuthState> {
 
       state = AppAuthAuthenticated(user.id);
     } on AuthException catch (e) {
-      state = AppAuthError(e.message);
+      state = AppAuthError(_messageForSignUpError(e));
     } catch (e) {
-      state = AppAuthError(e.toString());
+      state = const AppAuthError('네트워크 연결을 확인한 뒤 다시 시도해주세요.');
     }
   }
 
@@ -145,6 +145,35 @@ class AuthNotifier extends StateNotifier<AppAuthState> {
   String? get currentUserId => state is AppAuthAuthenticated
       ? (state as AppAuthAuthenticated).userId
       : null;
+
+  String _messageForSignInError(AuthException error) {
+    final message = error.message.toLowerCase();
+    if (message.contains('invalid login') ||
+        message.contains('invalid credentials') ||
+        message.contains('email not confirmed')) {
+      return '이메일 또는 비밀번호를 확인해주세요.';
+    }
+    if (message.contains('network') || message.contains('socket')) {
+      return '네트워크 연결을 확인한 뒤 다시 시도해주세요.';
+    }
+    return '로그인을 완료할 수 없습니다. 잠시 후 다시 시도해주세요.';
+  }
+
+  String _messageForSignUpError(AuthException error) {
+    final message = error.message.toLowerCase();
+    if (message.contains('already registered') ||
+        message.contains('already exists') ||
+        message.contains('user already')) {
+      return '이미 가입된 이메일입니다. 로그인하거나 비밀번호 찾기를 이용해주세요.';
+    }
+    if (message.contains('password')) {
+      return '비밀번호는 6자 이상으로 입력해주세요.';
+    }
+    if (message.contains('network') || message.contains('socket')) {
+      return '네트워크 연결을 확인한 뒤 다시 시도해주세요.';
+    }
+    return '회원가입을 완료할 수 없습니다. 잠시 후 다시 시도해주세요.';
+  }
 }
 
 final authNotifierProvider =

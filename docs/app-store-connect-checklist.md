@@ -61,9 +61,37 @@ GitHub Pages URL은 `docs/` 변경사항이 `main` 브랜치에 푸시되고 Pag
 
 ## 현재 앱 설정
 
-- 앱 버전: `1.0.2+24`
+- 앱 버전: `1.0.2+25`
 - iOS release AdMob App ID: `ios/Flutter/Release.xcconfig`의 `GAD_APPLICATION_IDENTIFIER`
 - 비회원 사용: 로그인 화면의 `로그인 없이 계속하기`로 홈 진입 가능
+
+## 심사 대응 노트
+
+2026년 7월 29일 App Review에서 `Guideline 2.1(a) - Performance - App Completeness`로 로그인 또는 계정 생성 시 에러 메시지가 표시된다는 지적을 받았다.
+
+재제출 전 확인:
+
+- Supabase Auth에서 App Review 전용 계정을 생성하고 이메일 인증 완료 상태로 둔다.
+- Supabase Auth URL Configuration의 redirect allow list에 `com.sungals.housemoneycalculator://login-callback/`가 포함되어 있는지 확인한다.
+- iOS release 빌드에서 `로그인 없이 계속하기`, 리뷰 계정 로그인, 신규 회원가입 이메일 인증 안내가 각각 정상 표시되는지 확인한다.
+- App Store Connect의 Review Notes에 리뷰 계정과 비회원 사용 경로를 명확히 적는다.
+
+Review Notes 예시:
+
+```text
+The app can be used without signing in.
+
+To use the app without an account:
+1. Launch the app.
+2. Tap "로그인 없이 계속하기".
+3. The main calculator screen opens.
+
+To test account features, please use the review account below:
+Email: appreview@example.com
+Password: ReviewPassword123!
+
+Account features are used for synced calculation history. If you create a new account, the app may ask for email verification before sign-in.
+```
 
 ## 현재 로컬 확인 결과
 

@@ -1,10 +1,10 @@
 # Play Console 배포 체크리스트
 
-기준 버전: `1.0.2+24`
+기준 버전: `1.0.2+25`
 
 ## 업로드 전 확인
 
-- `pubspec.yaml` 버전이 `1.0.2+24`인지 확인한다.
+- `pubspec.yaml` 버전이 `1.0.2+25`인지 확인한다.
 - Android 릴리스 번들이 생성되어 있는지 확인한다.
 - 산출물 경로: `build/app/outputs/bundle/release/app-release.aab`
 - 앱 서명 설정이 Play App Signing 기준과 충돌하지 않는지 확인한다.
