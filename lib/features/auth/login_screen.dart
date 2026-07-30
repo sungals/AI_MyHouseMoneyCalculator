@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../shared/widgets/primary_button.dart';
@@ -116,6 +117,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   void _navigateToHome(BuildContext ctx) {
     ctx.go('/');
+  }
+
+  Future<void> _continueWithoutLogin() async {
+    await Hive.box('app_settings').put('login_skipped', true);
+    if (!mounted) return;
+    _navigateToHome(context);
   }
 
   void _submit() {
@@ -299,6 +306,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
               if (!_isSignUp) ...[
                 const Divider(height: 32),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    onPressed: isLoading ? null : _continueWithoutLogin,
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 48),
+                    ),
+                    child: const Text('로그인 없이 계속하기'),
+                  ),
+                ),
+                const SizedBox(height: 12),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

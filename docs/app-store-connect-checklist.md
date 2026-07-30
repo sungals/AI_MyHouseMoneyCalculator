@@ -1,6 +1,6 @@
 # App Store Connect 제출 체크리스트
 
-최종 확인일: 2026년 5월 12일
+최종 확인일: 2026년 7월 30일
 
 ## URL
 
@@ -58,6 +58,12 @@ GitHub Pages URL은 `docs/` 변경사항이 `main` 브랜치에 푸시되고 Pag
 ```bash
 ./scripts/distribute.sh
 ```
+
+## 현재 앱 설정
+
+- 앱 버전: `1.0.2+24`
+- iOS release AdMob App ID: `ios/Flutter/Release.xcconfig`의 `GAD_APPLICATION_IDENTIFIER`
+- 비회원 사용: 로그인 화면의 `로그인 없이 계속하기`로 홈 진입 가능
 
 ## 현재 로컬 확인 결과
 

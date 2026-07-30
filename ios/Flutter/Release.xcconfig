@@ -1,4 +1,4 @@
 #include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"
 #include "Generated.xcconfig"
 // Replace this with the production iOS AdMob app ID before App Store release.
-GAD_APPLICATION_IDENTIFIER=
+GAD_APPLICATION_IDENTIFIER=ca-app-pub-8466696268316919~1342137874

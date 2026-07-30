@@ -1,7 +1,7 @@
 # 어떤비용 프로젝트 인수인계 문서
 
-최종 확인일: 2026-06-01  
-현재 앱 버전: `1.0.1+15`
+최종 확인일: 2026-07-30  
+현재 앱 버전: `1.0.2+24`
 
 ## 1. 프로젝트 개요
 
@@ -22,6 +22,7 @@
 - 취득세 계산
 - 계산 이력 저장, 메모, 즐겨찾기, 삭제
 - Supabase 로그인 및 계산 이력 동기화
+- 로그인 없이 계산 기능 사용
 - 공지사항 조회/읽음 처리/관리자 작성
 - Firebase Cloud Messaging 기반 공지 푸시
 - PIN/생체인증 잠금
@@ -151,6 +152,7 @@ supabase/functions/send-notice-push # 공지 푸시 Edge Function
 
 - 온보딩 완료 전에는 `/onboarding`으로 이동한다.
 - 온보딩 완료 후 로그인하지 않았고 `login_skipped`가 false이면 `/login`으로 이동한다.
+- 로그인 화면에서 `로그인 없이 계속하기`를 선택하면 Hive `app_settings`에 `login_skipped=true`를 저장하고 홈으로 이동한다.
 - `/admin/*` 경로는 Supabase 세션이 있어야 하며, 이메일이 `AppConstants.adminEmail`과 같아야 접근 가능하다.
 - 로그인 상태에서 PIN이 설정되어 있고 잠금 상태이면 `/biometric-login` 또는 `/pin-login`으로 보낸다.
 - 잠금 해제 후 원래 가려던 경로는 `consumePendingRouteAfterUnlock()`로 복원한다.
@@ -290,6 +292,8 @@ PIN은 [pin_notifier.dart](../lib/features/auth/pin/pin_notifier.dart)에서 관
 - AdMob 초기화는 `main.dart`에서 수행한다.
 - 광고 단위 ID는 `lib/core/ads/ad_unit_ids.dart`에서 관리한다.
 - 결과 화면 공통 광고 배너는 `shared/widgets/result_ad_banner.dart`를 사용한다.
+- iOS release 설정의 AdMob App ID는 `ios/Flutter/Release.xcconfig`의 `GAD_APPLICATION_IDENTIFIER`에 들어 있다.
+- AdMob `app-ads.txt` 호스팅용 Firebase Hosting 설정은 `FirebaseHost/`에 있다.
 
 공유/PDF:
 
@@ -337,6 +341,8 @@ iOS는 인증서/프로비저닝 환경이 맞는 개발 머신에서 IPA archiv
 - release signing: `android/key.properties` 기반
 
 버전은 `pubspec.yaml`의 `version: x.y.z+N`을 따른다.
+
+현재 로컬 기준 버전은 `1.0.2+24`이다.
 
 - `x.y.z`: versionName
 - `N`: versionCode

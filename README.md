@@ -2,7 +2,7 @@
 
 주거비와 생활금융 비용을 계산하고 저장/공유할 수 있는 Flutter 앱입니다.
 
-현재 버전: `1.0.1+15`
+현재 버전: `1.0.2+24`
 
 ## 주요 기능
 
@@ -20,6 +20,7 @@
 - 계산 이력 저장, 메모, 즐겨찾기, 삭제
 - 결과 공유 및 PDF 내보내기
 - Supabase 로그인 및 계산 이력 동기화
+- 로그인 없이 계산 기능 사용
 - 공지사항 조회/읽음 처리/관리자 작성
 - Firebase Cloud Messaging 공지 푸시
 - PIN/생체인증 잠금
@@ -79,8 +80,8 @@ flutter build appbundle --release \
   --dart-define=ADMOB_ANDROID_RESULT_BANNER_ID=ca-app-pub-xxxxxxxxxxxxxxxx/yyyyyyyyyy
 ```
 
-iOS 릴리스에서 광고를 활성화하려면 `ios/Flutter/Release.xcconfig`의
-`GAD_APPLICATION_IDENTIFIER`에 실제 iOS AdMob App ID를 넣고, 빌드 시 다음 값을 함께 전달합니다.
+iOS 릴리스의 AdMob App ID는 `ios/Flutter/Release.xcconfig`의
+`GAD_APPLICATION_IDENTIFIER`에 설정되어 있습니다. 배너 광고를 활성화하려면 빌드 시 다음 값을 함께 전달합니다.
 
 ```bash
 flutter build ipa --release \
@@ -147,6 +148,7 @@ scripts/                            # 배포, 스크린샷 보조 스크립트
 
 - 온보딩 미완료 사용자는 `/onboarding`으로 이동
 - 로그인하지 않았고 로그인 건너뛰기 상태가 아니면 `/login`으로 이동
+- 로그인 화면에서 `로그인 없이 계속하기`를 선택하면 `login_skipped`가 저장되고 홈으로 이동
 - 관리자 경로는 Supabase 로그인과 관리자 이메일을 확인
 - PIN 잠금 상태에서는 `/pin-login` 또는 `/biometric-login`으로 이동
 
