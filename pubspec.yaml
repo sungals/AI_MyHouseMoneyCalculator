@@ -2,7 +2,7 @@ name: house_money_calculator
 description: "전세, 월세, 반전세, 대출이자, 월 고정비를 계산하는 생활금융 계산 앱"
 publish_to: 'none'
 
-version: 1.0.2+25
+version: 1.0.2+26
 
 environment:
   sdk: ^3.5.1
@@ -24,7 +24,6 @@ dependencies:
   path_provider: ^2.1.3
   screenshot: ^3.0.0
   share_plus: ^9.0.0
-  supabase_flutter: ^2.5.0
   uuid: ^4.4.0
   flutter_local_notifications: ^19.5.0
   timezone: ^0.10.1
@@ -35,6 +34,9 @@ dependencies:
   flutter_widget_from_html: ^0.15.2
   image_picker: ^1.1.2
   google_mobile_ads: ^5.3.1
+  firebase_auth: ^5.2.0
+  cloud_firestore: ^5.4.0
+  firebase_storage: ^12.2.0
 
 dev_dependencies:
   flutter_test:

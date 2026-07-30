@@ -132,7 +132,7 @@ class CalculationHistory extends HiveObject {
   }
 
   String get featureType {
-    // Supabase에는 enum index 대신 안정적인 문자열 key를 저장한다.
+    // 원격 저장소에는 enum index 대신 안정적인 문자열 key를 저장한다.
     // enum 순서가 바뀌는 리팩터링이 필요하면 이 매핑도 함께 migration해야 한다.
     const types = [
       'rent_compare',
@@ -149,8 +149,7 @@ class CalculationHistory extends HiveObject {
     return types[typeIndex];
   }
 
-  Map<String, dynamic> toSupabaseJson() {
-    // user_id는 현재 Supabase 세션에서 결정되므로 RemoteStore에서 주입한다.
+  Map<String, dynamic> toRemoteJson() {
     return {
       'id': id,
       'feature_type': featureType,
@@ -166,7 +165,7 @@ class CalculationHistory extends HiveObject {
     };
   }
 
-  factory CalculationHistory.fromSupabaseJson(Map<String, dynamic> json) {
+  factory CalculationHistory.fromRemoteJson(Map<String, dynamic> json) {
     // 원격 DB의 feature_type 문자열을 앱 내부 enum index로 되돌린다.
     const featureTypeMap = {
       'rent_compare': 0,

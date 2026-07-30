@@ -1,63 +1,72 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 import '../models/calculation_history.dart';
 
 class CalculationHistoryRemoteStore {
-  SupabaseClient get _client => Supabase.instance.client;
-  static const _table = 'calculation_history';
+  CalculationHistoryRemoteStore({
+    FirebaseAuth? auth,
+    FirebaseFirestore? firestore,
+  })  : _auth = auth,
+        _firestore = firestore;
+
+  final FirebaseAuth? _auth;
+  final FirebaseFirestore? _firestore;
+
+  FirebaseAuth get _safeAuth => _auth ?? FirebaseAuth.instance;
+  FirebaseFirestore get _safeFirestore =>
+      _firestore ?? FirebaseFirestore.instance;
+
+  CollectionReference<Map<String, dynamic>>? get _collection {
+    final userId = _safeAuth.currentUser?.uid;
+    if (userId == null) return null;
+    return _safeFirestore
+        .collection('users')
+        .doc(userId)
+        .collection('calculation_history');
+  }
 
   Future<List<CalculationHistory>> fetchAll() async {
-    // 미로그인 상태에서는 원격 저장소가 없는 것처럼 동작한다.
-    final userId = _client.auth.currentUser?.id;
-    if (userId == null) return [];
+    final collection = _collection;
+    if (collection == null) return [];
 
-    final response = await _client
-        .from(_table)
-        .select()
-        .eq('user_id', userId)
-        .order('created_at', ascending: false);
+    final snapshot =
+        await collection.orderBy('created_at', descending: true).get();
 
-    return (response as List)
-        .map((json) => CalculationHistory.fromSupabaseJson(
-              Map<String, dynamic>.from(json as Map),
-            ))
+    return snapshot.docs
+        .map((doc) => CalculationHistory.fromRemoteJson(doc.data()))
         .toList();
   }
 
   Future<void> upsert(CalculationHistory history) async {
-    final userId = _client.auth.currentUser?.id;
-    if (userId == null) return;
+    final collection = _collection;
+    if (collection == null) return;
 
-    final json = {
-      ...history.toSupabaseJson(),
-      'user_id': userId,
-    };
-
-    await _client.from(_table).upsert(json);
+    await collection.doc(history.id).set(
+          history.toRemoteJson(),
+          SetOptions(merge: true),
+        );
   }
 
   Future<void> upsertMany(List<CalculationHistory> items) async {
-    final userId = _client.auth.currentUser?.id;
-    if (userId == null) return;
-    if (items.isEmpty) return;
+    final collection = _collection;
+    if (collection == null || items.isEmpty) return;
 
-    // 삭제 tombstone은 upsert하지 않는다. Repository.syncUnsynced에서 delete로 처리한다.
-    final rows = items
-        .where((h) => !h.isDeleted)
-        .map((h) => {
-              ...h.toSupabaseJson(),
-              'user_id': userId,
-            })
-        .toList();
-
-    if (rows.isEmpty) return;
-
-    await _client.from(_table).upsert(rows);
+    final batch = _safeFirestore.batch();
+    for (final item in items.where((h) => !h.isDeleted)) {
+      batch.set(
+        collection.doc(item.id),
+        item.toRemoteJson(),
+        SetOptions(merge: true),
+      );
+    }
+    await batch.commit();
   }
 
   Future<void> delete(String id) async {
-    final userId = _client.auth.currentUser?.id;
-    if (userId == null) return;
+    final collection = _collection;
+    if (collection == null) return;
 
-    await _client.from(_table).delete().eq('id', id).eq('user_id', userId);
+    await collection.doc(id).delete();
   }
 }

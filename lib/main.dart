@@ -1,13 +1,15 @@
+import 'dart:convert';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app.dart';
 import 'core/ads/ad_unit_ids.dart';
-import 'core/config/supabase_config.dart';
 import 'core/notifications/firebase_push_service.dart';
 import 'core/notifications/local_notification_service.dart';
 import 'data/local/calculation_history_store.dart';
@@ -18,15 +20,8 @@ import 'router/app_router.dart';
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
 
-  // Background isolate는 main isolate의 Supabase/Hive 초기화 상태를 공유하지 않는다.
-  // 알림 표시 여부를 세션 기준으로 판단하기 위해 여기서 Supabase만 최소 초기화한다.
-  await Supabase.initialize(
-    url: SupabaseConfig.url,
-    anonKey: SupabaseConfig.anonKey,
-  );
-
   // 백그라운드 isolate에서도 미인증 유저에게 알림 표시하지 않음
-  if (Supabase.instance.client.auth.currentSession == null) return;
+  if (FirebaseAuth.instance.currentUser == null) return;
 
   final notificationService = LocalNotificationService();
   await notificationService.initialize(
@@ -64,30 +59,27 @@ Future<void> bootstrap({
   }
   await Hive.openBox('app_settings');
   await Hive.openBox<CalculationHistory>(CalculationHistoryStore.boxName);
-  await Supabase.initialize(
-    url: SupabaseConfig.url,
-    anonKey: SupabaseConfig.anonKey,
-  );
 
   if (clearPersistedSession) {
-    await Supabase.instance.client.auth.signOut();
+    await FirebaseAuth.instance.signOut();
   }
 
   if (resetLoginSkipOnNoSession &&
-      Supabase.instance.client.auth.currentSession == null) {
+      FirebaseAuth.instance.currentUser == null) {
     await Hive.box('app_settings').put('login_skipped', false);
   }
 
   // 미인증 상태에서 이전 세션에서 등록된 stale 토큰을 DB에서 제거
   if (cleanupStalePushToken &&
-      Supabase.instance.client.auth.currentSession == null) {
+      FirebaseAuth.instance.currentUser == null) {
     try {
       final token = await FirebaseMessaging.instance.getToken();
       if (token != null) {
-        await Supabase.instance.client
-            .from('push_tokens')
+        final tokenId = base64Url.encode(utf8.encode(token));
+        await FirebaseFirestore.instance
+            .collection('push_tokens')
+            .doc(tokenId)
             .delete()
-            .eq('token', token)
             .timeout(const Duration(seconds: 5));
       }
     } catch (_) {}

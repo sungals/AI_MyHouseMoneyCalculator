@@ -1,7 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../core/constants/app_constants.dart';
 import '../features/onboarding/onboarding_screen.dart';
 import '../features/shared/main_shell.dart';
@@ -57,13 +57,13 @@ class AppRouter {
       if (done) {
         final loginSkipped =
             box.get('login_skipped', defaultValue: false) as bool;
-        final hasSession = Supabase.instance.client.auth.currentSession != null;
+        final hasSession = FirebaseAuth.instance.currentUser != null;
         final loc = state.matchedLocation;
 
-        // 관리자 화면은 클라이언트 라우팅과 Supabase RLS 양쪽에서 보호한다.
+        // 관리자 화면은 클라이언트 라우팅과 Firestore rules 양쪽에서 보호한다.
         if (loc.startsWith('/admin')) {
           if (!hasSession) return '/login';
-          final email = Supabase.instance.client.auth.currentUser?.email;
+          final email = FirebaseAuth.instance.currentUser?.email;
           if (email != AppConstants.adminEmail) return '/';
         }
 

@@ -1,7 +1,7 @@
 # 어떤비용 프로젝트 인수인계 문서
 
 최종 확인일: 2026-07-30  
-현재 앱 버전: `1.0.2+25`
+현재 앱 버전: `1.0.2+26`
 
 ## 1. 프로젝트 개요
 
@@ -21,7 +21,7 @@
 - 중개보수 계산
 - 취득세 계산
 - 계산 이력 저장, 메모, 즐겨찾기, 삭제
-- Supabase 로그인 및 계산 이력 동기화
+- Firebase 로그인 및 계산 이력 동기화
 - 로그인 없이 계산 기능 사용
 - 공지사항 조회/읽음 처리/관리자 작성
 - Firebase Cloud Messaging 기반 공지 푸시
@@ -36,7 +36,7 @@
 | 상태 관리 | Riverpod `StateNotifierProvider`, `Provider`, `FutureProvider`, `StreamProvider` |
 | 라우팅 | `go_router` |
 | 로컬 저장 | Hive |
-| 원격 백엔드 | Supabase Auth, Database, Storage, Edge Functions |
+| 원격 백엔드 | Firebase Authentication, Cloud Firestore, Cloud Storage |
 | 푸시 | Firebase Cloud Messaging, `flutter_local_notifications` |
 | 광고 | Google Mobile Ads |
 | 공유/문서 | `share_plus`, `pdf`, `printing`, `screenshot` |
@@ -85,12 +85,11 @@ iOS 배포는 [ios-deployment-guide.md](ios-deployment-guide.md)를 기준으로
 ```text
 lib/
 ├── app.dart                         # MaterialApp, 라우터, 오프라인 배너, 앱 생명주기 처리
-├── main.dart                        # Firebase, Supabase, Hive, AdMob, 알림 초기화
+├── main.dart                        # Firebase, Hive, AdMob, 알림 초기화
 ├── connectivity/                    # 네트워크 연결 상태
 ├── core/
 │   ├── ads/                         # AdMob 서비스와 광고 단위 ID
 │   ├── analytics/                   # 분석 서비스 placeholder
-│   ├── config/                      # Supabase URL/anon key
 │   ├── constants/                   # 앱 상수, 약관, 면책 문구
 │   ├── notifications/               # Firebase push, local notification, realtime notice
 │   ├── purchase/                    # 구매 서비스 placeholder
@@ -99,7 +98,7 @@ lib/
 ├── data/
 │   ├── local/                       # Hive 계산 이력 저장소
 │   ├── models/                      # CalculationHistory, Notice
-│   ├── remote/                      # Supabase 계산 이력 저장소
+│   ├── remote/                      # Firestore 계산 이력 저장소
 │   └── repositories/                # local/remote 조합 repository
 ├── domain/
 │   ├── calculators/                 # 순수 계산 로직
@@ -115,13 +114,7 @@ lib/
 ```text
 test/                               # 단위/위젯 테스트
 integration_test/                   # 기기 기반 smoke/screenshot 테스트
-```
-
-Supabase:
-
-```text
-supabase/migrations/                # DB/RLS/function/storage policy 마이그레이션
-supabase/functions/send-notice-push # 공지 푸시 Edge Function
+firebase/                           # Firestore/Storage 보안 규칙
 ```
 
 ## 5. 앱 초기화 흐름
@@ -137,10 +130,9 @@ supabase/functions/send-notice-push # 공지 푸시 Edge Function
 5. `CalculationHistoryAdapter` 등록
 6. `app_settings` 박스 열기
 7. `calculation_history` 박스 열기
-8. Supabase 초기화
-9. 미인증 상태에서 stale push token 정리
-10. 로컬 알림 서비스 초기화
-11. `ProviderScope`로 앱 실행
+8. 미인증 상태에서 stale push token 정리
+9. 로컬 알림 서비스 초기화
+10. `ProviderScope`로 앱 실행
 
 테스트에서는 `bootstrap()`의 옵션으로 광고/알림/session 초기화 동작을 일부 끌 수 있다.
 
@@ -153,7 +145,7 @@ supabase/functions/send-notice-push # 공지 푸시 Edge Function
 - 온보딩 완료 전에는 `/onboarding`으로 이동한다.
 - 온보딩 완료 후 로그인하지 않았고 `login_skipped`가 false이면 `/login`으로 이동한다.
 - 로그인 화면에서 `로그인 없이 계속하기`를 선택하면 Hive `app_settings`에 `login_skipped=true`를 저장하고 홈으로 이동한다.
-- `/admin/*` 경로는 Supabase 세션이 있어야 하며, 이메일이 `AppConstants.adminEmail`과 같아야 접근 가능하다.
+- `/admin/*` 경로는 Firebase 로그인 세션이 있어야 하며, 이메일이 `AppConstants.adminEmail`과 같아야 접근 가능하다.
 - 로그인 상태에서 PIN이 설정되어 있고 잠금 상태이면 `/biometric-login` 또는 `/pin-login`으로 보낸다.
 - 잠금 해제 후 원래 가려던 경로는 `consumePendingRouteAfterUnlock()`로 복원한다.
 
@@ -200,7 +192,7 @@ supabase/functions/send-notice-push # 공지 푸시 Edge Function
   - `CalculationType`
   - `label`
   - `featureType`
-  - `fromSupabaseJson()`의 `featureTypeMap`
+  - 원격 JSON 변환의 `featureTypeMap`
 - `lib/features/home/calculator_menu.dart`
 - `lib/router/app_router.dart`
 - `lib/features/settings/app_guide_screen.dart`
@@ -219,7 +211,7 @@ flutter pub run build_runner build --delete-conflicting-outputs
 저장소 구조:
 
 - `CalculationHistoryStore`: Hive 로컬 저장
-- `CalculationHistoryRemoteStore`: Supabase CRUD
+- `CalculationHistoryRemoteStore`: Firestore CRUD
 - `CalculationHistoryRepository`: 로컬 우선 저장, 원격 동기화, 충돌 처리
 
 저장 정책:
@@ -231,25 +223,25 @@ flutter pub run build_runner build --delete-conflicting-outputs
 - 오프라인 삭제는 `deletedAt`으로 tombstone 처리 후 이후 sync에서 원격 삭제한다.
 - 로그인 시 로컬 이력을 원격으로 migrate/sync한다.
 
-Supabase 주요 테이블:
+Firestore 주요 컬렉션:
 
-- `calculation_history`
 - `notices`
-- `notice_reads`
 - `push_tokens`
+- `users/{uid}/calculation_history`
+- `users/{uid}/notice_reads`
 
-관련 마이그레이션은 `supabase/migrations/`에 있다.
+Firestore/Storage 보안 규칙은 Firebase Console에서 관리한다.
 
 ## 9. 인증, PIN, 생체인증
 
-Supabase Auth는 [auth_notifier.dart](../lib/features/auth/auth_notifier.dart)에서 관리한다.
+Firebase Authentication은 [auth_notifier.dart](../lib/features/auth/auth_notifier.dart)에서 관리한다.
 
 지원 흐름:
 
 - 이메일 회원가입
 - 이메일 로그인
 - 로그아웃
-- 계정 삭제 RPC 호출
+- 계정 삭제
 - 비회원/로그인 건너뛰기 플래그
 - 로그인 성공 시 로컬 이력 원격 동기화
 
@@ -263,24 +255,24 @@ PIN은 [pin_notifier.dart](../lib/features/auth/pin/pin_notifier.dart)에서 관
 
 ## 10. 공지와 푸시
 
-공지 데이터는 Supabase `notices` 테이블에서 읽는다.
+공지 데이터는 Firestore `notices` 컬렉션에서 읽는다.
 
 사용자 기능:
 
 - 공지 목록 조회
 - 공지 상세 조회
 - 로그인 사용자의 읽음 상태 저장
-- Supabase realtime stream 기반 목록 갱신
+- Firestore snapshots 기반 목록 갱신
 
 관리자 기능:
 
 - 관리자 이메일은 [app_constants.dart](../lib/core/constants/app_constants.dart)의 `adminEmail`이다.
 - `/admin/notices`에서 공지 목록, 생성, 수정, 삭제를 처리한다.
-- 공지 이미지는 Supabase Storage bucket `notice-images`를 사용한다.
+- 공지 이미지는 Firebase Storage의 `notices/` 경로를 사용한다.
 
 푸시:
 
-- 앱 시작 후 로그인 상태면 `FirebasePushService.start()`가 FCM 토큰을 Supabase `push_tokens`에 등록한다.
+- 앱 시작 후 로그인 상태면 `FirebasePushService.start()`가 FCM 토큰을 Firestore `push_tokens`에 등록한다.
 - 로그아웃 시 push token 등록을 정리한다.
 - 백그라운드 알림 수신 시 미인증 사용자는 알림을 표시하지 않는다.
 - 공지 클릭 시 `AppRouter.openNoticeFromPush()`가 공지 상세 또는 목록으로 이동한다.
@@ -342,7 +334,7 @@ iOS는 인증서/프로비저닝 환경이 맞는 개발 머신에서 IPA archiv
 
 버전은 `pubspec.yaml`의 `version: x.y.z+N`을 따른다.
 
-현재 로컬 기준 버전은 `1.0.2+25`이다.
+현재 로컬 기준 버전은 `1.0.2+26`이다.
 
 - `x.y.z`: versionName
 - `N`: versionCode
@@ -377,7 +369,7 @@ bash scripts/distribute.sh
 
 ## 15. 환경/비밀값
 
-Supabase URL과 anon key는 [supabase_config.dart](../lib/core/config/supabase_config.dart)에 들어 있다. anon key는 클라이언트 공개 키 성격이지만, 권한은 반드시 Supabase RLS 정책으로 보호해야 한다.
+Firebase 클라이언트 설정은 Android/iOS Firebase 설정 파일에 포함되어 있다. 클라이언트 설정은 공개 키 성격이므로 실제 접근 제어는 Firestore/Storage 보안 규칙으로 보호해야 한다.
 
 로컬에만 있어야 하는 값:
 
@@ -386,7 +378,7 @@ Supabase URL과 anon key는 [supabase_config.dart](../lib/core/config/supabase_c
 - App Store Connect API private key
 - `.appstore_credentials` 또는 `appstore_credentials`
 - Google/Firebase 콘솔 관리 권한
-- Supabase service role key
+- Firebase service account key
 
 이 값들은 repository에 커밋하지 않는다.
 
@@ -395,9 +387,9 @@ Supabase URL과 anon key는 [supabase_config.dart](../lib/core/config/supabase_c
 - 계산 로직은 가능한 `domain/calculators`에 순수 함수처럼 유지한다.
 - 화면에서 계산식을 직접 구현하지 않는다.
 - Hive 모델 필드 번호는 변경/재사용하지 않는다.
-- Supabase 테이블 변경 시 migration과 RLS policy를 함께 작성한다.
+- Firestore/Storage 구조 변경 시 보안 규칙과 인덱스를 함께 점검한다.
 - 로그인/비회원/오프라인 상태 모두에서 계산 저장이 막히지 않아야 한다.
-- 관리자 기능은 `adminEmail`과 Supabase RLS 정책 양쪽에서 보호되어야 한다.
+- 관리자 기능은 `adminEmail`과 Firebase 보안 규칙 양쪽에서 보호되어야 한다.
 - 새 기능 추가 시 사용자 가이드와 README의 기능 목록도 같이 갱신한다.
 - 결과 화면에 저장/공유/PDF/광고 배치 패턴을 맞춘다.
 - 릴리스 전 `flutter analyze`, `flutter test`, Android AAB 또는 iOS archive를 확인한다.
@@ -432,14 +424,14 @@ iOS export 오류:
 
 - Firebase 설정 파일 존재 여부 확인
 - 사용자가 로그인 상태인지 확인
-- `push_tokens` 테이블에 토큰이 등록되어 있는지 확인
-- Supabase Edge Function 환경변수와 FCM 권한 확인
+- Firestore `push_tokens` 컬렉션에 토큰이 등록되어 있는지 확인
+- FCM 발송 서버 또는 Cloud Functions 권한 확인
 
 공지 관리가 막힐 때:
 
 - 로그인 이메일이 `AppConstants.adminEmail`과 같은지 확인
-- Supabase RLS admin policy 확인
-- `notices`, `notice-images` 권한 확인
+- Firestore/Storage admin rule 확인
+- `notices`, Storage `notices/` 권한 확인
 
 ## 18. 새 개발자 추천 온보딩 순서
 
@@ -448,5 +440,5 @@ iOS export 오류:
 3. `lib/main.dart`, `lib/app.dart`, `lib/router/app_router.dart`를 읽어 앱 시작 흐름을 파악한다.
 4. `lib/domain/calculators`의 계산 로직과 테스트를 함께 읽는다.
 5. `CalculationHistoryRepository`를 읽어 로컬/원격 저장 방식을 이해한다.
-6. Supabase migration을 읽어 서버 데이터 구조와 RLS를 확인한다.
+6. Firebase Console에서 Firestore/Storage 구조와 보안 규칙을 확인한다.
 7. 작은 계산기 기능 하나를 기준으로 `input -> calculator -> controller -> screen -> history save` 흐름을 따라간다.

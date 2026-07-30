@@ -15,9 +15,9 @@ class Notice {
     this.isPublished = true,
   });
 
-  factory Notice.fromJson(Map<String, dynamic> json) {
+  factory Notice.fromJson(Map<String, dynamic> json, {String? id}) {
     return Notice(
-      id: json['id'] as String,
+      id: id ?? json['id'] as String,
       title: json['title'] as String,
       body: json['body'] as String,
       contentHtml: json['content_html'] as String?,

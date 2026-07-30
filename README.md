@@ -2,7 +2,7 @@
 
 주거비와 생활금융 비용을 계산하고 저장/공유할 수 있는 Flutter 앱입니다.
 
-현재 버전: `1.0.2+25`
+현재 버전: `1.0.2+26`
 
 ## 주요 기능
 
@@ -19,7 +19,7 @@
 - 취득세 계산
 - 계산 이력 저장, 메모, 즐겨찾기, 삭제
 - 결과 공유 및 PDF 내보내기
-- Supabase 로그인 및 계산 이력 동기화
+- Firebase 로그인 및 계산 이력 동기화
 - 로그인 없이 계산 기능 사용
 - 공지사항 조회/읽음 처리/관리자 작성
 - Firebase Cloud Messaging 공지 푸시
@@ -34,7 +34,7 @@
 | 상태 관리 | Riverpod |
 | 라우팅 | go_router |
 | 로컬 저장 | Hive |
-| 백엔드 | Supabase Auth, Database, Storage, Edge Functions |
+| 백엔드 | Firebase Authentication, Cloud Firestore, Cloud Storage |
 | 푸시 | Firebase Cloud Messaging, flutter_local_notifications |
 | 광고 | Google Mobile Ads |
 | 공유/PDF | share_plus, pdf, printing, screenshot |
@@ -92,13 +92,12 @@ flutter build ipa --release \
 
 ```text
 lib/
-├── main.dart                        # Firebase, Supabase, Hive, AdMob, 알림 초기화
+├── main.dart                        # Firebase, Hive, AdMob, 알림 초기화
 ├── app.dart                         # MaterialApp, 라우터, 오프라인 배너, 생명주기 처리
 ├── connectivity/                    # 네트워크 연결 상태
 ├── core/
 │   ├── ads/                         # AdMob 서비스와 광고 단위 ID
 │   ├── analytics/                   # 분석 서비스
-│   ├── config/                      # Supabase 설정
 │   ├── constants/                   # 앱 상수, 약관, 면책 문구
 │   ├── notifications/               # FCM, 로컬 알림, 공지 realtime
 │   ├── purchase/                    # 구매 서비스
@@ -107,7 +106,7 @@ lib/
 ├── data/
 │   ├── local/                       # Hive 저장소
 │   ├── models/                      # CalculationHistory, Notice
-│   ├── remote/                      # Supabase 원격 저장소
+│   ├── remote/                      # Firestore 원격 저장소
 │   └── repositories/                # local/remote 조합 repository
 ├── domain/
 │   ├── calculators/                 # 순수 계산 로직
@@ -123,8 +122,7 @@ lib/
 ```text
 test/                               # 단위/위젯 테스트
 integration_test/                   # 기기 기반 smoke/screenshot 테스트
-supabase/migrations/                # Supabase DB/RLS/function/storage policy
-supabase/functions/send-notice-push # 공지 푸시 Edge Function
+firebase/                           # Firestore/Storage 보안 규칙
 docs/                               # 배포/인수인계/스토어 문서
 scripts/                            # 배포, 스크린샷 보조 스크립트
 ```
@@ -139,17 +137,16 @@ scripts/                            # 배포, 스크린샷 보조 스크립트
 2. AdMob 초기화
 3. Firebase 및 background message handler 초기화
 4. Hive 초기화 및 box open
-5. Supabase 초기화
-6. stale push token 정리
-7. 로컬 알림 서비스 초기화
-8. `ProviderScope`로 앱 실행
+5. stale push token 정리
+6. 로컬 알림 서비스 초기화
+7. `ProviderScope`로 앱 실행
 
 라우팅과 인증 게이트는 `lib/router/app_router.dart`에서 관리합니다.
 
 - 온보딩 미완료 사용자는 `/onboarding`으로 이동
 - 로그인하지 않았고 로그인 건너뛰기 상태가 아니면 `/login`으로 이동
 - 로그인 화면에서 `로그인 없이 계속하기`를 선택하면 `login_skipped`가 저장되고 홈으로 이동
-- 관리자 경로는 Supabase 로그인과 관리자 이메일을 확인
+- 관리자 경로는 Firebase 로그인과 관리자 이메일을 확인
 - PIN 잠금 상태에서는 `/pin-login` 또는 `/biometric-login`으로 이동
 
 ## 계산기 구현 패턴
@@ -164,7 +161,7 @@ features/<feature>/*_controller.dart
 features/<feature>/*_screen.dart
 ```
 
-화면은 입력값을 만들고 controller를 통해 계산합니다. 계산 결과는 `CalculationHistoryRepository`를 통해 Hive에 먼저 저장하고, Supabase 동기화가 가능하면 원격에도 저장합니다.
+화면은 입력값을 만들고 controller를 통해 계산합니다. 계산 결과는 `CalculationHistoryRepository`를 통해 Hive에 먼저 저장하고, Firebase 동기화가 가능하면 Firestore에도 저장합니다.
 
 새 계산기를 추가할 때는 다음 파일도 함께 확인해야 합니다.
 
@@ -185,16 +182,28 @@ flutter pub run build_runner build --delete-conflicting-outputs
 계산 이력은 로컬 우선 구조입니다.
 
 - `CalculationHistoryStore`: Hive 로컬 저장
-- `CalculationHistoryRemoteStore`: Supabase CRUD
+- `CalculationHistoryRemoteStore`: Firestore CRUD
 - `CalculationHistoryRepository`: 로컬 저장, 원격 동기화, 삭제 tombstone 처리
 
 원칙:
 
 - 계산 결과는 먼저 로컬에 저장합니다.
 - 원격 저장 실패는 계산/저장 흐름을 막지 않습니다.
-- 로그인 시 로컬 이력을 Supabase로 마이그레이션/동기화합니다.
+- 로그인 시 로컬 이력을 Firestore로 마이그레이션/동기화합니다.
 - 삭제는 원격 삭제 성공 시 로컬에서도 완전 삭제합니다.
 - 오프라인 삭제는 `deletedAt`으로 표시하고 다음 sync에서 처리합니다.
+
+Firestore/Storage 보안 규칙 배포:
+
+```bash
+firebase deploy --only firestore:rules,storage
+```
+
+공지 목록 인덱스까지 함께 배포하려면 다음 명령을 사용합니다.
+
+```bash
+firebase deploy --only firestore,storage
+```
 
 ## 배포
 
@@ -234,10 +243,8 @@ iOS:
 - `android/key.properties`
 - App Store Connect API private key
 - `.appstore_credentials` 또는 `appstore_credentials`
-- Supabase service role key
 - Firebase/Google 콘솔 관리자 권한
-
-Supabase anon key는 클라이언트 공개 키 성격이므로 앱에 포함되어 있습니다. 실제 접근 제어는 Supabase RLS policy로 보호해야 합니다.
+- Firestore/Storage 보안 규칙 관리 권한
 
 ## 릴리스 전 권장 체크
 

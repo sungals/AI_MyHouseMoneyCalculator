@@ -1,8 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/constants/disclaimer_texts.dart';
 import '../../core/theme/app_colors.dart';
@@ -22,7 +22,7 @@ class SettingsScreen extends ConsumerWidget {
     final authState = ref.watch(authNotifierProvider);
     final pinState = ref.watch(pinNotifierProvider);
     final isLoggedIn = authState is AppAuthAuthenticated;
-    final email = Supabase.instance.client.auth.currentUser?.email;
+    final email = FirebaseAuth.instance.currentUser?.email;
 
     return Scaffold(
       backgroundColor: AppColors.background,

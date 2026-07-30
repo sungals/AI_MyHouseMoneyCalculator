@@ -61,7 +61,7 @@ GitHub Pages URL은 `docs/` 변경사항이 `main` 브랜치에 푸시되고 Pag
 
 ## 현재 앱 설정
 
-- 앱 버전: `1.0.2+25`
+- 앱 버전: `1.0.2+26`
 - iOS release AdMob App ID: `ios/Flutter/Release.xcconfig`의 `GAD_APPLICATION_IDENTIFIER`
 - 비회원 사용: 로그인 화면의 `로그인 없이 계속하기`로 홈 진입 가능
 
@@ -71,8 +71,10 @@ GitHub Pages URL은 `docs/` 변경사항이 `main` 브랜치에 푸시되고 Pag
 
 재제출 전 확인:
 
-- Supabase Auth에서 App Review 전용 계정을 생성하고 이메일 인증 완료 상태로 둔다.
-- Supabase Auth URL Configuration의 redirect allow list에 `com.sungals.housemoneycalculator://login-callback/`가 포함되어 있는지 확인한다.
+- Firebase Authentication에서 App Review 전용 계정을 생성하고 이메일 인증 완료 상태로 둔다.
+- Firebase Authentication의 Email/Password provider가 활성화되어 있는지 확인한다.
+- Firestore/Storage 보안 규칙이 로그인 사용자와 관리자 이메일 기준으로 동작하는지 확인한다.
+- 필요 시 `firebase deploy --only firestore,storage`로 저장소의 보안 규칙과 인덱스를 배포한다.
 - iOS release 빌드에서 `로그인 없이 계속하기`, 리뷰 계정 로그인, 신규 회원가입 이메일 인증 안내가 각각 정상 표시되는지 확인한다.
 - App Store Connect의 Review Notes에 리뷰 계정과 비회원 사용 경로를 명확히 적는다.
 

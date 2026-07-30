@@ -9,7 +9,7 @@ void main() {
       expect(store, isNotNull);
     });
 
-    test('toSupabaseJson produces correct keys', () {
+    test('toRemoteJson produces correct keys', () {
       final history = CalculationHistory(
         id: 'abc',
         typeIndex: 0,
@@ -20,7 +20,7 @@ void main() {
         createdAt: DateTime.utc(2026, 4, 28),
         syncedAt: null,
       );
-      final json = history.toSupabaseJson();
+      final json = history.toRemoteJson();
       expect(json['feature_type'], equals('rent_compare'));
       expect(json['input_data'], equals({'a': 1}));
       expect(json['created_at'], contains('2026-04-28'));

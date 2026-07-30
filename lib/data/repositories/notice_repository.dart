@@ -1,93 +1,97 @@
 import 'dart:typed_data';
 
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 import '../models/notice.dart';
 
 class NoticeRepository {
-  NoticeRepository({SupabaseClient? client})
-      : _client = client ?? Supabase.instance.client;
+  NoticeRepository({
+    FirebaseAuth? auth,
+    FirebaseFirestore? firestore,
+    FirebaseStorage? storage,
+  })  : _auth = auth ?? FirebaseAuth.instance,
+        _firestore = firestore ?? FirebaseFirestore.instance,
+        _storage = storage ?? FirebaseStorage.instance;
 
-  final SupabaseClient _client;
+  final FirebaseAuth _auth;
+  final FirebaseFirestore _firestore;
+  final FirebaseStorage _storage;
+
+  CollectionReference<Map<String, dynamic>> get _notices =>
+      _firestore.collection('notices');
+
+  CollectionReference<Map<String, dynamic>>? get _readNotices {
+    final userId = _auth.currentUser?.uid;
+    if (userId == null) return null;
+    return _firestore.collection('users').doc(userId).collection('notice_reads');
+  }
 
   Future<List<Notice>> fetchNotices() async {
-    final rows = await _client
-        .from('notices')
-        .select()
-        .eq('is_published', true)
-        .order('published_at', ascending: false);
+    final snapshot = await _notices
+        .where('is_published', isEqualTo: true)
+        .orderBy('published_at', descending: true)
+        .get();
 
-    return (rows as List)
-        .map((row) => Notice.fromJson(row as Map<String, dynamic>))
+    return snapshot.docs
+        .map((doc) => Notice.fromJson(doc.data(), id: doc.id))
         .toList();
   }
 
   Future<Notice?> fetchNoticeById(String id) async {
-    final row = await _client
-        .from('notices')
-        .select()
-        .eq('id', id)
-        .eq('is_published', true)
-        .maybeSingle();
-
-    if (row == null) return null;
-    return Notice.fromJson(row);
+    final doc = await _notices.doc(id).get();
+    final data = doc.data();
+    if (!doc.exists || data == null) return null;
+    final notice = Notice.fromJson(data, id: doc.id);
+    if (!notice.isPublished) return null;
+    return notice;
   }
 
   Future<Notice?> fetchNoticeByIdForAdmin(String id) async {
-    final row =
-        await _client.from('notices').select().eq('id', id).maybeSingle();
-
-    if (row == null) return null;
-    return Notice.fromJson(row);
+    final doc = await _notices.doc(id).get();
+    final data = doc.data();
+    if (!doc.exists || data == null) return null;
+    return Notice.fromJson(data, id: doc.id);
   }
 
   Future<Set<String>> fetchReadNoticeIds() async {
-    final userId = _client.auth.currentUser?.id;
-    if (userId == null) return {};
+    final readNotices = _readNotices;
+    if (readNotices == null) return {};
 
-    final rows = await _client
-        .from('notice_reads')
-        .select('notice_id')
-        .eq('user_id', userId);
-
-    return (rows as List)
-        .map((row) => (row as Map<String, dynamic>)['notice_id'] as String)
-        .toSet();
+    final snapshot = await readNotices.get();
+    return snapshot.docs.map((doc) => doc.id).toSet();
   }
 
   Future<void> markAsRead(String noticeId) async {
-    final userId = _client.auth.currentUser?.id;
-    if (userId == null) return;
+    final readNotices = _readNotices;
+    if (readNotices == null) return;
 
-    await _client.from('notice_reads').upsert(
-      {
-        'notice_id': noticeId,
-        'user_id': userId,
-        'read_at': DateTime.now().toUtc().toIso8601String(),
-      },
-      onConflict: 'notice_id,user_id',
-    );
+    await readNotices.doc(noticeId).set({
+      'notice_id': noticeId,
+      'read_at': DateTime.now().toUtc().toIso8601String(),
+    }, SetOptions(merge: true));
   }
 
   Stream<List<Notice>> watchNotices() {
-    return _client
-        .from('notices')
-        .stream(primaryKey: ['id'])
-        .eq('is_published', true)
-        .order('published_at', ascending: false)
-        .map((rows) => rows.map(Notice.fromJson).toList());
+    return _notices
+        .where('is_published', isEqualTo: true)
+        .orderBy('published_at', descending: true)
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => Notice.fromJson(doc.data(), id: doc.id))
+              .toList(),
+        );
   }
 
   Future<List<Notice>> fetchAllNoticesForAdmin() async {
-    final rows = await _client
-        .from('notices')
-        .select()
-        .order('published_at', ascending: false)
-        .order('created_at', ascending: false);
+    final snapshot = await _notices
+        .orderBy('published_at', descending: true)
+        .get();
 
-    return (rows as List)
-        .map((row) => Notice.fromJson(row as Map<String, dynamic>))
+    return snapshot.docs
+        .map((doc) => Notice.fromJson(doc.data(), id: doc.id))
         .toList();
   }
 
@@ -98,12 +102,16 @@ class NoticeRepository {
     required DateTime publishedAt,
     required bool isPublished,
   }) async {
-    await _client.from('notices').insert({
+    final doc = _notices.doc();
+    await doc.set({
+      'id': doc.id,
       'title': title,
       'body': body,
       'content_html': contentHtml,
       'published_at': publishedAt.toUtc().toIso8601String(),
       'is_published': isPublished,
+      'created_at': DateTime.now().toUtc().toIso8601String(),
+      'updated_at': DateTime.now().toUtc().toIso8601String(),
     });
   }
 
@@ -115,26 +123,35 @@ class NoticeRepository {
     required DateTime publishedAt,
     required bool isPublished,
   }) async {
-    await _client.from('notices').update({
+    await _notices.doc(id).set({
+      'id': id,
       'title': title,
       'body': body,
       'content_html': contentHtml,
       'published_at': publishedAt.toUtc().toIso8601String(),
       'is_published': isPublished,
-    }).eq('id', id);
+      'updated_at': DateTime.now().toUtc().toIso8601String(),
+    }, SetOptions(merge: true));
   }
 
   Future<void> deleteNotice(String id) async {
-    await _client.from('notices').delete().eq('id', id);
+    await _notices.doc(id).delete();
   }
 
   Future<String> uploadNoticeImage(String fileName, Uint8List bytes) async {
     final path = 'notices/$fileName';
-    await _client.storage.from('notice-images').uploadBinary(
-          path,
-          bytes,
-          fileOptions: const FileOptions(upsert: true),
-        );
-    return _client.storage.from('notice-images').getPublicUrl(path);
+    final ref = _storage.ref(path);
+    await ref.putData(
+      bytes,
+      SettableMetadata(contentType: _contentTypeFor(fileName)),
+    );
+    return ref.getDownloadURL();
+  }
+
+  String _contentTypeFor(String fileName) {
+    final lower = fileName.toLowerCase();
+    if (lower.endsWith('.png')) return 'image/png';
+    if (lower.endsWith('.webp')) return 'image/webp';
+    return 'image/jpeg';
   }
 }

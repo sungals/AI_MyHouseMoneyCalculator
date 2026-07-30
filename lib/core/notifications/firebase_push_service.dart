@@ -1,12 +1,14 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer' as developer;
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'local_notification_service.dart';
 import '../../router/app_router.dart';
@@ -14,14 +16,17 @@ import '../../router/app_router.dart';
 class FirebasePushService {
   FirebasePushService({
     FirebaseMessaging? messaging,
-    SupabaseClient? client,
+    FirebaseAuth? auth,
+    FirebaseFirestore? firestore,
     required LocalNotificationService notificationService,
   })  : _messaging = messaging ?? FirebaseMessaging.instance,
-        _client = client ?? Supabase.instance.client,
+        _auth = auth ?? FirebaseAuth.instance,
+        _firestore = firestore ?? FirebaseFirestore.instance,
         _notificationService = notificationService;
 
   final FirebaseMessaging _messaging;
-  final SupabaseClient _client;
+  final FirebaseAuth _auth;
+  final FirebaseFirestore _firestore;
   final LocalNotificationService _notificationService;
 
   bool _started = false;
@@ -114,10 +119,10 @@ class FirebasePushService {
     try {
       final token = await _messaging.getToken();
       if (token != null) {
-        await _client
-            .from('push_tokens')
+        await _firestore
+            .collection('push_tokens')
+            .doc(_tokenId(token))
             .delete()
-            .eq('token', token)
             .timeout(const Duration(seconds: 10));
         _debugLog('Firebase push token deleted.');
       }
@@ -132,7 +137,7 @@ class FirebasePushService {
   }
 
   Future<void> _registerToken(String token) async {
-    final user = _client.auth.currentUser;
+    final user = _auth.currentUser;
     if (user == null) {
       _debugLog('Skipping token registration: user not authenticated.');
       return;
@@ -141,34 +146,17 @@ class FirebasePushService {
     final values = {
       'token': token,
       'platform': _platform,
-      'user_id': user.id,
+      'user_id': user.uid,
       'updated_at': DateTime.now().toUtc().toIso8601String(),
     };
 
     try {
-      await _client
-          .from('push_tokens')
-          .insert(values)
+      await _firestore
+          .collection('push_tokens')
+          .doc(_tokenId(token))
+          .set(values, SetOptions(merge: true))
           .timeout(const Duration(seconds: 10));
       _debugLog('Firebase push token registered.');
-    } on PostgrestException catch (error, stackTrace) {
-      if (error.code == '23505') {
-        // 같은 기기 토큰이 이미 있으면 user/platform/updated_at만 최신 상태로 갱신한다.
-        await _client
-            .from('push_tokens')
-            .update(values)
-            .eq('token', token)
-            .timeout(const Duration(seconds: 10));
-        _debugLog('Firebase push token refreshed.');
-        return;
-      }
-
-      developer.log(
-        'Failed to register Firebase push token.',
-        name: 'FirebasePushService',
-        error: error,
-        stackTrace: stackTrace,
-      );
     } on Object catch (error, stackTrace) {
       developer.log(
         'Failed to register Firebase push token.',
@@ -209,6 +197,10 @@ class FirebasePushService {
     if (Platform.isIOS) return 'ios';
     if (Platform.isMacOS) return 'macos';
     return 'unknown';
+  }
+
+  String _tokenId(String token) {
+    return base64Url.encode(utf8.encode(token));
   }
 
   void _debugLog(String message) {
