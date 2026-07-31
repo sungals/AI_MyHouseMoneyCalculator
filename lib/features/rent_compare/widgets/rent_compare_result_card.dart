@@ -78,7 +78,7 @@ class RentCompareResultCard extends StatelessWidget {
                 style: AppTextStyles.heading2.copyWith(color: diffColor),
               ),
               const SizedBox(height: 6),
-              const Text(
+              Text(
                 '전세와 월세의 실질 월 비용을 같은 기준으로 비교했어요.',
                 style: AppTextStyles.bodySecondary,
               ),
@@ -140,7 +140,7 @@ class RentCompareResultCard extends StatelessWidget {
               const SizedBox(height: 20),
               const Divider(),
               const SizedBox(height: 16),
-              const Text('비용 상세', style: AppTextStyles.label),
+              Text('비용 상세', style: AppTextStyles.label),
               const SizedBox(height: 12),
               _Row(
                 label: '전세 월 비용',
@@ -231,7 +231,7 @@ class _CostBarChart extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('월 비용 비교 그래프', style: AppTextStyles.label),
+          Text('월 비용 비교 그래프', style: AppTextStyles.label),
           const SizedBox(height: 8),
           SizedBox(
             height: 180,

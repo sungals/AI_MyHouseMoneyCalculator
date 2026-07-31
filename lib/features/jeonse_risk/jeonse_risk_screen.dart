@@ -427,25 +427,25 @@ class _ResultCard extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               if (result.warnings.isNotEmpty) ...[
-                const Text('주의 항목', style: AppTextStyles.label),
+                Text('주의 항목', style: AppTextStyles.label),
                 const SizedBox(height: 8),
                 ...result.warnings.map((item) => _Bullet(item, color: color)),
               ],
               const SizedBox(height: 12),
-              const Text('권장 조치', style: AppTextStyles.label),
+              Text('권장 조치', style: AppTextStyles.label),
               const SizedBox(height: 8),
               ...result.actionItems.map(
                 (item) => _Bullet(item, color: AppColors.primary),
               ),
               if (result.checklist.isNotEmpty) ...[
                 const SizedBox(height: 12),
-                const Text('추가 확인', style: AppTextStyles.label),
+                Text('추가 확인', style: AppTextStyles.label),
                 const SizedBox(height: 8),
                 ...result.checklist.map(
                     (item) => _Bullet(item, color: AppColors.textSecondary)),
               ],
               const SizedBox(height: 12),
-              const Text('보호 절차 체크리스트', style: AppTextStyles.label),
+              Text('보호 절차 체크리스트', style: AppTextStyles.label),
               const SizedBox(height: 8),
               ...result.protectionChecklist.map(
                 (item) => _Bullet(item, color: AppColors.positive),

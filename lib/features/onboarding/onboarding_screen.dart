@@ -299,14 +299,14 @@ class _ScenarioPreview extends StatelessWidget {
             color: const Color(0xFF2563EB).withOpacity(0.08),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: const Column(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('월 부담 최저', style: AppTextStyles.caption),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Text(
                 'A안 1,066,667원',
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.w800,
                   color: Color(0xFF2563EB),
                 ),
@@ -416,14 +416,14 @@ class _ResultPreview extends StatelessWidget {
             color: const Color(0xFF7C3AED).withOpacity(0.08),
             borderRadius: BorderRadius.circular(14),
           ),
-          child: const Column(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('반전세 계산 결과', style: AppTextStyles.caption),
-              SizedBox(height: 6),
+              const SizedBox(height: 6),
               Text(
                 '월세 18만원 높음',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
                   color: Color(0xFF7C3AED),
@@ -697,7 +697,7 @@ class _RiskScoreBar extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('위험 점수 62점', style: AppTextStyles.caption),
+        Text('위험 점수 62점', style: AppTextStyles.caption),
         const SizedBox(height: 6),
         ClipRRect(
           borderRadius: BorderRadius.circular(999),

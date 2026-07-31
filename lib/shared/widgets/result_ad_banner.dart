@@ -99,7 +99,7 @@ class _ResultAdBannerState extends State<ResultAdBanner> {
         ),
         child: Column(
           children: [
-            const Text('광고', style: AppTextStyles.caption),
+            Text('광고', style: AppTextStyles.caption),
             const SizedBox(height: 6),
             SizedBox(
               width: _bannerAd!.size.width.toDouble(),

@@ -227,12 +227,12 @@ class _IntroPanel extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(AppConstants.appName, style: AppTextStyles.heading2),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Text(
                       '계산부터 저장, 공유까지 한 흐름으로 사용하는 생활금융 계산 앱입니다.',
                       style: AppTextStyles.bodySecondary,
@@ -766,7 +766,7 @@ class _LoanInterestPreview extends StatelessWidget {
             color: AppColors.warning.withOpacity(0.07),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: const Column(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
@@ -776,7 +776,7 @@ class _LoanInterestPreview extends StatelessWidget {
                   _InfoChip(label: '단리(거치식)', color: AppColors.warning),
                 ],
               ),
-              SizedBox(height: 6),
+              const SizedBox(height: 6),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -1103,11 +1103,11 @@ class _LastPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('저장한 계산 활용', style: AppTextStyles.heading2),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         _GuidePanel(
           child: Column(
             children: [

@@ -156,7 +156,7 @@ class SettingsScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: AppColors.cardBorder),
               ),
-              child: const Text(
+              child: Text(
                 DisclaimerTexts.main,
                 style: AppTextStyles.disclaimer,
               ),

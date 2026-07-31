@@ -367,7 +367,7 @@ class _HistoryDetailScreenState extends ConsumerState<HistoryDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('결과 요약', style: AppTextStyles.label),
+                  Text('결과 요약', style: AppTextStyles.label),
                   const SizedBox(height: 8),
                   Text(item.summary, style: AppTextStyles.body),
                 ],
@@ -385,7 +385,7 @@ class _HistoryDetailScreenState extends ConsumerState<HistoryDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('메모', style: AppTextStyles.label),
+                  Text('메모', style: AppTextStyles.label),
                   const SizedBox(height: 12),
                   TextField(
                     controller: _memoController,
@@ -425,7 +425,7 @@ class _HistoryDetailScreenState extends ConsumerState<HistoryDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('계산 결과', style: AppTextStyles.label),
+                  Text('계산 결과', style: AppTextStyles.label),
                   const SizedBox(height: 12),
                   ...item.result.entries.map((e) => Padding(
                         padding: const EdgeInsets.only(bottom: 8),

@@ -109,7 +109,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                       color: AppColors.warning,
                     ),
                     const SizedBox(width: 8),
-                    const Expanded(
+                    Expanded(
                       child: Text(
                         '서버 동기화가 지연되고 있습니다. 로컬 저장은 완료되었습니다.',
                         style: AppTextStyles.caption,
@@ -133,7 +133,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : _items.isEmpty
-                    ? const Center(
+                    ? Center(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -201,7 +201,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                           ),
                           Expanded(
                             child: _filteredItems.isEmpty
-                                ? const Center(
+                                ? Center(
                                     child: Text(
                                       '조건에 맞는 저장 기록이 없습니다.',
                                       style: AppTextStyles.bodySecondary,

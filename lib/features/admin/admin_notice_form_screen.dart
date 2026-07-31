@@ -239,7 +239,7 @@ class _AdminNoticeFormScreenState extends ConsumerState<AdminNoticeFormScreen>
               const SizedBox(width: 12),
               Row(
                 children: [
-                  const Text('공개', style: AppTextStyles.body),
+                  Text('공개', style: AppTextStyles.body),
                   Switch(
                     value: _isPublished,
                     onChanged: (v) => setState(() => _isPublished = v),
@@ -279,7 +279,7 @@ class _AdminNoticeFormScreenState extends ConsumerState<AdminNoticeFormScreen>
             border: Border.all(color: AppColors.cardBorder),
           ),
           child: html.isEmpty
-              ? const Text('(HTML 내용 없음)', style: AppTextStyles.bodySecondary)
+              ? Text('(HTML 내용 없음)', style: AppTextStyles.bodySecondary)
               : HtmlWidget(
                   html,
                   textStyle: AppTextStyles.body.copyWith(height: 1.6),

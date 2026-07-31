@@ -169,7 +169,7 @@ class _ScenarioCompareScreenState extends State<ScenarioCompareScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 8),
-            const Text(
+            Text(
               '전세대출 금리를 A/B/C로 나눠 월 비용을 비교합니다.',
               style: AppTextStyles.bodySecondary,
             ),
@@ -179,7 +179,7 @@ class _ScenarioCompareScreenState extends State<ScenarioCompareScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('공통 조건', style: AppTextStyles.label),
+                  Text('공통 조건', style: AppTextStyles.label),
                   const SizedBox(height: 12),
                   MoneyInputField(
                     label: '전세 보증금',
@@ -245,7 +245,7 @@ class _ScenarioCompareScreenState extends State<ScenarioCompareScreen> {
                         setState(() => _depositInterestRate = value),
                   ),
                   const SizedBox(height: 24),
-                  const Text('비교할 전세대출 금리', style: AppTextStyles.label),
+                  Text('비교할 전세대출 금리', style: AppTextStyles.label),
                   const SizedBox(height: 12),
                   Row(
                     children: [

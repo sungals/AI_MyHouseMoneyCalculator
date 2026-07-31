@@ -143,7 +143,7 @@ class _TaxDeductionScreenState extends ConsumerState<TaxDeductionScreen> {
                   const SizedBox(height: 24),
                   const _SectionTitle('월세 세액공제'),
                   const SizedBox(height: 4),
-                  const Text(
+                  Text(
                     '총급여 5,500만원 이하 17% / 7,000만원 이하 15% / 초과 0%',
                     style: AppTextStyles.caption,
                   ),
@@ -160,7 +160,7 @@ class _TaxDeductionScreenState extends ConsumerState<TaxDeductionScreen> {
                   const SizedBox(height: 24),
                   const _SectionTitle('전세대출 원리금 소득공제'),
                   const SizedBox(height: 4),
-                  const Text(
+                  Text(
                     '연 상환액의 40% 소득공제, 연 400만원 한도',
                     style: AppTextStyles.caption,
                   ),
