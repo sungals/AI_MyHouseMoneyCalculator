@@ -57,3 +57,6 @@ appstore_credentials
 
 # Certificates & Keys
 Cer/
+
+# gen_l10n 생성물
+lib/l10n/gen/

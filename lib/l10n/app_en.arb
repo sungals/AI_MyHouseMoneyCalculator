@@ -1,0 +1,22 @@
+{
+  "@@locale": "en",
+
+  "appTitle": "Housing Cost Calculator",
+
+  "commonCancel": "Cancel",
+  "commonConfirm": "OK",
+  "commonSave": "Save",
+  "commonDelete": "Delete",
+  "commonClose": "Close",
+  "commonRetry": "Retry",
+  "commonError": "Something went wrong. Please try again in a moment.",
+
+  "settingsThemeLabel": "Theme",
+  "settingsThemeSystem": "Follow system",
+  "settingsThemeLight": "Light",
+  "settingsThemeDark": "Dark",
+  "settingsLanguageLabel": "Language",
+  "settingsLanguageSystem": "Follow system",
+  "settingsLanguageKorean": "한국어",
+  "settingsLanguageEnglish": "English"
+}

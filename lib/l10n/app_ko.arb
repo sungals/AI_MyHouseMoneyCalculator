@@ -1,0 +1,38 @@
+{
+  "@@locale": "ko",
+
+  "appTitle": "어떤비용",
+  "@appTitle": { "description": "앱 이름. 태스크 스위처에 표시" },
+
+  "commonCancel": "취소",
+  "@commonCancel": { "description": "다이얼로그 취소 버튼" },
+  "commonConfirm": "확인",
+  "@commonConfirm": { "description": "다이얼로그 확인 버튼" },
+  "commonSave": "저장",
+  "@commonSave": { "description": "저장 버튼" },
+  "commonDelete": "삭제",
+  "@commonDelete": { "description": "삭제 버튼" },
+  "commonClose": "닫기",
+  "@commonClose": { "description": "닫기 버튼" },
+  "commonRetry": "다시 시도",
+  "@commonRetry": { "description": "실패 후 재시도 버튼" },
+  "commonError": "오류가 발생했어요. 잠시 후 다시 시도해 주세요.",
+  "@commonError": { "description": "일반 오류 메시지" },
+
+  "settingsThemeLabel": "테마",
+  "@settingsThemeLabel": { "description": "테마 선택 항목 라벨" },
+  "settingsThemeSystem": "시스템 설정 따름",
+  "@settingsThemeSystem": { "description": "테마 옵션" },
+  "settingsThemeLight": "라이트",
+  "@settingsThemeLight": { "description": "테마 옵션" },
+  "settingsThemeDark": "다크",
+  "@settingsThemeDark": { "description": "테마 옵션" },
+  "settingsLanguageLabel": "언어",
+  "@settingsLanguageLabel": { "description": "언어 선택 항목 라벨" },
+  "settingsLanguageSystem": "시스템 설정 따름",
+  "@settingsLanguageSystem": { "description": "언어 옵션" },
+  "settingsLanguageKorean": "한국어",
+  "@settingsLanguageKorean": { "description": "언어 옵션. 두 로케일에서 동일하게 표기" },
+  "settingsLanguageEnglish": "English",
+  "@settingsLanguageEnglish": { "description": "언어 옵션. 두 로케일에서 동일하게 표기" }
+}
