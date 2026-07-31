@@ -13,6 +13,7 @@
 ## Global Constraints
 
 - **Dart 패키지명은 `house_money_calculator`다.** 모든 import는 `package:house_money_calculator/...` 형태여야 한다. (`my_house_money_calculator`가 아니다.)
+- **모든 커밋에서 `flutter analyze`의 error가 0이어야 하고 앱이 빌드되어야 한다.** Phase 0은 그 자체로 독립 검증 가능한 산출물이다. 기존 API를 제거해 호출부를 깨뜨리는 대신 `@Deprecated` shim으로 병존시키고, 실제 제거는 Phase 1이 모든 호출부를 옮긴 뒤에 한다. 전환 누락을 잡는 강제력은 컴파일 에러가 아니라 **deprecation 경고 수 + `tool/check_hardcoded.sh`의 exit 1**이 담당한다.
 - 지원 로케일은 `ko`, `en` 두 개뿐이다. 템플릿은 `app_ko.arb`.
 - `lib/core/constants/legal_texts.dart`는 **수정 금지**. 약관 원문은 한국어를 유지한다.
 - `lib/data/models/calculation_history.dart`의 **저장 값 포맷을 변경하지 않는다.** 사용자 기기에 이미 저장된 이력이 깨진다. 지역화는 표시 시점에만 한다.
@@ -52,10 +53,10 @@
 |---|---|
 | `lib/core/theme/app_colors.dart` | dark 색상 세트 추가 |
 | `lib/core/theme/app_theme.dart` | `dark` 게터 추가, extension 등록 |
-| `lib/core/theme/app_text_styles.dart` | **삭제** (`app_typography.dart`가 대체) |
+| `lib/core/theme/app_text_styles.dart` | `@Deprecated` shim으로 축소 — `AppTypography.light`에 위임. 제거는 Phase 1 |
 | `lib/app.dart` | `darkTheme`/`themeMode`/`locale`/delegates/`onGenerateTitle` |
 | `lib/core/utils/money_formatter.dart` | 로케일 분기 |
-| `lib/core/utils/validators.dart` | enum 반환 |
+| `lib/core/utils/validators.dart` | `*Code` enum 반환 메서드 추가. 기존 String 반환 메서드는 `@Deprecated`로 유지 |
 | `lib/core/utils/calculation_pdf_exporter.dart` | 지역화 문자열 주입 시그니처 |
 | `lib/domain/entities/jeonse_risk_result.dart` | String 필드 → enum 리스트 |
 | `lib/domain/calculators/*.dart` (6개) | 한글 반환 제거 |
@@ -414,7 +415,7 @@ git commit -m "feat: AppPalette ThemeExtension 추가"
 
 **Files:**
 - Create: `lib/core/theme/app_typography.dart`
-- Delete: `lib/core/theme/app_text_styles.dart`
+- Modify: `lib/core/theme/app_text_styles.dart` (`@Deprecated` shim으로 축소)
 - Test: `test/core/theme/app_typography_test.dart`
 
 **Interfaces:**
@@ -425,7 +426,14 @@ git commit -m "feat: AppPalette ThemeExtension 추가"
   - `static final AppTypography light`, `static final AppTypography dark`
   - `extension AppTypographyContext on BuildContext { AppTypography get typography; }`
 
-`app_text_styles.dart`는 이 태스크에서 삭제한다. `static const TextStyle`에 색이 박제되어 테마를 따라갈 수 없는 것이 삭제 이유다. 삭제하면 참조하던 135곳이 컴파일 에러가 되는데 이는 **의도된 것**이다 — 컴파일러가 슬라이스 작업의 누락을 강제로 드러낸다. Phase 1이 끝나야 0이 된다.
+`AppTextStyles`의 `static const TextStyle`은 색이 박제되어 테마를 따라갈 수 없다. 다만 **이 태스크에서 삭제하지 않는다** — 135곳의 호출부가 한꺼번에 깨지고 앱이 빌드되지 않기 때문이다. 대신 `AppTypography.light`에 위임하는 `@Deprecated` shim으로 축소한다.
+
+shim 구간의 동작을 정확히 알고 가야 한다. **아직 전환되지 않은 호출부는 다크모드에서 라이트 색을 쓴다** — 컴파일 에러로 터지지 않고 조용히 틀린다. 이를 잡는 강제력은 두 가지다.
+
+1. `flutter analyze`의 deprecation 경고 — 남은 호출부 수가 그대로 드러난다
+2. `tool/check_hardcoded.sh` (Task 16) — `AppTextStyles.` 참조가 1건이라도 있으면 exit 1
+
+Phase 1이 135곳을 모두 옮긴 뒤 `app_text_styles.dart`를 삭제한다.
 
 - [ ] **Step 1: 실패 테스트 작성**
 
@@ -640,25 +648,67 @@ extension AppTypographyContext on BuildContext {
 Run: `flutter test test/core/theme/app_typography_test.dart`
 Expected: PASS (4개 테스트)
 
-- [ ] **Step 5: `app_text_styles.dart` 삭제**
+- [ ] **Step 5: `app_text_styles.dart`를 shim으로 축소**
 
-```bash
-git rm lib/core/theme/app_text_styles.dart
+전체 교체한다. 스타일 값은 `AppTypography.light`가 이미 갖고 있으므로 중복 정의하지 않고 위임한다.
+
+```dart
+import 'package:flutter/material.dart';
+
+import 'app_palette.dart';
+import 'app_typography.dart';
+
+/// 라이트 색이 고정된 구형 텍스트 스타일.
+///
+/// 테마를 따라가지 못하므로 `context.typography`로 옮겨야 한다.
+/// 아직 옮기지 않은 호출부는 다크모드에서도 라이트 색을 쓴다 —
+/// 컴파일 에러가 아니라 조용히 틀리므로, 남은 호출부는
+/// deprecation 경고와 `tool/check_hardcoded.sh`로 추적한다.
+/// Phase 1에서 모든 호출부를 옮긴 뒤 이 파일을 삭제한다.
+@Deprecated('context.typography를 사용하세요. Phase 1 완료 후 제거됩니다.')
+class AppTextStyles {
+  AppTextStyles._();
+
+  static AppTypography get _t => AppTypography.fromPalette(AppPalette.light);
+
+  static TextStyle get heading1 => _t.heading1;
+  static TextStyle get heading2 => _t.heading2;
+  static TextStyle get heading3 => _t.heading3;
+  static TextStyle get resultAmount => _t.resultAmount;
+  static TextStyle get resultAmountPositive => _t.resultAmountPositive;
+  static TextStyle get body => _t.body;
+  static TextStyle get bodySecondary => _t.bodySecondary;
+  static TextStyle get label => _t.label;
+  static TextStyle get caption => _t.caption;
+  static TextStyle get disclaimer => _t.disclaimer;
+}
 ```
 
-- [ ] **Step 6: 컴파일 에러가 예상 규모로 나오는지 확인**
+`const`에서 `get`으로 바뀌므로 호출부가 `const` 컨텍스트에서 쓰고 있었다면 그 부분만 `const`를 떼야 한다. `flutter analyze`가 정확한 위치를 알려준다.
 
-Run: `flutter analyze 2>&1 | grep -c "AppTextStyles"`
-Expected: 100 이상. 이는 정상이며 Phase 1에서 해소된다.
+- [ ] **Step 6: 빌드가 유지되는지 확인**
+
+```bash
+flutter analyze 2>&1 | grep -E "^\s*error" | head -20
+```
+
+Expected: **출력 없음.** error가 하나라도 있으면 shim이 제 역할을 못 한 것이므로 먼저 고친다.
+
+```bash
+flutter analyze 2>&1 | grep -c "deprecated"
+```
+
+Expected: 100 이상. 이 수치가 Phase 1의 전환 잔여량이다.
 
 - [ ] **Step 7: 커밋**
 
 ```bash
-git add lib/core/theme/app_typography.dart test/core/theme/app_typography_test.dart
-git commit -m "feat: AppTypography ThemeExtension 추가 및 AppTextStyles 제거
+git add lib/core/theme/app_typography.dart lib/core/theme/app_text_styles.dart test/core/theme/app_typography_test.dart
+git commit -m "feat: AppTypography ThemeExtension 추가, AppTextStyles는 deprecated shim으로 축소
 
-색이 박제된 static const TextStyle은 테마 전환을 따라갈 수 없어 제거한다.
-참조하던 135곳은 Phase 1 슬라이스에서 context.typography로 치환한다."
+색이 박제된 static const TextStyle은 테마 전환을 따라갈 수 없다.
+호출부 135곳을 한꺼번에 깨뜨리지 않도록 삭제 대신 위임 shim을 남기고,
+전환 잔여량은 deprecation 경고와 check_hardcoded.sh로 추적한다."
 ```
 
 ---
@@ -1963,12 +2013,29 @@ ko 출력은 기존과 동일하게 유지하고 en에는 서구식 K/M/B 단위
 - Consumes: 없음
 - Produces:
   - `enum ValidationError { amountRequired, amountInvalid, rateRequired, rateOutOfRange, monthsRequired, monthsOutOfRange, loanExceedsDeposit }`
-  - `static ValidationError? Validators.requiredAmount(String?)`
-  - `static ValidationError? Validators.interestRate(String?)`
-  - `static ValidationError? Validators.months(String?)`
-  - `static ValidationError? Validators.loanNotExceedDeposit(int loan, int deposit)`
+  - `static ValidationError? Validators.requiredAmountCode(String?)`
+  - `static ValidationError? Validators.interestRateCode(String?)`
+  - `static ValidationError? Validators.monthsCode(String?)`
+  - `static ValidationError? Validators.loanNotExceedDepositCode(int loan, int deposit)`
+  - 기존 4개 메서드(`requiredAmount`, `interestRate`, `months`, `loanNotExceedDeposit`)는 **시그니처·동작 그대로 `@Deprecated`로 유지**
 
-`rateOutOfRange`와 `monthsOutOfRange` 메시지는 `AppConstants`의 상·하한을 문장에 넣어야 하므로 ARB 키에 플레이스홀더가 필요하다. 매핑은 Phase 1의 S10이 담당하고, **이 태스크는 enum까지만** 만든다.
+**기존 메서드의 반환 타입을 바꾸면 안 되는 이유가 있다.** 호출부 40건 중 **38건이 tear-off**다:
+
+```dart
+validator: Validators.requiredAmount,
+```
+
+Flutter의 `validator:`는 `String? Function(String?)`(`FormFieldValidator<String>`)를 요구한다. 반환 타입을 `ValidationError?`로 바꾸면 이 38곳이 전부 타입 에러가 나고, **지역화된 메시지 없이는 고칠 수도 없다** — 메시지를 만들려면 `BuildContext`가 필요하고 그건 Phase 1의 작업이다. 그래서 신구 API를 병존시킨다.
+
+Phase 1의 각 슬라이스는 tear-off를 클로저로 바꾸면서 전환한다:
+
+```dart
+validator: (v) => Validators.requiredAmountCode(v)?.localize(context),
+```
+
+`ValidationError.localize` 확장과 `rateOutOfRange`/`monthsOutOfRange`의 플레이스홀더 ARB 키(`AppConstants`의 상·하한이 문장에 들어간다)는 Phase 1의 S10이 만든다. **이 태스크는 enum과 `*Code` 메서드까지만** 만든다.
+
+Phase 1이 38곳을 모두 옮긴 뒤 `@Deprecated` 메서드 4개를 삭제하고, 그때 `*Code` 접미사를 떼는 기계적 리네임을 한 번에 한다.
 
 - [ ] **Step 1: 실패 테스트 작성**
 
@@ -1981,80 +2048,97 @@ import 'package:house_money_calculator/core/utils/validation_error.dart';
 import 'package:house_money_calculator/core/utils/validators.dart';
 
 void main() {
-  group('requiredAmount', () {
+  group('requiredAmountCode', () {
     test('빈 값은 amountRequired', () {
-      expect(Validators.requiredAmount(''), ValidationError.amountRequired);
-      expect(Validators.requiredAmount(null), ValidationError.amountRequired);
-      expect(Validators.requiredAmount('   '), ValidationError.amountRequired);
+      expect(Validators.requiredAmountCode(''), ValidationError.amountRequired);
+      expect(Validators.requiredAmountCode(null), ValidationError.amountRequired);
+      expect(Validators.requiredAmountCode('   '), ValidationError.amountRequired);
     });
 
     test('숫자가 아니면 amountInvalid', () {
-      expect(Validators.requiredAmount('abc'), ValidationError.amountInvalid);
+      expect(Validators.requiredAmountCode('abc'), ValidationError.amountInvalid);
     });
 
     test('음수는 amountInvalid', () {
-      expect(Validators.requiredAmount('-1'), ValidationError.amountInvalid);
+      expect(Validators.requiredAmountCode('-1'), ValidationError.amountInvalid);
     });
 
     test('쉼표가 있는 정상 금액은 null', () {
-      expect(Validators.requiredAmount('1,000,000'), isNull);
+      expect(Validators.requiredAmountCode('1,000,000'), isNull);
     });
   });
 
-  group('interestRate', () {
+  group('interestRateCode', () {
     test('빈 값은 rateRequired', () {
-      expect(Validators.interestRate(''), ValidationError.rateRequired);
+      expect(Validators.interestRateCode(''), ValidationError.rateRequired);
     });
 
     test('상한 초과는 rateOutOfRange', () {
       expect(
-        Validators.interestRate('${AppConstants.maxInterestRate + 1}'),
+        Validators.interestRateCode('${AppConstants.maxInterestRate + 1}'),
         ValidationError.rateOutOfRange,
       );
     });
 
     test('음수는 rateOutOfRange', () {
-      expect(Validators.interestRate('-1'), ValidationError.rateOutOfRange);
+      expect(Validators.interestRateCode('-1'), ValidationError.rateOutOfRange);
     });
 
     test('정상 금리는 null', () {
-      expect(Validators.interestRate('3.5'), isNull);
+      expect(Validators.interestRateCode('3.5'), isNull);
     });
   });
 
-  group('months', () {
+  group('monthsCode', () {
     test('빈 값은 monthsRequired', () {
-      expect(Validators.months(''), ValidationError.monthsRequired);
+      expect(Validators.monthsCode(''), ValidationError.monthsRequired);
     });
 
     test('상한 초과는 monthsOutOfRange', () {
       expect(
-        Validators.months('${AppConstants.maxMonths + 1}'),
+        Validators.monthsCode('${AppConstants.maxMonths + 1}'),
         ValidationError.monthsOutOfRange,
       );
     });
 
     test('하한 미만은 monthsOutOfRange', () {
       expect(
-        Validators.months('${AppConstants.minMonths - 1}'),
+        Validators.monthsCode('${AppConstants.minMonths - 1}'),
         ValidationError.monthsOutOfRange,
       );
     });
 
     test('정상 개월수는 null', () {
-      expect(Validators.months('${AppConstants.minMonths}'), isNull);
+      expect(Validators.monthsCode('${AppConstants.minMonths}'), isNull);
     });
   });
 
-  group('loanNotExceedDeposit', () {
+  group('loanNotExceedDepositCode', () {
     test('대출금이 크면 loanExceedsDeposit', () {
-      expect(Validators.loanNotExceedDeposit(200, 100),
+      expect(Validators.loanNotExceedDepositCode(200, 100),
           ValidationError.loanExceedsDeposit);
     });
 
     test('같거나 작으면 null', () {
-      expect(Validators.loanNotExceedDeposit(100, 100), isNull);
-      expect(Validators.loanNotExceedDeposit(50, 100), isNull);
+      expect(Validators.loanNotExceedDepositCode(100, 100), isNull);
+      expect(Validators.loanNotExceedDepositCode(50, 100), isNull);
+    });
+  });
+
+  group('구형 API 병존', () {
+    test('deprecated 메서드는 여전히 String을 반환한다', () {
+      // ignore: deprecated_member_use_from_same_package
+      final result = Validators.requiredAmount('');
+      expect(result, isA<String>());
+    });
+
+    test('신구 API의 판정이 일치한다', () {
+      for (final input in ['', 'abc', '-1', '1,000,000']) {
+        // ignore: deprecated_member_use_from_same_package
+        final legacyFailed = Validators.requiredAmount(input) != null;
+        final codeFailed = Validators.requiredAmountCode(input) != null;
+        expect(codeFailed, legacyFailed, reason: '입력 "$input"에서 판정이 갈렸다');
+      }
     });
   });
 }
@@ -2082,7 +2166,7 @@ enum ValidationError {
 }
 ```
 
-`lib/core/utils/validators.dart` 전체 교체:
+`lib/core/utils/validators.dart` 전체 교체. **기존 4개 메서드는 본문을 그대로 두고 `@Deprecated`만 붙인다** — 판정 로직을 손대면 38개 호출부의 동작이 조용히 바뀐다. 새 `*Code` 메서드는 같은 조건을 enum으로 반환한다.
 
 ```dart
 import '../constants/app_constants.dart';
@@ -2091,7 +2175,9 @@ import 'validation_error.dart';
 class Validators {
   Validators._();
 
-  static ValidationError? requiredAmount(String? value) {
+  // ---- 신규 API: 코드 반환 ----
+
+  static ValidationError? requiredAmountCode(String? value) {
     if (value == null || value.trim().isEmpty) {
       return ValidationError.amountRequired;
     }
@@ -2100,7 +2186,7 @@ class Validators {
     return null;
   }
 
-  static ValidationError? interestRate(String? value) {
+  static ValidationError? interestRateCode(String? value) {
     if (value == null || value.trim().isEmpty) {
       return ValidationError.rateRequired;
     }
@@ -2111,7 +2197,7 @@ class Validators {
     return null;
   }
 
-  static ValidationError? months(String? value) {
+  static ValidationError? monthsCode(String? value) {
     if (value == null || value.trim().isEmpty) {
       return ValidationError.monthsRequired;
     }
@@ -2122,25 +2208,71 @@ class Validators {
     return null;
   }
 
-  static ValidationError? loanNotExceedDeposit(int loan, int deposit) {
+  static ValidationError? loanNotExceedDepositCode(int loan, int deposit) {
     if (loan > deposit) return ValidationError.loanExceedsDeposit;
+    return null;
+  }
+
+  // ---- 구형 API: 한글 메시지 반환 ----
+  // FormFieldValidator<String> tear-off로 38곳에서 쓰이고 있어 제거할 수 없다.
+  // Phase 1이 호출부를 (v) => ...Code(v)?.localize(context) 로 옮긴 뒤 삭제한다.
+
+  @Deprecated('requiredAmountCode를 사용하세요. Phase 1 완료 후 제거됩니다.')
+  static String? requiredAmount(String? value) {
+    if (value == null || value.trim().isEmpty) return '금액을 입력해 주세요.';
+    final amount = int.tryParse(value.replaceAll(',', ''));
+    if (amount == null || amount < 0) return '올바른 금액을 입력해 주세요.';
+    return null;
+  }
+
+  @Deprecated('interestRateCode를 사용하세요. Phase 1 완료 후 제거됩니다.')
+  static String? interestRate(String? value) {
+    if (value == null || value.trim().isEmpty) return '금리를 입력해 주세요.';
+    final rate = double.tryParse(value);
+    if (rate == null || rate < 0 || rate > AppConstants.maxInterestRate) {
+      return '금리는 0 이상 ${AppConstants.maxInterestRate} 이하로 입력해 주세요.';
+    }
+    return null;
+  }
+
+  @Deprecated('monthsCode를 사용하세요. Phase 1 완료 후 제거됩니다.')
+  static String? months(String? value) {
+    if (value == null || value.trim().isEmpty) return '거주 기간을 입력해 주세요.';
+    final m = int.tryParse(value);
+    if (m == null || m < AppConstants.minMonths || m > AppConstants.maxMonths) {
+      return '거주 기간은 ${AppConstants.minMonths}~${AppConstants.maxMonths}개월로 입력해 주세요.';
+    }
+    return null;
+  }
+
+  @Deprecated('loanNotExceedDepositCode를 사용하세요. Phase 1 완료 후 제거됩니다.')
+  static String? loanNotExceedDeposit(int loan, int deposit) {
+    if (loan > deposit) return '대출금은 전세 보증금보다 클 수 없습니다.';
     return null;
   }
 }
 ```
 
+구형 메서드의 한글 문자열은 `tool/check_hardcoded.sh`에 계속 잡힌다. Phase 1이 끝나야 0이 되므로 **정상이다.**
+
 - [ ] **Step 4: 통과 확인**
 
-Run: `flutter test test/core/utils/validators_test.dart`
-Expected: PASS (14개 테스트)
+```bash
+flutter test test/core/utils/validators_test.dart
+flutter analyze 2>&1 | grep -E "^\s*error" | head
+```
 
-`Validators`를 `String?` 반환으로 쓰던 호출부에 타입 에러가 새로 생긴다. 의도된 것이며 Phase 1이 해소한다.
+Expected: 테스트 PASS (16개), analyze error 출력 없음. 38개 tear-off 호출부가 그대로 컴파일되어야 한다.
 
 - [ ] **Step 5: 커밋**
 
 ```bash
 git add lib/core/utils/validation_error.dart lib/core/utils/validators.dart test/core/utils/validators_test.dart
-git commit -m "refactor: Validators가 한글 메시지 대신 ValidationError를 반환하도록 변경"
+git commit -m "feat: Validators에 ValidationError를 반환하는 *Code 메서드 추가
+
+38곳이 FormFieldValidator tear-off로 쓰고 있어 기존 메서드의 반환 타입을
+바꿀 수 없다. 지역화 메시지에는 BuildContext가 필요해 호출부를 지금
+고칠 수도 없으므로 신구 API를 병존시키고 구형은 @Deprecated로 표시한다."
 ```
 
 ---
@@ -3110,6 +3242,8 @@ Expected: **exit 1**. AppColors·AppTextStyles·한글 리터럴이 다수 보�
 
 domain이 0건이 아니면 Task 13이 미완이므로 돌아가서 마무리한다.
 
+**이 스크립트가 exit 1인 것은 Phase 0에서 정상이다.** shim 방식을 택했으므로 `AppTextStyles` 정의부(위임 shim)와 `Validators`의 구형 메서드에 든 한글이 그대로 남아 있다. 이 스크립트는 Phase 0의 합격 기준이 아니라 **Phase 1의 진행률 계기판**이다. Phase 0의 빌드 합격 기준은 `flutter analyze`의 error 0건이며, 그건 Task 18이 검사한다.
+
 - [ ] **Step 3: 커밋**
 
 ```bash
@@ -3226,15 +3360,36 @@ tail -20 /tmp/phase0_baseline.txt
 
 `lib/domain 한글 리터럴`이 **0건**임을 확인한다. 나머지 항목의 건수가 Phase 1의 시작 기준선이다.
 
-- [ ] **Step 4: 남은 컴파일 에러가 Phase 1 대상뿐인지 확인**
+- [ ] **Step 4: 빌드가 깨지지 않았는지 확인 (Phase 0의 핵심 합격 기준)**
 
 ```bash
-flutter analyze 2>&1 | grep -E "error" | grep -vE "AppTextStyles|Validators|ValidationError|JeonseRisk|levelDescription|summaryText|PdfExportLabels" | head -20
+flutter analyze 2>&1 | grep -E "^\s*error" | head -20
 ```
 
-Expected: 출력 없음. 무언가 나오면 Phase 0이 만든 회귀이므로 먼저 고친다.
+Expected: **출력 없음.** error가 하나라도 있으면 Global Constraints 위반이므로 Phase 1로 넘어가기 전에 고친다.
 
-- [ ] **Step 5: Phase 1 계획 작성**
+```bash
+echo "deprecation 잔여: $(flutter analyze 2>&1 | grep -c 'deprecated')"
+```
+
+이 수치가 Phase 1이 옮겨야 할 호출부의 규모다 (`AppTextStyles` 135곳 + `Validators` 38곳 근처).
+
+- [ ] **Step 5: 앱이 실제로 실행되는지 확인**
+
+```bash
+flutter run -d $(flutter devices | grep -i android | head -1 | awk -F'•' '{print $2}' | tr -d ' ')
+```
+
+Android 기기(SM G973N)에서 실행한다. 확인할 것:
+
+1. 앱이 정상 기동한다
+2. 설정 화면에 **테마**와 **언어** 항목이 보인다
+3. 테마를 **다크**로 바꾸면 즉시 반영되고, 앱을 껐다 켜도 유지된다
+4. 언어를 **English**로 바꾸면 설정 화면의 테마/언어 라벨이 영어로 바뀐다
+
+3·4번이 되면 Phase 0의 목표가 달성된 것이다. 아직 전환되지 않은 화면들이 다크모드에서 라이트 색으로 보이는 것은 **예상된 상태**다 — shim이 라이트 색을 반환하고 있기 때문이며 Phase 1에서 해소된다.
+
+- [ ] **Step 6: Phase 1 계획 작성**
 
 Phase 0이 끝나 실제 API 이름이 확정되었다. `writing-plans` 스킬로 Phase 1(슬라이스 10개) + Phase 2(통합) 계획을 작성한다. 입력은 이 계획의 산출물과 `docs/superpowers/specs/2026-07-31-slice-contract.md`다.
 
@@ -3246,4 +3401,14 @@ Phase 1과 Phase 2는 이 계획이 완료된 뒤 별도 문서로 작성한다.
 
 Phase 1은 10개 슬라이스를 격리된 worktree에서 병렬 실행하고, Phase 2는 프래그먼트 병합 → 용어집 검수 게이트 → 잔여 스캔 → 대비 검증 → 리뷰 순으로 진행한다.
 
-Phase 1이 끝나기 전에는 앱이 컴파일되지 않는다. `AppTextStyles` 삭제와 `Validators` 시그니처 변경이 의도적으로 컴파일 에러를 남기기 때문이다. 이는 누락을 컴파일러가 강제로 드러내게 하려는 설계이며, `flutter run`으로 실제 동작을 확인하는 것은 Phase 1 완료 후에 가능하다.
+**Phase 0이 끝나면 앱은 빌드되고 실행된다.** 테마 3모드와 언어 2개 전환이 실제로 동작하고 재시작 후에도 유지된다. 다만 아직 전환되지 않은 화면은 다크모드에서 라이트 색으로 보인다 — `AppTextStyles` shim이 `AppPalette.light`를 반환하기 때문이며, 이는 컴파일 에러가 아니라 조용한 오작동이므로 다음 두 계기판으로 추적한다.
+
+- `flutter analyze`의 deprecation 경고 수 (`AppTextStyles` 135곳 + `Validators` 38곳 근처)
+- `tool/check_hardcoded.sh`의 exit 1과 잔여 건수
+
+**Phase 1이 반드시 끝내야 할 정리 두 가지:**
+
+1. 135곳을 `context.typography`로 옮긴 뒤 `lib/core/theme/app_text_styles.dart` **삭제**
+2. 38곳의 tear-off를 `(v) => Validators.*Code(v)?.localize(context)`로 옮긴 뒤 `Validators`의 `@Deprecated` 메서드 4개 **삭제**하고 `*Code` 접미사를 떼는 기계적 리네임
+
+이 둘이 끝나야 `tool/check_hardcoded.sh`가 exit 0이 된다.
