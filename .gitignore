@@ -58,5 +58,7 @@ appstore_credentials
 # Certificates & Keys
 Cer/
 
-# gen_l10n 생성물
-lib/l10n/gen/
+# gen_l10n 생성물(lib/l10n/gen/)은 의도적으로 커밋한다.
+# `flutter pub get`은 이를 재생성하지 않는다(pubspec의 generate: true 로도 안 됨).
+# 무시하면 신규 클론과 CI에서 컴파일이 깨진다.
+# ARB를 수정하면 `flutter gen-l10n`을 다시 돌려 생성물도 함께 커밋할 것.
