@@ -88,12 +88,83 @@ void main() {
       expect(result, isA<String>());
     });
 
-    test('신구 API의 판정이 일치한다', () {
-      for (final input in ['', 'abc', '-1', '1,000,000']) {
+    test('requiredAmount: 신구 API의 판정이 일치한다', () {
+      final inputs = [
+        '',           // empty
+        'abc',        // non-numeric
+        '-1',         // negative
+        '0',          // boundary: zero is valid
+        '1,000,000',  // valid with comma
+      ];
+      for (final input in inputs) {
         // ignore: deprecated_member_use_from_same_package
         final legacyFailed = Validators.requiredAmount(input) != null;
         final codeFailed = Validators.requiredAmountCode(input) != null;
-        expect(codeFailed, legacyFailed, reason: '입력 "$input"에서 판정이 갈렸다');
+        expect(codeFailed, legacyFailed,
+            reason: 'requiredAmount 입력 "$input"에서 판정이 갈렸다');
+      }
+    });
+
+    test('interestRate: 신구 API의 판정이 일치한다', () {
+      final inputs = [
+        '',                                      // empty
+        '  ',                                    // whitespace
+        null,                                    // null
+        'abc',                                   // non-numeric
+        '-0.1',                                  // negative
+        '0',                                     // boundary: zero is valid
+        '3.5',                                   // normal value
+        AppConstants.maxInterestRate.toString(), // at max
+        '${AppConstants.maxInterestRate + 0.1}', // above max
+        '100',                                   // way above max
+      ];
+      for (final input in inputs) {
+        // ignore: deprecated_member_use_from_same_package
+        final legacyFailed = Validators.interestRate(input) != null;
+        final codeFailed = Validators.interestRateCode(input) != null;
+        expect(codeFailed, legacyFailed,
+            reason: 'interestRate 입력 "$input"에서 판정이 갈렸다');
+      }
+    });
+
+    test('months: 신구 API의 판정이 일치한다', () {
+      final inputs = [
+        '',                                  // empty
+        ' ',                                 // whitespace
+        null,                                // null
+        'abc',                               // non-numeric
+        '0',                                 // below min
+        AppConstants.minMonths.toString(),   // at min
+        '1',                                 // at min (redundant)
+        '600',                               // at max
+        '${AppConstants.maxMonths + 1}',     // above max
+        '1200',                              // way above max
+      ];
+      for (final input in inputs) {
+        // ignore: deprecated_member_use_from_same_package
+        final legacyFailed = Validators.months(input) != null;
+        final codeFailed = Validators.monthsCode(input) != null;
+        expect(codeFailed, legacyFailed,
+            reason: 'months 입력 "$input"에서 판정이 갈렸다');
+      }
+    });
+
+    test('loanNotExceedDeposit: 신구 API의 판정이 일치한다', () {
+      final cases = [
+        (0, 0),           // equal, both zero
+        (100, 100),       // equal
+        (50, 100),        // loan less
+        (101, 100),       // loan greater (fail case)
+        (0, 100),         // zero loan
+        (100, 0),         // zero deposit
+      ];
+      for (final (loan, deposit) in cases) {
+        // ignore: deprecated_member_use_from_same_package
+        final legacyFailed = Validators.loanNotExceedDeposit(loan, deposit) != null;
+        final codeFailed =
+            Validators.loanNotExceedDepositCode(loan, deposit) != null;
+        expect(codeFailed, legacyFailed,
+            reason: 'loanNotExceedDeposit($loan, $deposit)에서 판정이 갈렸다');
       }
     });
   });
