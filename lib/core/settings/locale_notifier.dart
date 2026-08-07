@@ -58,7 +58,10 @@ final localeNotifierProvider =
 
 /// MaterialApp.localeResolutionCallback에 연결한다.
 /// 지원 목록에 없는 기기 로케일은 목록의 첫 항목으로 폴백한다.
-/// 목록이 비어 있는 경우에만 한국어로 되돌린다.
+///
+/// 빈 목록 가드는 방어용이다. 실제 호출자는 항상 비어 있지 않은
+/// [kSupportedLocales]를 넘기므로 프로덕션에서는 도달하지 않는다.
+/// "빈 목록이 될 수 있는 설정이 어딘가 있나?" 하는 오해를 막기 위해 적어 둔다.
 Locale resolveLocale(Locale? deviceLocale, Iterable<Locale> supported) {
   if (deviceLocale != null) {
     for (final locale in supported) {
