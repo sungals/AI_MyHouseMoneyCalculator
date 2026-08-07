@@ -1,8 +1,6 @@
 {
   "@@locale": "en",
-
   "appTitle": "Housing Cost Calculator",
-
   "commonCancel": "Cancel",
   "commonConfirm": "OK",
   "commonSave": "Save",
@@ -10,7 +8,6 @@
   "commonClose": "Close",
   "commonRetry": "Retry",
   "commonError": "Something went wrong. Please try again in a moment.",
-
   "settingsThemeLabel": "Theme",
   "settingsThemeSystem": "Follow system",
   "settingsThemeLight": "Light",
