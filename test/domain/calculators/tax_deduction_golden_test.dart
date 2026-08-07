@@ -184,6 +184,7 @@ void main() {
     // _golden 인덱스: 0,1,2,3,7 = 혜택 있음 / 4 = 7천만원 초과 제외 /
     //                 5,6 = 공제 항목 입력 없음
     test('공제 항목이 없는 두 입력은 같은 분류다', () {
+      expect(run(_golden[5]).message, isA<TaxDeductionMessage>());
       expect(run(_golden[5]).message, run(_golden[6]).message);
     });
 

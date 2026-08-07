@@ -1,3 +1,9 @@
+enum TaxDeductionMessage {
+  incomeTooHighForRentTaxCredit,
+  hasTaxBenefit,
+  noDeductionInput,
+}
+
 class TaxDeductionResult {
   final int rentDeductionRate;
   final int eligibleAnnualRent;
@@ -6,7 +12,7 @@ class TaxDeductionResult {
   final int incomeDeductionAmount;
   final int loanTaxSaving;
   final int totalTaxBenefit;
-  final String message;
+  final TaxDeductionMessage message;
 
   const TaxDeductionResult({
     required this.rentDeductionRate,

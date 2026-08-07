@@ -49,23 +49,17 @@ class TaxDeductionCalculator {
     return 0;
   }
 
-  String _buildMessage({
+  TaxDeductionMessage _buildMessage({
     required int rentDeductionRate,
     required bool hasRent,
     required int totalTaxBenefit,
   }) {
     if (rentDeductionRate == 0 && hasRent) {
-      return '총급여 7천만원 초과로 월세 세액공제 대상이 아닙니다.';
+      return TaxDeductionMessage.incomeTooHighForRentTaxCredit;
     }
     if (totalTaxBenefit > 0) {
-      return '연간 최대 ${_formatWon(totalTaxBenefit)} 세금을 아낄 수 있어요!';
+      return TaxDeductionMessage.hasTaxBenefit;
     }
-    return '해당하는 공제 항목을 입력해 주세요.';
-  }
-
-  String _formatWon(int amount) {
-    final formatted = amount.toString().replaceAllMapped(
-        RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]},');
-    return '$formatted원';
+    return TaxDeductionMessage.noDeductionInput;
   }
 }
