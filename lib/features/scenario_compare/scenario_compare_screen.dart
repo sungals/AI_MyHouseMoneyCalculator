@@ -19,6 +19,7 @@ import '../../shared/widgets/percent_input_field.dart';
 import '../../shared/widgets/primary_button.dart';
 import '../../shared/widgets/result_action_buttons.dart';
 import '../../shared/widgets/slider_rate_field.dart';
+import '../rent_compare/rent_compare_localizations.dart';
 
 class ScenarioCompareScreen extends StatefulWidget {
   const ScenarioCompareScreen({super.key});
@@ -111,7 +112,7 @@ class _ScenarioCompareScreenState extends State<ScenarioCompareScreen> {
     final lines = _results.map((scenario) {
       final result = scenario.result;
       return '${scenario.label} (${scenario.interestRate.toStringAsFixed(2)}%): '
-          '${result.recommendationText} / 전세 월 ${MoneyFormatter.formatWithWon(result.jeonseMonthlyCost)} '
+          '${rentCompareRecommendationText(result)} / 전세 월 ${MoneyFormatter.formatWithWon(result.jeonseMonthlyCost)} '
           '/ 실질 월세 ${MoneyFormatter.formatWithWon(result.adjustedRentMonthlyCost)}';
     }).join('\n');
 
@@ -132,7 +133,7 @@ class _ScenarioCompareScreenState extends State<ScenarioCompareScreen> {
       context,
       labels: kKoreanPdfExportLabels,
       title: '복수 시나리오 비교 결과',
-      summary: _results.first.result.recommendationText,
+      summary: rentCompareRecommendationText(_results.first.result),
       resultImageBytes: imageBytes,
       input: {
         '전세 보증금': MoneyFormatter.formatWithWon(
@@ -150,7 +151,7 @@ class _ScenarioCompareScreenState extends State<ScenarioCompareScreen> {
       result: {
         for (final scenario in _results)
           '${scenario.label} ${scenario.interestRate.toStringAsFixed(2)}%':
-              '${scenario.result.recommendationText} / 전세 월 ${MoneyFormatter.formatWithWon(scenario.result.jeonseMonthlyCost)}',
+              '${rentCompareRecommendationText(scenario.result)} / 전세 월 ${MoneyFormatter.formatWithWon(scenario.result.jeonseMonthlyCost)}',
       },
     );
   }
@@ -370,7 +371,7 @@ class _ScenarioCard extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            result.recommendationText,
+            rentCompareRecommendationText(result),
             style: AppTextStyles.body.copyWith(
               color: color,
               fontWeight: FontWeight.w600,

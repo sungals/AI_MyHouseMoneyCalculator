@@ -13,6 +13,7 @@ import '../../core/utils/validators.dart';
 import '../../providers/calculation_history_provider.dart';
 import '../../data/models/calculation_history.dart';
 import '../../domain/entities/semi_rent_input.dart';
+import '../../domain/entities/semi_rent_result.dart';
 import '../../shared/widgets/disclaimer_box.dart';
 import '../../shared/widgets/help_icon.dart';
 import '../../shared/widgets/money_input_field.dart';
@@ -87,7 +88,7 @@ class _SemiRentScreenState extends ConsumerState<SemiRentScreen> {
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       typeIndex: CalculationType.semiRent.index,
       title: '반전세 계산',
-      summary: result.summaryText,
+      summary: _summaryText(result),
       input: {
         'baseDeposit': MoneyFormatter.parse(_baseDeposit.text),
         'convertedDeposit': MoneyFormatter.parse(_convertedDeposit.text),
@@ -119,7 +120,7 @@ class _SemiRentScreenState extends ConsumerState<SemiRentScreen> {
 
     final text = '''[어떤비용] 반전세 계산 결과
 
-${result.summaryText}
+${_summaryText(result)}
 
 전환율 기준 적정 월세: ${MoneyFormatter.formatWithWon(result.fairMonthlyRent)}
 실제 월세: ${MoneyFormatter.formatWithWon(result.actualMonthlyRent)}
@@ -144,7 +145,7 @@ ${result.summaryText}
       context,
       labels: kKoreanPdfExportLabels,
       title: '반전세 계산 결과',
-      summary: result.summaryText,
+      summary: _summaryText(result),
       resultImageBytes: imageBytes,
       input: {
         '기준 전세 보증금': MoneyFormatter.formatWithWon(
@@ -365,7 +366,7 @@ class _ResultCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                result.summaryText as String,
+                _summaryText(result),
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -404,6 +405,19 @@ class _ResultCard extends StatelessWidget {
         ],
       ],
     );
+  }
+}
+
+String _summaryText(SemiRentResult result) {
+  switch (result.summaryText) {
+    case SemiRentSummary.actualRentHigherThanFairRent:
+      return '입력한 월세는 전환율 기준보다 월 ${MoneyFormatter.formatWithWon(result.monthlyDifference)} 높아요.\n'
+          '${result.totalDifference ~/ result.monthlyDifference}개월 기준 약 ${MoneyFormatter.formatWithWon(result.totalDifference.abs())} 차이입니다.';
+    case SemiRentSummary.actualRentLowerThanFairRent:
+      return '입력한 월세는 전환율 기준보다 월 ${MoneyFormatter.formatWithWon(result.monthlyDifference.abs())} 낮아요.\n'
+          '${result.totalDifference ~/ result.monthlyDifference}개월 기준 약 ${MoneyFormatter.formatWithWon(result.totalDifference.abs())} 유리합니다.';
+    case SemiRentSummary.actualRentEqualsFairRent:
+      return '입력한 월세가 전환율 기준과 동일해요.';
   }
 }
 

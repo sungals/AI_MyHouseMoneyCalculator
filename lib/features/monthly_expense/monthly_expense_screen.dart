@@ -12,6 +12,7 @@ import '../../core/utils/share_helper.dart';
 import '../../providers/calculation_history_provider.dart';
 import '../../data/models/calculation_history.dart';
 import '../../domain/entities/monthly_expense_input.dart';
+import '../../domain/entities/monthly_expense_result.dart';
 import '../../shared/widgets/disclaimer_box.dart';
 import '../../shared/widgets/help_icon.dart';
 import '../../shared/widgets/money_input_field.dart';
@@ -86,7 +87,7 @@ class _MonthlyExpenseScreenState extends ConsumerState<MonthlyExpenseScreen> {
       title: '월 고정비 계산',
       summary: '월 합계 ${MoneyFormatter.formatWithWon(result.totalMonthly)}',
       input: Map.fromEntries(
-        result.breakdown.entries.map((e) => MapEntry(e.key, e.value)),
+        result.breakdown.entries.map((e) => MapEntry(e.key.label, e.value)),
       ),
       result: {
         'totalMonthly': result.totalMonthly,
@@ -145,7 +146,7 @@ $breakdown
       input: {
         for (final entry in result.breakdown.entries)
           if (entry.value > 0)
-            entry.key: MoneyFormatter.formatWithWon(entry.value),
+            entry.key.label: MoneyFormatter.formatWithWon(entry.value),
       },
       result: {
         '월 합계': MoneyFormatter.formatWithWon(result.totalMonthly),
@@ -262,7 +263,7 @@ $breakdown
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(e.key,
+                                    Text(e.key.label,
                                         style: const TextStyle(
                                             fontSize: 14,
                                             color: AppColors.textSecondary)),
@@ -329,6 +330,29 @@ $breakdown
         ),
       ),
     );
+  }
+}
+
+extension _MonthlyExpenseCategoryLabel on MonthlyExpenseCategory {
+  String get label {
+    switch (this) {
+      case MonthlyExpenseCategory.housing:
+        return '주거비';
+      case MonthlyExpenseCategory.maintenance:
+        return '관리비';
+      case MonthlyExpenseCategory.communication:
+        return '통신비';
+      case MonthlyExpenseCategory.transportation:
+        return '교통비';
+      case MonthlyExpenseCategory.insurance:
+        return '보험료';
+      case MonthlyExpenseCategory.subscription:
+        return '구독료';
+      case MonthlyExpenseCategory.food:
+        return '식비';
+      case MonthlyExpenseCategory.other:
+        return '기타';
+    }
   }
 }
 

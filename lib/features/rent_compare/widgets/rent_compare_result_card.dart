@@ -6,6 +6,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../domain/entities/rent_compare_result.dart';
 import '../../../shared/widgets/disclaimer_box.dart';
 import '../../../shared/widgets/result_action_buttons.dart';
+import '../rent_compare_localizations.dart';
 
 class RentCompareResultCard extends StatelessWidget {
   final RentCompareResult result;
@@ -74,7 +75,7 @@ class RentCompareResultCard extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               Text(
-                result.recommendationText,
+                rentCompareRecommendationText(result),
                 style: AppTextStyles.heading2.copyWith(color: diffColor),
               ),
               const SizedBox(height: 6),

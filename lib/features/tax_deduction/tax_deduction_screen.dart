@@ -12,6 +12,7 @@ import '../../core/utils/money_formatter.dart';
 import '../../core/utils/pdf_export_labels_ko.dart';
 import '../../core/utils/validators.dart';
 import '../../domain/entities/tax_deduction_input.dart';
+import '../../domain/entities/tax_deduction_result.dart';
 import '../../shared/widgets/disclaimer_box.dart';
 import '../../shared/widgets/money_input_field.dart';
 import '../../shared/widgets/primary_button.dart';
@@ -75,7 +76,7 @@ class _TaxDeductionScreenState extends ConsumerState<TaxDeductionScreen> {
       context,
       labels: kKoreanPdfExportLabels,
       title: '연말정산 세액공제 결과',
-      summary: result.message,
+      summary: _messageText(result),
       resultImageBytes: imageBytes,
       input: {
         '연간 총급여': MoneyFormatter.formatWithWon(
@@ -197,7 +198,7 @@ class _TaxDeductionScreenState extends ConsumerState<TaxDeductionScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        result.message,
+                        _messageText(result),
                         style: AppTextStyles.heading3.copyWith(
                           color: result.totalTaxBenefit > 0
                               ? AppColors.positive
@@ -278,6 +279,17 @@ class _TaxDeductionScreenState extends ConsumerState<TaxDeductionScreen> {
         ),
       ),
     );
+  }
+}
+
+String _messageText(TaxDeductionResult result) {
+  switch (result.message) {
+    case TaxDeductionMessage.incomeTooHighForRentTaxCredit:
+      return '총급여 7천만원 초과로 월세 세액공제 대상이 아닙니다.';
+    case TaxDeductionMessage.hasTaxBenefit:
+      return '연간 최대 ${MoneyFormatter.formatWithWon(result.totalTaxBenefit)} 세금을 아낄 수 있어요!';
+    case TaxDeductionMessage.noDeductionInput:
+      return '해당하는 공제 항목을 입력해 주세요.';
   }
 }
 

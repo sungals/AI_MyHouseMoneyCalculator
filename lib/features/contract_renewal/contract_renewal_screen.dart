@@ -13,6 +13,7 @@ import '../../core/utils/share_helper.dart';
 import '../../core/utils/validators.dart';
 import '../../data/models/calculation_history.dart';
 import '../../domain/entities/contract_renewal_input.dart';
+import '../../domain/entities/contract_renewal_result.dart';
 import '../../providers/calculation_history_provider.dart';
 import '../../shared/widgets/disclaimer_box.dart';
 import '../../shared/widgets/help_icon.dart';
@@ -69,7 +70,7 @@ class _ContractRenewalScreenState extends ConsumerState<ContractRenewalScreen> {
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         typeIndex: CalculationType.contractRenewal.index,
         title: '계약 갱신 계산',
-        summary: result.summaryText,
+        summary: _summaryText(result),
         input: {
           'currentDeposit': result.currentDeposit,
           'currentMonthlyRent': result.currentMonthlyRent,
@@ -97,7 +98,7 @@ class _ContractRenewalScreenState extends ConsumerState<ContractRenewalScreen> {
 
     final text = '''[어떤비용] 계약 갱신 계산 결과
 
-${result.summaryText}
+${_summaryText(result)}
 
 현재 보증금: ${MoneyFormatter.formatWithWon(result.currentDeposit)}
 갱신 보증금 상한: ${MoneyFormatter.formatWithWon(result.maxDeposit)}
@@ -124,7 +125,7 @@ ${result.summaryText}
       context,
       labels: kKoreanPdfExportLabels,
       title: '계약 갱신 계산 결과',
-      summary: result.summaryText,
+      summary: _summaryText(result),
       resultImageBytes: imageBytes,
       input: {
         '현재 보증금': MoneyFormatter.formatWithWon(result.currentDeposit),
@@ -283,7 +284,7 @@ class _ResultCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(result.summaryText as String, style: AppTextStyles.heading3),
+              Text(_summaryText(result), style: AppTextStyles.heading3),
               const SizedBox(height: 20),
               const Divider(),
               const SizedBox(height: 16),
@@ -316,6 +317,15 @@ class _ResultCard extends StatelessWidget {
         ],
       ],
     );
+  }
+}
+
+String _summaryText(ContractRenewalResult result) {
+  switch (result.summaryText) {
+    case ContractRenewalSummary.renewalClaimIncreaseLimitApplied:
+      return '갱신청구권 행사 시 ${result.increaseRate.toStringAsFixed(1)}% 상한 기준으로 '
+          '보증금은 최대 ${MoneyFormatter.formatWithWon(result.maxDeposit)}, '
+          '월세는 최대 ${MoneyFormatter.formatWithWon(result.maxMonthlyRent)}까지 계산됩니다.';
   }
 }
 

@@ -24,6 +24,7 @@ import '../../shared/widgets/primary_button.dart';
 import '../../shared/widgets/result_action_buttons.dart';
 import '../../shared/widgets/slider_rate_field.dart';
 import 'rent_compare_controller.dart';
+import 'rent_compare_localizations.dart';
 import 'widgets/rent_compare_result_card.dart';
 
 class RentCompareScreen extends ConsumerStatefulWidget {
@@ -114,7 +115,7 @@ class _RentCompareScreenState extends ConsumerState<RentCompareScreen> {
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       typeIndex: CalculationType.rentCompare.index,
       title: '전세 vs 월세 비교',
-      summary: result.recommendationText,
+      summary: rentCompareRecommendationText(result),
       input: {
         'jeonseDeposit': MoneyFormatter.parse(_jeonseDeposit.text),
         'jeonseLoan': MoneyFormatter.parse(_jeonseLoan.text),
@@ -178,7 +179,7 @@ class _RentCompareScreenState extends ConsumerState<RentCompareScreen> {
       context,
       labels: kKoreanPdfExportLabels,
       title: '전세 vs 월세 비교 결과',
-      summary: result.recommendationText,
+      summary: rentCompareRecommendationText(result),
       resultImageBytes: imageBytes,
       input: {
         '전세 보증금': MoneyFormatter.formatWithWon(
