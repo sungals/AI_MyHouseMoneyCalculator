@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:house_money_calculator/domain/calculators/rent_compare_calculator.dart';
 import 'package:house_money_calculator/domain/entities/rent_compare_input.dart';
+import 'package:house_money_calculator/domain/entities/rent_compare_result.dart';
 
 void main() {
   late RentCompareCalculator calculator;
@@ -35,7 +36,9 @@ void main() {
       expect(result.monthlyDifference, greaterThan(0));
       expect(result.isJeonseAdvantageous, isTrue);
       expect(result.totalDifference, equals(result.monthlyDifference * 24));
-      expect(result.recommendationText, contains('전세가'));
+      expect(result.recommendationText, isA<RentCompareRecommendation>());
+      expect(result.recommendationText,
+          RentCompareRecommendation.jeonseAdvantageous);
     });
 
     test('월세가 유리한 경우 - monthlyDifference가 음수', () {
@@ -60,7 +63,8 @@ void main() {
       // 차이: 600,000 - 1,975,000 = -1,375,000원 (월세 유리)
       expect(result.monthlyDifference, lessThan(0));
       expect(result.isJeonseAdvantageous, isFalse);
-      expect(result.recommendationText, contains('월세가'));
+      expect(result.recommendationText,
+          RentCompareRecommendation.monthlyRentAdvantageous);
     });
 
     test('전세와 월세 비용이 동일한 경우', () {
@@ -84,7 +88,7 @@ void main() {
 
       // Assert
       expect(result.monthlyDifference, equals(0));
-      expect(result.recommendationText, contains('같아요'));
+      expect(result.recommendationText, RentCompareRecommendation.costsEqual);
     });
 
     test('거주 기간에 따라 총 차이가 비례해서 증가한다', () {

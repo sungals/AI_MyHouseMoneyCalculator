@@ -1,3 +1,9 @@
+enum RentCompareRecommendation {
+  jeonseAdvantageous,
+  monthlyRentAdvantageous,
+  costsEqual,
+}
+
 class RentCompareResult {
   final int jeonseMonthlyCost;
   final int rentMonthlyCost;
@@ -5,7 +11,7 @@ class RentCompareResult {
   final int adjustedRentMonthlyCost;
   final int monthlyDifference;
   final int totalDifference;
-  final String recommendationText;
+  final RentCompareRecommendation recommendationText;
   final bool isJeonseAdvantageous;
 
   const RentCompareResult({

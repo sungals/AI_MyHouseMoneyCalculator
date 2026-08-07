@@ -23,10 +23,10 @@ class RentCompareCalculator {
     final isJeonseAdvantageous = monthlyDifference >= 0;
 
     final recommendationText = monthlyDifference > 0
-        ? '전세가 월 ${_formatWon(monthlyDifference)} 유리해요.'
+        ? RentCompareRecommendation.jeonseAdvantageous
         : monthlyDifference < 0
-            ? '월세가 월 ${_formatWon(monthlyDifference.abs())} 유리해요.'
-            : '전세와 월세의 월 비용이 같아요.';
+            ? RentCompareRecommendation.monthlyRentAdvantageous
+            : RentCompareRecommendation.costsEqual;
 
     return RentCompareResult(
       jeonseMonthlyCost: jeonseMonthlyCost,
@@ -38,11 +38,5 @@ class RentCompareCalculator {
       recommendationText: recommendationText,
       isJeonseAdvantageous: isJeonseAdvantageous,
     );
-  }
-
-  String _formatWon(int amount) {
-    final formatted = amount.toString().replaceAllMapped(
-        RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]},');
-    return '$formatted원';
   }
 }
