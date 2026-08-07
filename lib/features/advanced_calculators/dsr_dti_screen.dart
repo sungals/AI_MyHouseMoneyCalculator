@@ -8,6 +8,7 @@ import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/calculation_pdf_exporter.dart';
 import '../../core/utils/money_formatter.dart';
+import '../../core/utils/pdf_export_labels_ko.dart';
 import '../../core/utils/validators.dart';
 import '../../data/models/calculation_history.dart';
 import '../../domain/calculators/dsr_dti_calculator.dart';
@@ -99,6 +100,7 @@ class _DsrDtiScreenState extends ConsumerState<DsrDtiScreen> {
     if (!mounted) return;
     await CalculationPdfExporter.share(
       context,
+      labels: kKoreanPdfExportLabels,
       title: 'DSR/DTI 계산 결과',
       summary: 'DSR ${dsr.toStringAsFixed(1)}%, DTI ${dti.toStringAsFixed(1)}%',
       resultImageBytes: imageBytes,

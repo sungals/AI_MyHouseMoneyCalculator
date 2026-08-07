@@ -7,6 +7,7 @@ import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/calculation_pdf_exporter.dart';
 import '../../core/utils/money_formatter.dart';
+import '../../core/utils/pdf_export_labels_ko.dart';
 import '../../core/utils/share_helper.dart';
 import '../../core/utils/validators.dart';
 import '../../providers/calculation_history_provider.dart';
@@ -116,6 +117,7 @@ ${result.months}개월 총 이자: ${MoneyFormatter.formatWithWon(result.totalIn
     if (!mounted) return;
     await CalculationPdfExporter.share(
       context,
+      labels: kKoreanPdfExportLabels,
       title: '대출이자 계산 결과',
       summary: '월 이자 ${MoneyFormatter.formatWithWon(result.monthlyInterest)}',
       resultImageBytes: imageBytes,

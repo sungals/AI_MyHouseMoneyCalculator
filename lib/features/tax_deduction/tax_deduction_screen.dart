@@ -9,6 +9,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/utils/calculation_pdf_exporter.dart';
 import '../../core/utils/money_formatter.dart';
+import '../../core/utils/pdf_export_labels_ko.dart';
 import '../../core/utils/validators.dart';
 import '../../domain/entities/tax_deduction_input.dart';
 import '../../shared/widgets/disclaimer_box.dart';
@@ -72,6 +73,7 @@ class _TaxDeductionScreenState extends ConsumerState<TaxDeductionScreen> {
     if (!mounted) return;
     await CalculationPdfExporter.share(
       context,
+      labels: kKoreanPdfExportLabels,
       title: '연말정산 세액공제 결과',
       summary: result.message,
       resultImageBytes: imageBytes,

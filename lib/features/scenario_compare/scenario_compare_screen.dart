@@ -7,6 +7,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/utils/calculation_pdf_exporter.dart';
 import '../../core/utils/money_formatter.dart';
+import '../../core/utils/pdf_export_labels_ko.dart';
 import '../../core/utils/share_helper.dart';
 import '../../core/utils/validators.dart';
 import '../../domain/calculators/rent_compare_calculator.dart';
@@ -129,6 +130,7 @@ class _ScenarioCompareScreenState extends State<ScenarioCompareScreen> {
     if (!mounted) return;
     await CalculationPdfExporter.share(
       context,
+      labels: kKoreanPdfExportLabels,
       title: '복수 시나리오 비교 결과',
       summary: _results.first.result.recommendationText,
       resultImageBytes: imageBytes,

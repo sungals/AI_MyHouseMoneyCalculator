@@ -10,6 +10,58 @@ import 'package:share_plus/share_plus.dart';
 
 import 'share_helper.dart';
 
+/// PDF에 찍히는 고정 문구. 지역화는 호출부(표현 계층)가 담당한다.
+class PdfExportLabels {
+  /// 헤더 배지에 들어가는 한 글자 브랜드 마크.
+  final String brandMark;
+
+  /// 제목 위에 붙는 문서 종류 라벨.
+  final String documentTitle;
+
+  /// 요약 카드의 섹션 제목.
+  final String summarySectionTitle;
+
+  /// 계산 결과 key-value 카드의 섹션 제목.
+  final String resultSectionTitle;
+
+  /// 입력값 key-value 카드의 섹션 제목.
+  final String inputSectionTitle;
+
+  /// 문서 하단 면책 문구.
+  final String disclaimer;
+
+  const PdfExportLabels({
+    required this.brandMark,
+    required this.documentTitle,
+    required this.summarySectionTitle,
+    required this.resultSectionTitle,
+    required this.inputSectionTitle,
+    required this.disclaimer,
+  });
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is PdfExportLabels &&
+        other.brandMark == brandMark &&
+        other.documentTitle == documentTitle &&
+        other.summarySectionTitle == summarySectionTitle &&
+        other.resultSectionTitle == resultSectionTitle &&
+        other.inputSectionTitle == inputSectionTitle &&
+        other.disclaimer == disclaimer;
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        brandMark,
+        documentTitle,
+        summarySectionTitle,
+        resultSectionTitle,
+        inputSectionTitle,
+        disclaimer,
+      );
+}
+
 class CalculationPdfExporter {
   CalculationPdfExporter._();
 
@@ -26,6 +78,7 @@ class CalculationPdfExporter {
     BuildContext context, {
     required String title,
     required String summary,
+    required PdfExportLabels labels,
     Map<String, String> input = const {},
     Map<String, String> result = const {},
     Uint8List? resultImageBytes,
@@ -47,22 +100,22 @@ class CalculationPdfExporter {
           if (resultImageBytes != null) {
             // 차트/복잡한 결과 화면은 key-value 재구성 대신 캡처 이미지를 그대로 넣는다.
             return [
-              _header(title, bold),
+              _header(title, labels, bold),
               pw.SizedBox(height: 14),
               _imageCard(resultImageBytes),
               pw.SizedBox(height: 14),
-              _notice(),
+              _notice(labels.disclaimer),
             ];
           }
 
           return [
-            _header(title, bold),
+            _header(title, labels, bold),
             pw.SizedBox(height: 14),
-            _summaryCard(summary, bold),
+            _summaryCard(summary, labels.summarySectionTitle, bold),
             if (result.isNotEmpty) ...[
               pw.SizedBox(height: 14),
               _keyValueCard(
-                title: '계산 결과',
+                title: labels.resultSectionTitle,
                 values: result,
                 accentColor: _primary,
                 bold: bold,
@@ -72,21 +125,21 @@ class CalculationPdfExporter {
             if (input.isNotEmpty) ...[
               pw.SizedBox(height: 14),
               _keyValueCard(
-                title: '입력값',
+                title: labels.inputSectionTitle,
                 values: input,
                 accentColor: _textSecondary,
                 bold: bold,
               ),
             ],
             pw.SizedBox(height: 14),
-            _notice(),
+            _notice(labels.disclaimer),
           ];
         },
       ),
     );
 
     final dir = await getTemporaryDirectory();
-    final fileName = '${_safeFileName(title)}.pdf';
+    final fileName = '${safeFileName(title)}.pdf';
     final file = File('${dir.path}/$fileName');
     await file.writeAsBytes(await doc.save(), flush: true);
     if (!context.mounted) return;
@@ -114,7 +167,11 @@ class CalculationPdfExporter {
     );
   }
 
-  static pw.Widget _header(String title, pw.Font bold) {
+  static pw.Widget _header(
+    String title,
+    PdfExportLabels labels,
+    pw.Font bold,
+  ) {
     return pw.Container(
       width: double.infinity,
       padding: const pw.EdgeInsets.all(20),
@@ -134,7 +191,7 @@ class CalculationPdfExporter {
             ),
             alignment: pw.Alignment.center,
             child: pw.Text(
-              '어',
+              labels.brandMark,
               style: pw.TextStyle(
                 font: bold,
                 fontSize: 20,
@@ -148,7 +205,7 @@ class CalculationPdfExporter {
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
                 pw.Text(
-                  '어떤비용 계산 결과',
+                  labels.documentTitle,
                   style: const pw.TextStyle(
                     fontSize: 10,
                     color: PdfColors.white,
@@ -171,7 +228,11 @@ class CalculationPdfExporter {
     );
   }
 
-  static pw.Widget _summaryCard(String summary, pw.Font bold) {
+  static pw.Widget _summaryCard(
+    String summary,
+    String sectionTitle,
+    pw.Font bold,
+  ) {
     return pw.Container(
       width: double.infinity,
       padding: const pw.EdgeInsets.all(18),
@@ -183,7 +244,7 @@ class CalculationPdfExporter {
       child: pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
-          _sectionLabel('결과 요약', _primary, bold),
+          _sectionLabel(sectionTitle, _primary, bold),
           pw.SizedBox(height: 10),
           pw.Container(
             width: double.infinity,
@@ -338,7 +399,7 @@ class CalculationPdfExporter {
     );
   }
 
-  static pw.Widget _notice() {
+  static pw.Widget _notice(String disclaimer) {
     return pw.Container(
       width: double.infinity,
       padding: const pw.EdgeInsets.all(14),
@@ -360,7 +421,7 @@ class CalculationPdfExporter {
           pw.SizedBox(width: 8),
           pw.Expanded(
             child: pw.Text(
-              '본 계산 결과는 참고용입니다. 실제 계약 전 전문가와 관련 기관에 확인하세요.',
+              disclaimer,
               style: const pw.TextStyle(
                 fontSize: 10,
                 color: _textSecondary,
@@ -373,8 +434,16 @@ class CalculationPdfExporter {
     );
   }
 
-  static String _safeFileName(String title) {
-    final safeTitle = title.replaceAll(RegExp(r'[^a-zA-Z0-9가-힣_-]'), '_');
+  /// 파일명에 쓸 수 없는 문자를 밑줄로 바꾼다.
+  ///
+  /// 한글 음절 영역(U+AC00~U+D7A3)은 유니코드 이스케이프로 표기해 이 파일에
+  /// 한글 리터럴이 남지 않게 한다. 허용 문자 집합은 이전과 동일하다.
+  @visibleForTesting
+  static String safeFileName(String title) {
+    final safeTitle = title.replaceAll(
+      RegExp('[^a-zA-Z0-9\u{AC00}-\u{D7A3}_-]'),
+      '_',
+    );
     return '${safeTitle}_${DateTime.now().millisecondsSinceEpoch}';
   }
 }
