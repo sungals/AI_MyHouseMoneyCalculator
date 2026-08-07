@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:house_money_calculator/domain/calculators/monthly_expense_calculator.dart';
 import 'package:house_money_calculator/domain/entities/monthly_expense_input.dart';
+import 'package:house_money_calculator/domain/entities/monthly_expense_result.dart';
 
 void main() {
   late MonthlyExpenseCalculator calculator;
@@ -85,9 +86,12 @@ void main() {
       final result = calculator.calculate(input);
 
       // Assert
+      expect(result.breakdown, isA<Map<MonthlyExpenseCategory, int>>());
       expect(result.breakdown.length, equals(8));
-      expect(result.breakdown.containsKey('주거비'), isTrue);
-      expect(result.breakdown.containsKey('기타'), isTrue);
+      expect(
+          result.breakdown.containsKey(MonthlyExpenseCategory.housing), isTrue);
+      expect(
+          result.breakdown.containsKey(MonthlyExpenseCategory.other), isTrue);
     });
   });
 }
