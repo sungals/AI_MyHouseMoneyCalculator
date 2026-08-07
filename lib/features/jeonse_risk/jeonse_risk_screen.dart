@@ -14,13 +14,13 @@ import '../../data/models/calculation_history.dart';
 import '../../domain/entities/jeonse_risk_input.dart';
 import '../../domain/entities/jeonse_risk_result.dart';
 import '../../providers/calculation_history_provider.dart';
-import 'jeonse_risk_localizations.dart';
 import '../../shared/widgets/disclaimer_box.dart';
 import '../../shared/widgets/help_icon.dart';
 import '../../shared/widgets/money_input_field.dart';
 import '../../shared/widgets/primary_button.dart';
 import '../../shared/widgets/result_action_buttons.dart';
 import 'jeonse_risk_controller.dart';
+import 'jeonse_risk_localizations.dart';
 
 class JeonseRiskScreen extends ConsumerStatefulWidget {
   const JeonseRiskScreen({super.key});

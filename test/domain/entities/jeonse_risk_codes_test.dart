@@ -106,4 +106,183 @@ void main() {
     expect(result.seniorDebtRatio, 0);
     expect(result.combinedDebtRatio, 0);
   });
+
+  // Comprehensive enum member isolation tests
+  // Ensures every enum member's condition is mapped correctly
+
+  group('JeonseRiskWarning isolation', () {
+    test('seniorDebtOver50: 선순위채권 비율 50% 이상이면 나온다', () {
+      final result = calculator.calculate(buildInput(seniorDebt: 100000000));
+      expect(result.warnings, contains(JeonseRiskWarning.seniorDebtOver50));
+      expect(result.warnings,
+          isNot(contains(JeonseRiskWarning.seniorDebtOver30)));
+    });
+
+    test('seniorDebtOver30: 선순위채권 비율 30% 이상 50% 미만이면 나온다', () {
+      final result = calculator.calculate(buildInput(seniorDebt: 60000000));
+      expect(result.warnings, contains(JeonseRiskWarning.seniorDebtOver30));
+      expect(result.warnings,
+          isNot(contains(JeonseRiskWarning.seniorDebtOver50)));
+    });
+
+    test('combinedOver90: 보증금+선순위채권 비율 90% 이상이면 나온다', () {
+      final result = calculator.calculate(
+          buildInput(deposit: 180000000, seniorDebt: 0));
+      expect(result.warnings, contains(JeonseRiskWarning.combinedOver90));
+      expect(result.warnings,
+          isNot(contains(JeonseRiskWarning.combinedOver80)));
+    });
+
+    test('combinedOver80: 보증금+선순위채권 비율 80% 이상 90% 미만이면 나온다',
+        () {
+      final result =
+          calculator.calculate(buildInput(deposit: 160000000, seniorDebt: 0));
+      expect(result.warnings, contains(JeonseRiskWarning.combinedOver80));
+      expect(result.warnings,
+          isNot(contains(JeonseRiskWarning.combinedOver90)));
+    });
+
+    test('ownerMismatch: 소유자 미일치이면 나온다', () {
+      final result = calculator.calculate(buildInput(ownerMatched: false));
+      expect(result.warnings, contains(JeonseRiskWarning.ownerMismatch));
+    });
+
+    test('guaranteeInsuranceUncertain: 보증보험 불가능이면 나온다', () {
+      final result =
+          calculator.calculate(buildInput(canJoinGuaranteeInsurance: false));
+      expect(result.warnings,
+          contains(JeonseRiskWarning.guaranteeInsuranceUncertain));
+    });
+
+    test('moveInNotPlanned: 전입신고 미예정이면 나온다', () {
+      final result =
+          calculator.calculate(buildInput(willReportMoveIn: false));
+      expect(result.warnings, contains(JeonseRiskWarning.moveInNotPlanned));
+    });
+
+    test('fixedDateNotPlanned: 확정일자 미예정이면 나온다', () {
+      final result =
+          calculator.calculate(buildInput(willGetFixedDate: false));
+      expect(result.warnings, contains(JeonseRiskWarning.fixedDateNotPlanned));
+    });
+  });
+
+  group('JeonseRiskCheck isolation', () {
+    test('seniorDebtExists: 선순위채권 존재 (0% 초과 30% 미만)하면 나온다', () {
+      final result = calculator.calculate(buildInput(seniorDebt: 30000000));
+      expect(result.checklist, contains(JeonseRiskCheck.seniorDebtExists));
+    });
+
+    test('combinedOver70: 보증금+선순위채권 비율 70% 이상 80% 미만이면 나온다',
+        () {
+      final result =
+          calculator.calculate(buildInput(deposit: 140000000, seniorDebt: 0));
+      expect(result.checklist, contains(JeonseRiskCheck.combinedOver70));
+    });
+
+    test('taxArrearsUnchecked: 세금 체납 확인 미완료이면 나온다', () {
+      final result = calculator.calculate(buildInput(checkedTaxArrears: false));
+      expect(result.checklist, contains(JeonseRiskCheck.taxArrearsUnchecked));
+    });
+  });
+
+  group('JeonseRiskAction isolation', () {
+    test(
+        'checkNearbyPricesAndInsuranceLimit: 전세가율 80%대에서 나온다',
+        () {
+      final result = calculator.calculate(buildInput(deposit: 170000000));
+      expect(result.actionItems,
+          contains(JeonseRiskAction.checkNearbyPricesAndInsuranceLimit));
+      expect(result.actionItems,
+          isNot(contains(JeonseRiskAction.lowerDepositOrCheckInsurance)));
+    });
+
+    test(
+        'clearSeniorDebtBeforeBalance: 선순위채권 비율 50% 이상이면 나온다',
+        () {
+      final result = calculator.calculate(buildInput(seniorDebt: 100000000));
+      expect(result.actionItems,
+          contains(JeonseRiskAction.clearSeniorDebtBeforeBalance));
+    });
+
+    test(
+        'verifySeniorDebtMaxAndClearance: 선순위채권 비율 30~50% 미만이면 나온다',
+        () {
+      final result = calculator.calculate(buildInput(seniorDebt: 60000000));
+      expect(result.actionItems,
+          contains(JeonseRiskAction.verifySeniorDebtMaxAndClearance));
+      expect(result.actionItems,
+          isNot(contains(JeonseRiskAction.clearSeniorDebtBeforeBalance)));
+    });
+
+    test(
+        'holdOrRenegotiate: 보증금+선순위채권 비율 90% 이상이면 나온다',
+        () {
+      final result = calculator.calculate(
+          buildInput(deposit: 180000000, seniorDebt: 0));
+      expect(result.actionItems, contains(JeonseRiskAction.holdOrRenegotiate));
+    });
+
+    test(
+        'checkInsuranceAmountAndClearance: 보증금+선순위채권 비율 80~90% 미만이면 나온다',
+        () {
+      final result = calculator.calculate(
+          buildInput(deposit: 160000000, seniorDebt: 0));
+      expect(result.actionItems,
+          contains(JeonseRiskAction.checkInsuranceAmountAndClearance));
+      expect(result.actionItems,
+          isNot(contains(JeonseRiskAction.holdOrRenegotiate)));
+    });
+
+    test('verifyProxyDocuments: 소유자 미일치이면 나온다', () {
+      final result = calculator.calculate(buildInput(ownerMatched: false));
+      expect(result.actionItems, contains(JeonseRiskAction.verifyProxyDocuments));
+    });
+
+    test('requestTaxCertificate: 세금 체납 확인 미완료이면 나온다', () {
+      final result = calculator.calculate(buildInput(checkedTaxArrears: false));
+      expect(result.actionItems, contains(JeonseRiskAction.requestTaxCertificate));
+    });
+
+    test('checkGuaranteeEligibility: 보증보험 불가능이면 나온다', () {
+      final result =
+          calculator.calculate(buildInput(canJoinGuaranteeInsurance: false));
+      expect(result.actionItems,
+          contains(JeonseRiskAction.checkGuaranteeEligibility));
+    });
+
+    test('reconsiderIfNoMoveIn: 전입신고 미예정이면 나온다', () {
+      final result =
+          calculator.calculate(buildInput(willReportMoveIn: false));
+      expect(result.actionItems,
+          contains(JeonseRiskAction.reconsiderIfNoMoveIn));
+    });
+
+    test('reconsiderIfNoFixedDate: 확정일자 미예정이면 나온다', () {
+      final result =
+          calculator.calculate(buildInput(willGetFixedDate: false));
+      expect(result.actionItems,
+          contains(JeonseRiskAction.reconsiderIfNoFixedDate));
+    });
+  });
+
+  group('JeonseProtectionStep (always present)', () {
+    test('recheckRegistryOnClosing: 항상 보호 절차에 포함된다', () {
+      final result = calculator.calculate(buildInput());
+      expect(result.protectionChecklist,
+          contains(JeonseProtectionStep.recheckRegistryOnClosing));
+    });
+
+    test('reportMoveInAndFixedDate: 항상 보호 절차에 포함된다', () {
+      final result = calculator.calculate(buildInput());
+      expect(result.protectionChecklist,
+          contains(JeonseProtectionStep.reportMoveInAndFixedDate));
+    });
+
+    test('addSpecialTerms: 항상 보호 절차에 포함된다', () {
+      final result = calculator.calculate(buildInput());
+      expect(result.protectionChecklist,
+          contains(JeonseProtectionStep.addSpecialTerms));
+    });
+  });
 }
