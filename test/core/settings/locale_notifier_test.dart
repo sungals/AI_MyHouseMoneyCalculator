@@ -86,5 +86,17 @@ void main() {
     test('기기 로케일이 null이면 ko로 폴백한다', () {
       expect(resolveLocale(null, kSupportedLocales), const Locale('ko'));
     });
+
+    test('폴백은 supported의 첫 항목을 따른다', () {
+      const reordered = [Locale('en'), Locale('ko')];
+
+      expect(resolveLocale(const Locale('ja'), reordered), const Locale('en'));
+      expect(resolveLocale(null, reordered), const Locale('en'));
+    });
+
+    test('supported가 비어 있으면 ko로 폴백한다', () {
+      expect(resolveLocale(const Locale('ja'), const []), const Locale('ko'));
+      expect(resolveLocale(null, const []), const Locale('ko'));
+    });
   });
 }

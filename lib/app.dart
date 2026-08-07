@@ -3,10 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'connectivity/connectivity_notifier.dart';
 import 'core/notifications/firebase_push_service.dart';
+import 'core/settings/locale_notifier.dart';
+import 'core/settings/theme_mode_notifier.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/auth_notifier.dart';
 import 'features/auth/auth_state.dart';
 import 'features/auth/pin/pin_notifier.dart';
+import 'l10n/gen/app_localizations.dart';
 import 'router/app_router.dart';
 import 'shared/widgets/offline_banner.dart';
 
@@ -66,10 +69,18 @@ class _AppState extends ConsumerState<App> with WidgetsBindingObserver {
     });
 
     final isOnline = ref.watch(connectivityProvider);
+    final themeMode = ref.watch(themeModeNotifierProvider);
+    final locale = ref.watch(localeNotifierProvider);
 
     return MaterialApp.router(
-      title: '어떤비용',
+      onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
       theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      themeMode: themeMode,
+      locale: locale,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: kSupportedLocales,
+      localeResolutionCallback: resolveLocale,
       routerConfig: AppRouter.router,
       debugShowCheckedModeBanner: false,
       builder: (context, child) => Column(

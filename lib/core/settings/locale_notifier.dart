@@ -57,12 +57,13 @@ final localeNotifierProvider =
     NotifierProvider<LocaleNotifier, Locale?>(LocaleNotifier.new);
 
 /// MaterialApp.localeResolutionCallback에 연결한다.
-/// 지원하지 않는 기기 로케일은 한국어로 폴백한다.
+/// 지원 목록에 없는 기기 로케일은 목록의 첫 항목으로 폴백한다.
+/// 목록이 비어 있는 경우에만 한국어로 되돌린다.
 Locale resolveLocale(Locale? deviceLocale, Iterable<Locale> supported) {
   if (deviceLocale != null) {
     for (final locale in supported) {
       if (locale.languageCode == deviceLocale.languageCode) return locale;
     }
   }
-  return const Locale('ko');
+  return supported.isEmpty ? const Locale('ko') : supported.first;
 }
