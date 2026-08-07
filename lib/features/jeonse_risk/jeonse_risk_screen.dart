@@ -14,6 +14,7 @@ import '../../data/models/calculation_history.dart';
 import '../../domain/entities/jeonse_risk_input.dart';
 import '../../domain/entities/jeonse_risk_result.dart';
 import '../../providers/calculation_history_provider.dart';
+import 'jeonse_risk_localizations.dart';
 import '../../shared/widgets/disclaimer_box.dart';
 import '../../shared/widgets/help_icon.dart';
 import '../../shared/widgets/money_input_field.dart';
@@ -80,11 +81,11 @@ class _JeonseRiskScreenState extends ConsumerState<JeonseRiskScreen> {
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         typeIndex: CalculationType.jeonseRisk.index,
         title: '전세사기 위험도 체크',
-        summary: result.summaryText,
+        summary: JeonseRiskLocalizations.summaryText(result),
         input: _inputForHistory(),
         result: {
           'riskScore': result.score,
-          'riskLevel': result.level.label,
+          'riskLevel': JeonseRiskLocalizations.levelLabel(result.level),
           'jeonseRatio': result.jeonseRatio,
           'seniorDebtRatio': result.seniorDebtRatio,
           'combinedDebtRatio': result.combinedDebtRatio,
@@ -105,10 +106,12 @@ class _JeonseRiskScreenState extends ConsumerState<JeonseRiskScreen> {
 
     final warnings = result.warnings.isEmpty
         ? '큰 위험 신호 없음'
-        : result.warnings.map((item) => '- $item').join('\n');
+        : result.warnings
+            .map((item) => '- ${JeonseRiskLocalizations.warningText(item)}')
+            .join('\n');
     final text = '''[어떤비용] 전세사기 위험도 체크 결과
 
-${result.summaryText}
+${JeonseRiskLocalizations.summaryText(result)}
 전세가율: ${result.jeonseRatio.toStringAsFixed(1)}%
 선순위채권 비율: ${result.seniorDebtRatio.toStringAsFixed(1)}%
 보증금+선순위채권 비율: ${result.combinedDebtRatio.toStringAsFixed(1)}%
@@ -116,7 +119,7 @@ ${result.summaryText}
 $warnings
 
 권장 조치
-${result.actionItems.map((item) => '- $item').join('\n')}
+${result.actionItems.map((item) => '- ${JeonseRiskLocalizations.actionText(item)}').join('\n')}
 
 ※ 본 체크는 참고용입니다. 계약 전 등기부, 세금 체납, 보증보험, 전문가 확인이 필요합니다.''';
 
@@ -137,7 +140,7 @@ ${result.actionItems.map((item) => '- $item').join('\n')}
     await CalculationPdfExporter.share(
       context,
       title: '전세사기 위험도 체크 결과',
-      summary: result.summaryText,
+      summary: JeonseRiskLocalizations.summaryText(result),
       resultImageBytes: imageBytes,
       input: {
         '주택 예상 시세': MoneyFormatter.formatWithWon(
@@ -153,14 +156,18 @@ ${result.actionItems.map((item) => '- $item').join('\n')}
       },
       result: {
         '위험 점수': '${result.score}점',
-        '위험 등급': result.level.label,
+        '위험 등급': JeonseRiskLocalizations.levelLabel(result.level),
         '전세가율': '${result.jeonseRatio.toStringAsFixed(1)}%',
         '선순위채권 비율': '${result.seniorDebtRatio.toStringAsFixed(1)}%',
         '보증금+선순위채권 비율': '${result.combinedDebtRatio.toStringAsFixed(1)}%',
         '주요 경고': result.warnings.isEmpty
             ? '큰 위험 신호 없음'
-            : result.warnings.join(' / '),
-        '권장 조치': result.actionItems.join(' / '),
+            : result.warnings
+                .map((w) => JeonseRiskLocalizations.warningText(w))
+                .join(' / '),
+        '권장 조치': result.actionItems
+            .map((a) => JeonseRiskLocalizations.actionText(a))
+            .join(' / '),
       },
     );
   }
@@ -395,7 +402,7 @@ class _ResultCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      result.summaryText,
+                      JeonseRiskLocalizations.summaryText(result),
                       style: AppTextStyles.heading2.copyWith(color: color),
                     ),
                   ),
@@ -404,7 +411,7 @@ class _ResultCard extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                result.levelDescription,
+                JeonseRiskLocalizations.levelDescription(result.level),
                 style: AppTextStyles.bodySecondary,
               ),
               const SizedBox(height: 20),
@@ -429,26 +436,37 @@ class _ResultCard extends StatelessWidget {
               if (result.warnings.isNotEmpty) ...[
                 Text('주의 항목', style: AppTextStyles.label),
                 const SizedBox(height: 8),
-                ...result.warnings.map((item) => _Bullet(item, color: color)),
+                ...result.warnings.map((item) => _Bullet(
+                      JeonseRiskLocalizations.warningText(item),
+                      color: color,
+                    )),
               ],
               const SizedBox(height: 12),
               Text('권장 조치', style: AppTextStyles.label),
               const SizedBox(height: 8),
               ...result.actionItems.map(
-                (item) => _Bullet(item, color: AppColors.primary),
+                (item) => _Bullet(
+                  JeonseRiskLocalizations.actionText(item),
+                  color: AppColors.primary,
+                ),
               ),
               if (result.checklist.isNotEmpty) ...[
                 const SizedBox(height: 12),
                 Text('추가 확인', style: AppTextStyles.label),
                 const SizedBox(height: 8),
-                ...result.checklist.map(
-                    (item) => _Bullet(item, color: AppColors.textSecondary)),
+                ...result.checklist.map((item) => _Bullet(
+                      JeonseRiskLocalizations.checkText(item),
+                      color: AppColors.textSecondary,
+                    )),
               ],
               const SizedBox(height: 12),
               Text('보호 절차 체크리스트', style: AppTextStyles.label),
               const SizedBox(height: 8),
               ...result.protectionChecklist.map(
-                (item) => _Bullet(item, color: AppColors.positive),
+                (item) => _Bullet(
+                  JeonseRiskLocalizations.protectionStepText(item),
+                  color: AppColors.positive,
+                ),
               ),
             ],
           ),
