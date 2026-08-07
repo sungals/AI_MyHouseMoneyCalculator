@@ -122,5 +122,19 @@ void main() {
       expect(MoneyFormatter.formatCompact(999500, MoneyFormatStyle.western),
           'KRW 999.5K');
     });
+
+    test('정확한 단위 경계값을 올바르게 포맷한다', () {
+      // K 단위 시작: 1000원 = 1K
+      expect(MoneyFormatter.formatCompact(1000, MoneyFormatStyle.western),
+          'KRW 1K');
+
+      // M 단위 시작: 1,000,000원 = 1M
+      expect(MoneyFormatter.formatCompact(1000000, MoneyFormatStyle.western),
+          'KRW 1M');
+
+      // B 단위 시작: 1,000,000,000원 = 1B
+      expect(MoneyFormatter.formatCompact(1000000000, MoneyFormatStyle.western),
+          'KRW 1B');
+    });
   });
 }

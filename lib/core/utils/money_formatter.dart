@@ -49,39 +49,34 @@ class MoneyFormatter {
   static String _formatWestern(int amount) {
     if (amount <= 0) return '';
 
-    // B unit (billion)
-    if (amount >= 1000000000) {
-      final trimmed = _trim(amount / 1000000000);
-      // 1000B is not a valid notation; would need higher unit (not defined)
-      return 'KRW ${trimmed}B';
-    }
+    const units = [
+      (divisor: 1000000000, suffix: 'B'),
+      (divisor: 1000000, suffix: 'M'),
+      (divisor: 1000, suffix: 'K'),
+    ];
 
-    // M unit (million)
-    if (amount >= 1000000) {
-      final trimmed = _trim(amount / 1000000);
-      if (double.parse(trimmed) >= 1000) {
-        // Promote to B
-        return 'KRW 1B';
-      }
-      return 'KRW ${trimmed}M';
-    }
+    for (int i = 0; i < units.length; i++) {
+      final unit = units[i];
 
-    // K unit (thousand)
-    if (amount >= 1000) {
-      final trimmed = _trim(amount / 1000);
-      if (double.parse(trimmed) >= 1000) {
-        // Promote to M
-        return 'KRW 1M';
+      if (amount >= unit.divisor) {
+        final scaled = amount / unit.divisor;
+        final rounded = (scaled * 10).round() / 10;
+
+        if (rounded >= 1000 && i > 0) {
+          // Promote to the next larger unit (previous in list)
+          final promotedUnit = units[i - 1];
+          return 'KRW 1${promotedUnit.suffix}';
+        }
+
+        return 'KRW ${_formatValue(rounded)}${unit.suffix}';
       }
-      return 'KRW ${trimmed}K';
     }
 
     return 'KRW $amount';
   }
 
   /// 소수 첫째 자리까지 쓰되 .0은 떼어낸다.
-  static String _trim(double value) {
-    final rounded = (value * 10).round() / 10;
+  static String _formatValue(double rounded) {
     return rounded == rounded.truncateToDouble()
         ? rounded.truncate().toString()
         : rounded.toString();
