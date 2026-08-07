@@ -13,6 +13,7 @@ import '../auth/auth_state.dart';
 import '../auth/pin/biometric_auth_service.dart';
 import '../auth/pin/pin_notifier.dart';
 import '../auth/pin/pin_state.dart';
+import 'theme_locale_section.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -96,6 +97,14 @@ class SettingsScreen extends ConsumerWidget {
               ]),
               const SizedBox(height: 24),
             ],
+
+            // ── 테마·언어 ────────────────────────────
+            const _Label('설정'),
+            _SettingsCard(children: [
+              const ThemeLocaleSection(),
+            ]),
+
+            const SizedBox(height: 24),
 
             // ── 앱 정보 ───────────────────────────────
             const _Label('앱 정보'),
