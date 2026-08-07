@@ -1,3 +1,7 @@
+enum ContractRenewalSummary {
+  renewalClaimIncreaseLimitApplied,
+}
+
 class ContractRenewalResult {
   final int currentDeposit;
   final int currentMonthlyRent;
@@ -6,7 +10,7 @@ class ContractRenewalResult {
   final int maxMonthlyRent;
   final int depositIncrease;
   final int monthlyRentIncrease;
-  final String summaryText;
+  final ContractRenewalSummary summaryText;
 
   const ContractRenewalResult({
     required this.currentDeposit,

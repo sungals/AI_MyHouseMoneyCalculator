@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:house_money_calculator/domain/calculators/contract_renewal_calculator.dart';
 import 'package:house_money_calculator/domain/entities/contract_renewal_input.dart';
+import 'package:house_money_calculator/domain/entities/contract_renewal_result.dart';
 
 void main() {
   group('ContractRenewalCalculator', () {
@@ -17,6 +18,9 @@ void main() {
       expect(result.maxMonthlyRent, 525000);
       expect(result.depositIncrease, 5000000);
       expect(result.monthlyRentIncrease, 25000);
+      expect(result.summaryText, isA<ContractRenewalSummary>());
+      expect(result.summaryText,
+          ContractRenewalSummary.renewalClaimIncreaseLimitApplied);
     });
   });
 }
