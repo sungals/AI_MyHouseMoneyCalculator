@@ -99,7 +99,7 @@ class SettingsScreen extends ConsumerWidget {
             ],
 
             // ── 테마·언어 ────────────────────────────
-            const _Label('설정'),
+            const _Label('테마·언어'),
             const _SettingsCard(children: [
               ThemeLocaleSection(),
             ]),
