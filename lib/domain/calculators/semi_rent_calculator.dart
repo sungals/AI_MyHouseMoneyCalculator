@@ -12,10 +12,10 @@ class SemiRentCalculator {
     final isOverpriced = monthlyDifference > 0;
 
     final summaryText = monthlyDifference > 0
-        ? '입력한 월세는 전환율 기준보다 월 ${_formatWon(monthlyDifference)} 높아요.\n${input.months}개월 기준 약 ${_formatWon(totalDifference.abs())} 차이입니다.'
+        ? SemiRentSummary.actualRentHigherThanFairRent
         : monthlyDifference < 0
-            ? '입력한 월세는 전환율 기준보다 월 ${_formatWon(monthlyDifference.abs())} 낮아요.\n${input.months}개월 기준 약 ${_formatWon(totalDifference.abs())} 유리합니다.'
-            : '입력한 월세가 전환율 기준과 동일해요.';
+            ? SemiRentSummary.actualRentLowerThanFairRent
+            : SemiRentSummary.actualRentEqualsFairRent;
 
     return SemiRentResult(
       reducedDeposit: reducedDeposit,
@@ -26,11 +26,5 @@ class SemiRentCalculator {
       summaryText: summaryText,
       isOverpriced: isOverpriced,
     );
-  }
-
-  String _formatWon(int amount) {
-    final formatted = amount.toString().replaceAllMapped(
-        RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]},');
-    return '$formatted원';
   }
 }

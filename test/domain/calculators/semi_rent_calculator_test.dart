@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:house_money_calculator/domain/calculators/semi_rent_calculator.dart';
 import 'package:house_money_calculator/domain/entities/semi_rent_input.dart';
+import 'package:house_money_calculator/domain/entities/semi_rent_result.dart';
 
 void main() {
   late SemiRentCalculator calculator;
@@ -30,7 +31,8 @@ void main() {
       expect(result.fairMonthlyRent, equals(1250000));
       expect(result.monthlyDifference, equals(250000));
       expect(result.isOverpriced, isTrue);
-      expect(result.summaryText, contains('높아요'));
+      expect(result.summaryText, isA<SemiRentSummary>());
+      expect(result.summaryText, SemiRentSummary.actualRentHigherThanFairRent);
     });
 
     test('월세가 전환율보다 낮을 때 isOverpriced는 false', () {
@@ -50,7 +52,7 @@ void main() {
       // Assert
       expect(result.monthlyDifference, lessThan(0));
       expect(result.isOverpriced, isFalse);
-      expect(result.summaryText, contains('낮아요'));
+      expect(result.summaryText, SemiRentSummary.actualRentLowerThanFairRent);
     });
 
     test('총 차이는 월 차이 * 개월 수와 같다', () {

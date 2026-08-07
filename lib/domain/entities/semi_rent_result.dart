@@ -1,10 +1,16 @@
+enum SemiRentSummary {
+  actualRentHigherThanFairRent,
+  actualRentLowerThanFairRent,
+  actualRentEqualsFairRent,
+}
+
 class SemiRentResult {
   final int reducedDeposit;
   final int fairMonthlyRent;
   final int actualMonthlyRent;
   final int monthlyDifference;
   final int totalDifference;
-  final String summaryText;
+  final SemiRentSummary summaryText;
   final bool isOverpriced;
 
   const SemiRentResult({
