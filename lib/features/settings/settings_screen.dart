@@ -100,8 +100,8 @@ class SettingsScreen extends ConsumerWidget {
 
             // ── 테마·언어 ────────────────────────────
             const _Label('설정'),
-            _SettingsCard(children: [
-              const ThemeLocaleSection(),
+            const _SettingsCard(children: [
+              ThemeLocaleSection(),
             ]),
 
             const SizedBox(height: 24),
