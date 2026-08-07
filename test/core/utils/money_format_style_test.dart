@@ -108,5 +108,19 @@ void main() {
       expect(MoneyFormatter.formatCompact(1234000000, MoneyFormatStyle.western),
           'KRW 1.2B');
     });
+
+    test('반올림으로 1000이 되면 다음 단위로 승격한다', () {
+      // K → M 승격: 999999 / 1000 = 999.999 → 1000K가 아니라 1M
+      expect(MoneyFormatter.formatCompact(999999, MoneyFormatStyle.western),
+          'KRW 1M');
+
+      // M → B 승격: 999999999 / 1000000 = 999.999999 → 1000M이 아니라 1B
+      expect(MoneyFormatter.formatCompact(999999999, MoneyFormatStyle.western),
+          'KRW 1B');
+
+      // 승격 경계 아래: 999500은 999.5K로 승격하지 않음
+      expect(MoneyFormatter.formatCompact(999500, MoneyFormatStyle.western),
+          'KRW 999.5K');
+    });
   });
 }

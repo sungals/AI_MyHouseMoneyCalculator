@@ -44,12 +44,38 @@ class MoneyFormatter {
 
   /// 서구식 축약 표기: K(천), M(백만), B(십억) 단위.
   /// 반올림 규칙: 소수점 첫째 자리까지 반올림하되, 결과가 정수면 소수점을 제거한다.
-  /// 예: 1234 → "1.2K", 35000 → "35K", 2500000000 → "2.5B"
+  /// 단위 승격: 반올림 후 값이 1000 이상이면 다음 단위로 승격한다.
+  /// 예: 1234 → "1.2K", 35000 → "35K", 999999 → "1M", 2500000000 → "2.5B"
   static String _formatWestern(int amount) {
     if (amount <= 0) return '';
-    if (amount >= 1000000000) return 'KRW ${_trim(amount / 1000000000)}B';
-    if (amount >= 1000000) return 'KRW ${_trim(amount / 1000000)}M';
-    if (amount >= 1000) return 'KRW ${_trim(amount / 1000)}K';
+
+    // B unit (billion)
+    if (amount >= 1000000000) {
+      final trimmed = _trim(amount / 1000000000);
+      // 1000B is not a valid notation; would need higher unit (not defined)
+      return 'KRW ${trimmed}B';
+    }
+
+    // M unit (million)
+    if (amount >= 1000000) {
+      final trimmed = _trim(amount / 1000000);
+      if (double.parse(trimmed) >= 1000) {
+        // Promote to B
+        return 'KRW 1B';
+      }
+      return 'KRW ${trimmed}M';
+    }
+
+    // K unit (thousand)
+    if (amount >= 1000) {
+      final trimmed = _trim(amount / 1000);
+      if (double.parse(trimmed) >= 1000) {
+        // Promote to M
+        return 'KRW 1M';
+      }
+      return 'KRW ${trimmed}K';
+    }
+
     return 'KRW $amount';
   }
 
