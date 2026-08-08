@@ -2,12 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:house_money_calculator/features/jeonse_risk/jeonse_risk_screen.dart';
+import 'package:house_money_calculator/l10n/gen/app_localizations.dart';
 
 void main() {
   testWidgets('전세사기 위험도 체크 결과와 액션을 표시한다', (tester) async {
     await tester.pumpWidget(
       const ProviderScope(
-        child: MaterialApp(home: JeonseRiskScreen()),
+        child: MaterialApp(
+          locale: Locale('ko'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: JeonseRiskScreen(),
+        ),
       ),
     );
 

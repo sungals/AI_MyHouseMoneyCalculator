@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../l10n/gen/app_localizations.dart';
+
 class PercentInputField extends StatelessWidget {
   final String label;
   final TextEditingController controller;
@@ -21,6 +23,8 @@ class PercentInputField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return TextFormField(
       controller: controller,
       focusNode: focusNode,
@@ -37,7 +41,7 @@ class PercentInputField extends StatelessWidget {
       },
       decoration: InputDecoration(
         labelText: label,
-        hintText: '예: 3.5',
+        hintText: l10n.sharedPercentHint,
         suffixText: '%',
       ),
     );

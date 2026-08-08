@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/gen/app_localizations.dart';
 import 'result_ad_banner.dart';
 
 class ResultActionButtons extends StatelessWidget {
   final VoidCallback? onShare;
   final VoidCallback? onSave;
   final VoidCallback? onExportPdf;
-  final String shareLabel;
-  final String saveLabel;
-  final String pdfLabel;
+  final String? shareLabel;
+  final String? saveLabel;
+  final String? pdfLabel;
   final IconData shareIcon;
   final bool showAd;
 
@@ -17,15 +18,20 @@ class ResultActionButtons extends StatelessWidget {
     this.onShare,
     this.onSave,
     this.onExportPdf,
-    this.shareLabel = '공유',
-    this.saveLabel = '저장',
-    this.pdfLabel = 'PDF 내보내기',
+    this.shareLabel,
+    this.saveLabel,
+    this.pdfLabel,
     this.shareIcon = Icons.share_outlined,
     this.showAd = true,
   });
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final effectiveShareLabel = shareLabel ?? l10n.sharedShareAction;
+    final effectiveSaveLabel = saveLabel ?? l10n.commonSave;
+    final effectivePdfLabel = pdfLabel ?? l10n.sharedExportPdfAction;
+
     if (onShare == null && onSave == null && onExportPdf == null) {
       return const SizedBox.shrink();
     }
@@ -40,7 +46,7 @@ class ResultActionButtons extends StatelessWidget {
                   child: OutlinedButton.icon(
                     onPressed: onShare,
                     icon: Icon(shareIcon, size: 18),
-                    label: Text(shareLabel),
+                    label: Text(effectiveShareLabel),
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size(0, 48),
                     ),
@@ -52,7 +58,7 @@ class ResultActionButtons extends StatelessWidget {
                   child: ElevatedButton.icon(
                     onPressed: onSave,
                     icon: const Icon(Icons.bookmark_add_outlined, size: 18),
-                    label: Text(saveLabel),
+                    label: Text(effectiveSaveLabel),
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size(0, 48),
                     ),
@@ -65,7 +71,7 @@ class ResultActionButtons extends StatelessWidget {
           OutlinedButton.icon(
             onPressed: onExportPdf,
             icon: const Icon(Icons.picture_as_pdf_outlined, size: 18),
-            label: Text(pdfLabel),
+            label: Text(effectivePdfLabel),
             style: OutlinedButton.styleFrom(
               minimumSize: const Size(double.infinity, 48),
             ),

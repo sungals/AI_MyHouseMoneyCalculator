@@ -4,10 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../../core/constants/app_constants.dart';
-import '../../core/constants/disclaimer_texts.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_text_styles.dart';
+import '../../core/theme/app_palette.dart';
+import '../../core/theme/app_typography.dart';
 import '../../core/notifications/firebase_push_service.dart';
+import '../../l10n/gen/app_localizations.dart';
 import '../auth/auth_notifier.dart';
 import '../auth/auth_state.dart';
 import '../auth/pin/biometric_auth_service.dart';
@@ -20,14 +20,16 @@ class SettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final palette = context.palette;
     final authState = ref.watch(authNotifierProvider);
     final pinState = ref.watch(pinNotifierProvider);
     final isLoggedIn = authState is AppAuthAuthenticated;
     final email = FirebaseAuth.instance.currentUser?.email;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(title: const Text('설정')),
+      backgroundColor: palette.background,
+      appBar: AppBar(title: Text(l10n.settingsTitle)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(
           horizontal: AppConstants.horizontalPadding,
@@ -37,17 +39,17 @@ class SettingsScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // ── 계정 ──────────────────────────────────
-            const _Label('계정'),
+            _Label(l10n.settingsSectionAccount),
             if (isLoggedIn) ...[
               _SettingsCard(children: [
                 _InfoRow(
                   icon: Icons.account_circle_outlined,
-                  title: email ?? '로그인됨',
+                  title: email ?? l10n.settingsSignedIn,
                 ),
                 const _Divider(),
                 _ActionRow(
                   icon: Icons.manage_accounts_outlined,
-                  title: '계정 관리',
+                  title: l10n.settingsAccountManage,
                   onTap: () => context.push('/account-manage'),
                 ),
               ]),
@@ -55,7 +57,7 @@ class SettingsScreen extends ConsumerWidget {
               _SettingsCard(children: [
                 _ActionRow(
                   icon: Icons.login,
-                  title: '로그인',
+                  title: l10n.settingsSignIn,
                   onTap: () => context.push('/login'),
                 ),
               ]),
@@ -65,20 +67,20 @@ class SettingsScreen extends ConsumerWidget {
 
             // ── 보안 (로그인 시만) ─────────────────────
             if (isLoggedIn) ...[
-              const _Label('보안'),
+              _Label(l10n.settingsSectionSecurity),
               _SettingsCard(children: [
                 _PinRow(pinState: pinState, ref: ref),
                 if (pinState is PinEnabled) ...[
                   const _Divider(),
                   _ActionRow(
                     icon: Icons.password_outlined,
-                    title: 'PIN 변경',
+                    title: l10n.settingsPinChange,
                     onTap: () => context.push('/pin-change'),
                   ),
                   const _Divider(),
                   _ActionRow(
                     icon: Icons.fingerprint,
-                    title: '생체인증 재설정',
+                    title: l10n.settingsBiometricReset,
                     onTap: () async {
                       await ref.read(biometricAuthServiceProvider).disable();
                       if (context.mounted) context.push('/biometric-setup');
@@ -91,7 +93,7 @@ class SettingsScreen extends ConsumerWidget {
               const SizedBox(height: 24),
 
               // ── 알림 ──────────────────────────────────
-              const _Label('알림'),
+              _Label(l10n.settingsSectionNotification),
               _SettingsCard(children: [
                 _PushNotificationRow(ref: ref),
               ]),
@@ -99,7 +101,7 @@ class SettingsScreen extends ConsumerWidget {
             ],
 
             // ── 테마·언어 ────────────────────────────
-            const _Label('테마·언어'),
+            _Label(l10n.settingsSectionThemeLanguage),
             const _SettingsCard(children: [
               ThemeLocaleSection(),
             ]),
@@ -107,23 +109,23 @@ class SettingsScreen extends ConsumerWidget {
             const SizedBox(height: 24),
 
             // ── 앱 정보 ───────────────────────────────
-            const _Label('앱 정보'),
+            _Label(l10n.settingsSectionAppInfo),
             _SettingsCard(children: [
               _ActionRow(
                 icon: Icons.help_outline,
-                title: '앱 사용법',
+                title: l10n.settingsAppGuide,
                 onTap: () => context.push('/app-guide'),
               ),
               const _Divider(),
               _ActionRow(
                 icon: Icons.campaign_outlined,
-                title: '공지사항',
+                title: l10n.settingsNotices,
                 onTap: () => context.push('/notices'),
               ),
               const _Divider(),
-              const _InfoRow(
+              _InfoRow(
                 icon: Icons.info_outline,
-                title: '버전',
+                title: l10n.settingsVersion,
                 value: AppConstants.appVersion,
               ),
             ]),
@@ -131,26 +133,26 @@ class SettingsScreen extends ConsumerWidget {
             const SizedBox(height: 24),
 
             // ── 약관 ──────────────────────────────────
-            const _Label('약관'),
+            _Label(l10n.settingsSectionLegal),
             _SettingsCard(children: [
               _ActionRow(
                 icon: Icons.description_outlined,
-                title: '이용약관',
+                title: l10n.settingsTermsOfService,
                 onTap: () => context.push('/terms'),
               ),
               const _Divider(),
               _ActionRow(
                 icon: Icons.privacy_tip_outlined,
-                title: '개인정보 처리방침',
+                title: l10n.settingsPrivacyPolicy,
                 onTap: () => context.push('/privacy'),
               ),
               const _Divider(),
               _ActionRow(
                 icon: Icons.code,
-                title: '오픈소스 라이선스',
+                title: l10n.settingsOpenSourceLicenses,
                 onTap: () => showLicensePage(
                   context: context,
-                  applicationName: AppConstants.appName,
+                  applicationName: l10n.appTitle,
                   applicationVersion: AppConstants.appVersion,
                 ),
               ),
@@ -161,13 +163,13 @@ class SettingsScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppColors.surface,
+                color: palette.surface,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.cardBorder),
+                border: Border.all(color: palette.cardBorder),
               ),
               child: Text(
-                DisclaimerTexts.main,
-                style: AppTextStyles.disclaimer,
+                l10n.sharedDisclaimerMain,
+                style: context.typography.disclaimer,
               ),
             ),
             if (isLoggedIn) ...[
@@ -175,18 +177,18 @@ class SettingsScreen extends ConsumerWidget {
               _SettingsCard(children: [
                 _ActionRow(
                   icon: Icons.logout,
-                  title: '로그아웃',
+                  title: l10n.settingsSignOut,
                   onTap: () => _signOut(context, ref),
                 ),
               ]),
             ],
             if (email == AppConstants.adminEmail) ...[
               const SizedBox(height: 24),
-              const _Label('관리자'),
+              _Label(l10n.settingsSectionAdmin),
               _SettingsCard(children: [
                 _ActionRow(
                   icon: Icons.admin_panel_settings_outlined,
-                  title: '공지사항 관리',
+                  title: l10n.settingsManageNotices,
                   onTap: () => context.push('/admin/notices'),
                 ),
               ]),
@@ -204,7 +206,6 @@ class SettingsScreen extends ConsumerWidget {
     await ref.read(authNotifierProvider.notifier).signOut();
     if (context.mounted) context.go('/login');
   }
-
 }
 
 // ─── Layout helpers ───────────────────────────────────────────────────────────
@@ -217,7 +218,7 @@ class _Label extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 4, bottom: 8),
-      child: Text(text, style: AppTextStyles.label),
+      child: Text(text, style: context.typography.label),
     );
   }
 }
@@ -239,9 +240,9 @@ class _SettingsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.palette.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: context.palette.cardBorder),
       ),
       clipBehavior: Clip.antiAlias,
       child: Column(
@@ -267,12 +268,14 @@ class _ActionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     return ListTile(
-      leading: Icon(icon, color: AppColors.primary, size: 22),
-      title: Text(title, style: const TextStyle(fontSize: 15, color: AppColors.textPrimary)),
-      trailing: const Icon(
+      leading: Icon(icon, color: palette.primary, size: 22),
+      title: Text(title,
+          style: TextStyle(fontSize: 15, color: palette.textPrimary)),
+      trailing: Icon(
         Icons.chevron_right,
-        color: AppColors.textSecondary,
+        color: palette.textSecondary,
         size: 20,
       ),
       onTap: onTap,
@@ -292,10 +295,10 @@ class _InfoRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(icon, color: AppColors.primary, size: 22),
+      leading: Icon(icon, color: context.palette.primary, size: 22),
       title: Text(title, style: const TextStyle(fontSize: 15)),
       trailing: value != null
-          ? Text(value!, style: AppTextStyles.bodySecondary)
+          ? Text(value!, style: context.typography.bodySecondary)
           : null,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16),
       visualDensity: VisualDensity.compact,
@@ -312,29 +315,31 @@ class _PinRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final palette = context.palette;
     final enabled = pinState is PinEnabled;
     return ListTile(
       leading: Icon(
         enabled ? Icons.lock : Icons.lock_open,
-        color: enabled ? AppColors.primary : AppColors.textSecondary,
+        color: enabled ? palette.primary : palette.textSecondary,
         size: 22,
       ),
       title: Text(
-        enabled ? '간편로그인 사용 중' : '간편로그인 설정',
+        enabled ? l10n.settingsQuickLoginEnabled : l10n.settingsQuickLoginSetup,
         style: const TextStyle(fontSize: 15),
       ),
       trailing: enabled
           ? TextButton(
               onPressed: () =>
                   ref.read(pinNotifierProvider.notifier).disablePin(),
-              child: const Text(
-                '해제',
-                style: TextStyle(color: AppColors.danger, fontSize: 14),
+              child: Text(
+                l10n.settingsQuickLoginDisable,
+                style: TextStyle(color: palette.danger, fontSize: 14),
               ),
             )
-          : const Icon(
+          : Icon(
               Icons.chevron_right,
-              color: AppColors.textSecondary,
+              color: palette.textSecondary,
               size: 20,
             ),
       onTap: enabled ? null : () => context.push('/pin-setup'),
@@ -351,17 +356,21 @@ class _RequireAuthRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     return SwitchListTile(
-      secondary: const Icon(
+      secondary: Icon(
         Icons.screen_lock_portrait,
-        color: AppColors.primary,
+        color: palette.primary,
         size: 22,
       ),
-      title: const Text('앱 재진입 시 인증', style: TextStyle(fontSize: 15)),
+      title: Text(
+        AppLocalizations.of(context).settingsRequireAuthOnLaunch,
+        style: const TextStyle(fontSize: 15),
+      ),
       value: pinState.requireAuthOnLaunch,
       onChanged: (v) =>
           ref.read(pinNotifierProvider.notifier).setRequireAuthOnLaunch(v),
-      activeColor: AppColors.primary,
+      activeColor: palette.primary,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16),
       visualDensity: VisualDensity.compact,
     );
@@ -399,6 +408,7 @@ class _PushNotificationRowState extends State<_PushNotificationRow> {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     return SwitchListTile(
       secondary: _saving
           ? const SizedBox(
@@ -406,15 +416,18 @@ class _PushNotificationRowState extends State<_PushNotificationRow> {
               height: 22,
               child: CircularProgressIndicator(strokeWidth: 2),
             )
-          : const Icon(
+          : Icon(
               Icons.notifications_active_outlined,
-              color: AppColors.primary,
+              color: palette.primary,
               size: 22,
             ),
-      title: const Text('공지 알림', style: TextStyle(fontSize: 15)),
+      title: Text(
+        AppLocalizations.of(context).settingsNoticePush,
+        style: const TextStyle(fontSize: 15),
+      ),
       value: _enabled,
       onChanged: _saving ? null : _toggle,
-      activeColor: AppColors.primary,
+      activeColor: palette.primary,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16),
       visualDensity: VisualDensity.compact,
     );

@@ -4,8 +4,9 @@ import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/constants/app_constants.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_text_styles.dart';
+import '../../core/theme/app_palette.dart';
+import '../../core/theme/app_typography.dart';
+import '../../l10n/gen/app_localizations.dart';
 import '../../providers/notice_provider.dart';
 
 class NoticeDetailScreen extends ConsumerStatefulWidget {
@@ -29,16 +30,19 @@ class _NoticeDetailScreenState extends ConsumerState<NoticeDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final palette = context.palette;
+    final typo = context.typography;
     final notice = ref.watch(noticeDetailProvider(widget.noticeId));
 
     return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(title: const Text('공지사항')),
+      backgroundColor: palette.background,
+      appBar: AppBar(title: Text(l10n.settingsNotices)),
       body: SafeArea(
         child: notice.when(
           data: (item) {
             if (item == null) {
-              return const Center(child: Text('공지사항을 찾을 수 없습니다'));
+              return Center(child: Text(l10n.settingsNoticeNotFound));
             }
 
             Future.microtask(_markAsRead);
@@ -49,25 +53,25 @@ class _NoticeDetailScreenState extends ConsumerState<NoticeDetailScreen> {
             return ListView(
               padding: const EdgeInsets.all(AppConstants.horizontalPadding),
               children: [
-                Text(item.title, style: AppTextStyles.heading2),
+                Text(item.title, style: typo.heading2),
                 const SizedBox(height: 8),
-                Text(publishedAt, style: AppTextStyles.caption),
+                Text(publishedAt, style: typo.caption),
                 const SizedBox(height: 20),
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppColors.surface,
+                    color: palette.surface,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.cardBorder),
+                    border: Border.all(color: palette.cardBorder),
                   ),
                   child: item.contentHtml != null
                       ? HtmlWidget(
                           item.contentHtml!,
-                          textStyle: AppTextStyles.body.copyWith(height: 1.6),
+                          textStyle: typo.body.copyWith(height: 1.6),
                         )
                       : Text(
                           item.body,
-                          style: AppTextStyles.body.copyWith(height: 1.6),
+                          style: typo.body.copyWith(height: 1.6),
                         ),
                 ),
               ],
@@ -78,9 +82,9 @@ class _NoticeDetailScreenState extends ConsumerState<NoticeDetailScreen> {
             child: Padding(
               padding: const EdgeInsets.all(24),
               child: Text(
-                '공지사항을 불러오지 못했습니다\n$error',
+                l10n.settingsNoticesLoadError('$error'),
                 textAlign: TextAlign.center,
-                style: AppTextStyles.bodySecondary,
+                style: typo.bodySecondary,
               ),
             ),
           ),

@@ -1,22 +1,37 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+class NotificationLabels {
+  final String noticeChannelName;
+  final String noticeChannelDescription;
+  final String noticeFallbackTitle;
+
+  const NotificationLabels({
+    required this.noticeChannelName,
+    required this.noticeChannelDescription,
+    required this.noticeFallbackTitle,
+  });
+
+  static const fallback = NotificationLabels(
+    noticeChannelName: 'Notice',
+    noticeChannelDescription: 'New notice alerts',
+    noticeFallbackTitle: 'Notice',
+  );
+}
+
 class LocalNotificationService {
   LocalNotificationService();
 
   final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
 
-  static const _androidChannel = AndroidNotificationChannel(
-    'notices',
-    '공지사항',
-    description: '새 공지사항 알림',
-    importance: Importance.high,
-  );
+  NotificationLabels _labels = NotificationLabels.fallback;
 
   Future<void> initialize({
+    NotificationLabels labels = NotificationLabels.fallback,
     void Function(String? payload)? onSelectNotification,
   }) async {
+    _labels = labels;
     const android = AndroidInitializationSettings('@mipmap/ic_launcher');
     const darwin = DarwinInitializationSettings(
       requestAlertPermission: true,
@@ -33,7 +48,14 @@ class LocalNotificationService {
 
     final androidPlugin = _plugin.resolvePlatformSpecificImplementation<
         AndroidFlutterLocalNotificationsPlugin>();
-    await androidPlugin?.createNotificationChannel(_androidChannel);
+    await androidPlugin?.createNotificationChannel(
+      AndroidNotificationChannel(
+        'notices',
+        labels.noticeChannelName,
+        description: labels.noticeChannelDescription,
+        importance: Importance.high,
+      ),
+    );
     await androidPlugin?.requestNotificationsPermission();
 
     final iosPlugin = _plugin.resolvePlatformSpecificImplementation<
@@ -54,19 +76,23 @@ class LocalNotificationService {
       DateTime.now().millisecondsSinceEpoch.remainder(100000),
       title,
       body,
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'notices',
-          '공지사항',
-          channelDescription: '새 공지사항 알림',
-          importance: Importance.high,
-          priority: Priority.high,
-        ),
-        iOS: DarwinNotificationDetails(),
-      ),
+      _notificationDetails,
       payload: noticeId,
     );
   }
+
+  String get noticeFallbackTitle => _labels.noticeFallbackTitle;
+
+  NotificationDetails get _notificationDetails => NotificationDetails(
+        android: AndroidNotificationDetails(
+          'notices',
+          _labels.noticeChannelName,
+          channelDescription: _labels.noticeChannelDescription,
+          importance: Importance.high,
+          priority: Priority.high,
+        ),
+        iOS: const DarwinNotificationDetails(),
+      );
 }
 
 final localNotificationServiceProvider = Provider<LocalNotificationService>(

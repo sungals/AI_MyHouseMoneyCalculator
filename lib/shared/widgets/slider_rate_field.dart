@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_text_styles.dart';
+import '../../core/theme/app_palette.dart';
+import '../../core/theme/app_typography.dart';
 
 class SliderRateField extends StatelessWidget {
   final String label;
@@ -22,18 +22,21 @@ class SliderRateField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+    final typography = context.typography;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(label, style: AppTextStyles.bodySecondary),
+            Text(label, style: typography.bodySecondary),
             Text(
               '${value.toStringAsFixed(1)}%',
-              style: AppTextStyles.body.copyWith(
+              style: typography.body.copyWith(
                 fontWeight: FontWeight.w600,
-                color: AppColors.primary,
+                color: palette.primary,
               ),
             ),
           ],
@@ -49,16 +52,16 @@ class SliderRateField extends StatelessWidget {
             min: min,
             max: max,
             divisions: divisions,
-            activeColor: AppColors.primary,
-            inactiveColor: AppColors.divider,
+            activeColor: palette.primary,
+            inactiveColor: palette.divider,
             onChanged: onChanged,
           ),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('${min.toStringAsFixed(1)}%', style: AppTextStyles.caption),
-            Text('${max.toStringAsFixed(1)}%', style: AppTextStyles.caption),
+            Text('${min.toStringAsFixed(1)}%', style: typography.caption),
+            Text('${max.toStringAsFixed(1)}%', style: typography.caption),
           ],
         ),
       ],

@@ -5,8 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import '../../core/ads/ad_unit_ids.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_text_styles.dart';
+import '../../core/theme/app_palette.dart';
+import '../../core/theme/app_typography.dart';
+import '../../l10n/gen/app_localizations.dart';
 
 class ResultAdBanner extends StatefulWidget {
   final bool enabled;
@@ -87,19 +88,23 @@ class _ResultAdBannerState extends State<ResultAdBanner> {
       return const SizedBox.shrink();
     }
 
+    final palette = context.palette;
+    final typography = context.typography;
+    final l10n = AppLocalizations.of(context);
+
     return Padding(
       padding: const EdgeInsets.only(top: 12),
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: palette.surface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.cardBorder),
+          border: Border.all(color: palette.cardBorder),
         ),
         child: Column(
           children: [
-            Text('광고', style: AppTextStyles.caption),
+            Text(l10n.sharedAdLabel, style: typography.caption),
             const SizedBox(height: 6),
             SizedBox(
               width: _bannerAd!.size.width.toDouble(),

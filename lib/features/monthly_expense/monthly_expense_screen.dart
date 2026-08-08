@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:screenshot/screenshot.dart';
 import '../../core/constants/app_constants.dart';
-import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_palette.dart';
+import '../../core/theme/app_typography.dart';
 import '../../core/utils/calculation_pdf_exporter.dart';
 import '../../core/utils/money_formatter.dart';
 import '../../core/utils/pdf_export_labels_ko.dart';
 import '../../core/utils/share_helper.dart';
+import '../../l10n/gen/app_localizations.dart';
 import '../../providers/calculation_history_provider.dart';
 import '../../data/models/calculation_history.dart';
 import '../../domain/entities/monthly_expense_input.dart';
@@ -78,16 +80,21 @@ class _MonthlyExpenseScreenState extends ConsumerState<MonthlyExpenseScreen> {
     final result = ref.read(monthlyExpenseControllerProvider);
     if (result == null) return;
 
+    final l10n = AppLocalizations.of(context);
     final repo = ref.read(calculationHistoryRepositoryProvider);
     await repo.init();
 
     final history = CalculationHistory(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       typeIndex: CalculationType.monthlyExpense.index,
-      title: '월 고정비 계산',
-      summary: '월 합계 ${MoneyFormatter.formatWithWon(result.totalMonthly)}',
+      // 계약서 §10: 저장 값은 지역화하지 않는다. 이력 화면이 title/summary/input을
+      // 그대로 표시하므로 로케일과 무관하게 한국어 표기를 유지한다.
+      title: CalculationType.monthlyExpense.label,
+      summary: '$_koMonthlyTotalLabel '
+          '${MoneyFormatter.formatWithWon(result.totalMonthly)}',
       input: Map.fromEntries(
-        result.breakdown.entries.map((e) => MapEntry(e.key.label, e.value)),
+        result.breakdown.entries
+            .map((e) => MapEntry(e.key.storageLabel, e.value)),
       ),
       result: {
         'totalMonthly': result.totalMonthly,
@@ -100,7 +107,7 @@ class _MonthlyExpenseScreenState extends ConsumerState<MonthlyExpenseScreen> {
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('계산 결과가 저장되었습니다.')),
+        SnackBar(content: Text(l10n.monthlyExpenseSaved)),
       );
     }
   }
@@ -109,25 +116,32 @@ class _MonthlyExpenseScreenState extends ConsumerState<MonthlyExpenseScreen> {
     final result = ref.read(monthlyExpenseControllerProvider);
     if (result == null) return;
 
-    final breakdown = result.breakdown.entries
-        .where((e) => e.value > 0)
-        .map((e) => '${e.key}: ${MoneyFormatter.formatWithWon(e.value)}')
-        .join('\n');
-
-    final text = '''[어떤비용] 월 고정비 계산 결과
-
-$breakdown
-
-월 합계: ${MoneyFormatter.formatWithWon(result.totalMonthly)}
-연간 합계: ${MoneyFormatter.formatWithWon(result.totalAnnual)}
-
-※ 본 계산 결과는 참고용입니다.''';
+    final l10n = AppLocalizations.of(context);
+    final lines = <String>[
+      l10n.monthlyExpenseShareHeader(l10n.appTitle),
+      '',
+      for (final e in result.breakdown.entries)
+        if (e.value > 0)
+          l10n.monthlyExpenseShareLine(
+            e.key.displayLabel(l10n),
+            MoneyFormatter.formatWithWon(e.value),
+          ),
+      '',
+      l10n.monthlyExpenseShareMonthlyTotal(
+        MoneyFormatter.formatWithWon(result.totalMonthly),
+      ),
+      l10n.monthlyExpenseShareAnnualTotal(
+        MoneyFormatter.formatWithWon(result.totalAnnual),
+      ),
+      '',
+      l10n.monthlyExpenseShareDisclaimer,
+    ];
 
     ShareHelper.shareText(
       context,
-      text: text,
-      subject: '월 고정비 계산 결과',
-      title: '월 고정비 계산 결과',
+      text: lines.join('\n'),
+      subject: l10n.monthlyExpenseShareSubject,
+      title: l10n.monthlyExpenseShareSubject,
     );
   }
 
@@ -135,22 +149,30 @@ $breakdown
     final result = ref.read(monthlyExpenseControllerProvider);
     if (result == null) return;
 
+    final l10n = AppLocalizations.of(context);
     final imageBytes = await _captureResultImage();
     if (!mounted) return;
+    // 계약서 §7: 문서 틀(kKoreanPdfExportLabels)은 pdf* 키가 S10에 있어 Phase 2까지
+    // 한국어 고정이다. 본문 항목은 이 슬라이스 소유이므로 지역화한다.
     await CalculationPdfExporter.share(
       context,
       labels: kKoreanPdfExportLabels,
-      title: '월 고정비 계산 결과',
-      summary: '월 합계 ${MoneyFormatter.formatWithWon(result.totalMonthly)}',
+      title: l10n.monthlyExpenseShareSubject,
+      summary: l10n.monthlyExpenseShareMonthlyTotal(
+        MoneyFormatter.formatWithWon(result.totalMonthly),
+      ),
       resultImageBytes: imageBytes,
       input: {
         for (final entry in result.breakdown.entries)
           if (entry.value > 0)
-            entry.key.label: MoneyFormatter.formatWithWon(entry.value),
+            entry.key.displayLabel(l10n):
+                MoneyFormatter.formatWithWon(entry.value),
       },
       result: {
-        '월 합계': MoneyFormatter.formatWithWon(result.totalMonthly),
-        '연간 합계': MoneyFormatter.formatWithWon(result.totalAnnual),
+        l10n.monthlyExpenseMonthlyTotalLabel:
+            MoneyFormatter.formatWithWon(result.totalMonthly),
+        l10n.monthlyExpenseAnnualTotalLabel:
+            MoneyFormatter.formatWithWon(result.totalAnnual),
       },
     );
   }
@@ -163,70 +185,64 @@ $breakdown
   @override
   Widget build(BuildContext context) {
     final result = ref.watch(monthlyExpenseControllerProvider);
+    final l10n = AppLocalizations.of(context);
+    final palette = context.palette;
+    final typography = context.typography;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(title: const Text('월 고정비 계산')),
+      backgroundColor: palette.background,
+      appBar: AppBar(title: Text(l10n.monthlyExpenseTitle)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppConstants.horizontalPadding),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 8),
-            const _SectionTitle(
-              '월 고정 지출',
-              helpTitle: '월 고정비란?',
-              helpBody: '매달 일정하게 나가는 생활 고정 지출 항목입니다.\n\n'
-                  '• 주거비: 월세 또는 전세 대출 월 이자\n'
-                  '• 관리비: 건물 관리·공용 시설 이용 비용\n'
-                  '• 통신비: 핸드폰·인터넷 요금\n'
-                  '• 교통비: 교통카드·주유비 등\n'
-                  '• 보험료: 생명보험·실손보험 등 월 납부 보험\n'
-                  '• 구독료: 넷플릭스·스포티파이 등 구독 서비스\n'
-                  '• 식비: 외식비·식재료비\n'
-                  '• 기타: 그 외 고정 지출\n\n'
-                  '0원인 항목은 결과에서 제외됩니다.',
+            _SectionTitle(
+              l10n.monthlyExpenseSectionTitle,
+              helpTitle: l10n.monthlyExpenseHelpTitle,
+              helpBody: l10n.monthlyExpenseHelpBody,
             ),
             const SizedBox(height: 12),
             Column(
               children: [
                 _ExpenseField(
-                    label: '주거비 (월세/이자)',
+                    label: l10n.monthlyExpenseHousingFieldLabel,
                     controller: _housing,
                     sliderMax: 3000000,
                     sliderDivisions: 60),
                 _ExpenseField(
-                    label: '관리비',
+                    label: l10n.monthlyExpenseCategoryMaintenance,
                     controller: _maintenance,
                     sliderMax: 500000,
                     sliderDivisions: 50),
                 _ExpenseField(
-                    label: '통신비',
+                    label: l10n.monthlyExpenseCategoryCommunication,
                     controller: _communication,
                     sliderMax: 300000,
                     sliderDivisions: 60),
                 _ExpenseField(
-                    label: '교통비',
+                    label: l10n.monthlyExpenseCategoryTransportation,
                     controller: _transportation,
                     sliderMax: 500000,
                     sliderDivisions: 50),
                 _ExpenseField(
-                    label: '보험료',
+                    label: l10n.monthlyExpenseCategoryInsurance,
                     controller: _insurance,
                     sliderMax: 1000000,
                     sliderDivisions: 100),
                 _ExpenseField(
-                    label: '구독료',
+                    label: l10n.monthlyExpenseCategorySubscription,
                     controller: _subscription,
                     sliderMax: 200000,
                     sliderDivisions: 40),
                 _ExpenseField(
-                    label: '식비',
+                    label: l10n.monthlyExpenseCategoryFood,
                     controller: _food,
                     sliderMax: 2000000,
                     sliderDivisions: 40),
                 _ExpenseField(
-                  label: '기타',
+                  label: l10n.monthlyExpenseCategoryOther,
                   controller: _other,
                   textInputAction: TextInputAction.done,
                   sliderMax: 1000000,
@@ -235,7 +251,8 @@ $breakdown
               ],
             ),
             const SizedBox(height: 24),
-            PrimaryButton(label: '계산하기', onPressed: _calculate),
+            PrimaryButton(
+                label: l10n.monthlyExpenseCalculate, onPressed: _calculate),
             if (result != null) ...[
               const SizedBox(height: 24),
               Screenshot(
@@ -244,16 +261,15 @@ $breakdown
                   width: double.infinity,
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: AppColors.surface,
+                    color: palette.surface,
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: AppColors.cardBorder),
+                    border: Border.all(color: palette.cardBorder),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('계산 결과',
-                          style: TextStyle(
-                              fontSize: 14, color: AppColors.textSecondary)),
+                      Text(l10n.monthlyExpenseResultTitle,
+                          style: typography.bodySecondary),
                       const SizedBox(height: 16),
                       ...result.breakdown.entries
                           .where((e) => e.value > 0)
@@ -263,13 +279,12 @@ $breakdown
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(e.key.label,
-                                        style: const TextStyle(
-                                            fontSize: 14,
-                                            color: AppColors.textSecondary)),
+                                    Text(e.key.displayLabel(l10n),
+                                        style: typography.bodySecondary),
                                     Text(
                                       MoneyFormatter.formatWithWon(e.value),
-                                      style: const TextStyle(fontSize: 14),
+                                      style: typography.body
+                                          .copyWith(fontSize: 14),
                                     ),
                                   ],
                                 ),
@@ -278,15 +293,15 @@ $breakdown
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('월 합계',
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold)),
+                          Text(l10n.monthlyExpenseMonthlyTotalLabel,
+                              style: typography.body
+                                  .copyWith(fontWeight: FontWeight.bold)),
                           Text(
                             MoneyFormatter.formatWithWon(result.totalMonthly),
-                            style: const TextStyle(
+                            style: typography.body.copyWith(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
-                              color: AppColors.primary,
+                              color: palette.primary,
                             ),
                           ),
                         ],
@@ -295,17 +310,12 @@ $breakdown
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('연간 합계',
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  color: AppColors.textSecondary)),
+                          Text(l10n.monthlyExpenseAnnualTotalLabel,
+                              style: typography.bodySecondary),
                           Text(
                             MoneyFormatter.formatWithWon(result.totalAnnual),
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textPrimary,
-                            ),
+                            style: typography.body
+                                .copyWith(fontWeight: FontWeight.w600),
                           ),
                         ],
                       ),
@@ -333,8 +343,35 @@ $breakdown
   }
 }
 
+/// 이력 요약에 저장되는 한국어 라벨. 계약서 §10에 따라 지역화하지 않는다.
+const String _koMonthlyTotalLabel = '월 합계';
+
 extension _MonthlyExpenseCategoryLabel on MonthlyExpenseCategory {
-  String get label {
+  /// 화면·공유 문구에 쓰는 지역화 라벨.
+  String displayLabel(AppLocalizations l10n) {
+    switch (this) {
+      case MonthlyExpenseCategory.housing:
+        return l10n.monthlyExpenseCategoryHousing;
+      case MonthlyExpenseCategory.maintenance:
+        return l10n.monthlyExpenseCategoryMaintenance;
+      case MonthlyExpenseCategory.communication:
+        return l10n.monthlyExpenseCategoryCommunication;
+      case MonthlyExpenseCategory.transportation:
+        return l10n.monthlyExpenseCategoryTransportation;
+      case MonthlyExpenseCategory.insurance:
+        return l10n.monthlyExpenseCategoryInsurance;
+      case MonthlyExpenseCategory.subscription:
+        return l10n.monthlyExpenseCategorySubscription;
+      case MonthlyExpenseCategory.food:
+        return l10n.monthlyExpenseCategoryFood;
+      case MonthlyExpenseCategory.other:
+        return l10n.monthlyExpenseCategoryOther;
+    }
+  }
+
+  /// Hive 이력과 한국어 고정 PDF에 쓰는 키. 계약서 §7·§10에 따라 한국어를 유지한다.
+  /// 값을 바꾸면 이미 저장된 이력과 표기가 어긋난다.
+  String get storageLabel {
     switch (this) {
       case MonthlyExpenseCategory.housing:
         return '주거비';
@@ -369,10 +406,9 @@ class _SectionTitle extends StatelessWidget {
       children: [
         Text(
           text,
-          style: const TextStyle(
+          style: context.typography.label.copyWith(
             fontSize: 15,
             fontWeight: FontWeight.w600,
-            color: AppColors.textSecondary,
           ),
         ),
         if (helpTitle != null) ...[

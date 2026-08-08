@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -14,6 +15,7 @@ import 'core/notifications/firebase_push_service.dart';
 import 'core/notifications/local_notification_service.dart';
 import 'data/local/calculation_history_store.dart';
 import 'data/models/calculation_history.dart';
+import 'l10n/gen/app_localizations.dart';
 import 'router/app_router.dart';
 
 @pragma('vm:entry-point')
@@ -25,6 +27,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
   final notificationService = LocalNotificationService();
   await notificationService.initialize(
+    labels: _notificationLabelsForSystemLocale(),
     onSelectNotification: AppRouter.openNoticeFromPush,
   );
   await FirebasePushService.showRemoteMessage(
@@ -64,14 +67,12 @@ Future<void> bootstrap({
     await FirebaseAuth.instance.signOut();
   }
 
-  if (resetLoginSkipOnNoSession &&
-      FirebaseAuth.instance.currentUser == null) {
+  if (resetLoginSkipOnNoSession && FirebaseAuth.instance.currentUser == null) {
     await Hive.box('app_settings').put('login_skipped', false);
   }
 
   // 미인증 상태에서 이전 세션에서 등록된 stale 토큰을 DB에서 제거
-  if (cleanupStalePushToken &&
-      FirebaseAuth.instance.currentUser == null) {
+  if (cleanupStalePushToken && FirebaseAuth.instance.currentUser == null) {
     try {
       final token = await FirebaseMessaging.instance.getToken();
       if (token != null) {
@@ -87,7 +88,9 @@ Future<void> bootstrap({
 
   final notificationService = LocalNotificationService();
   if (initializeNotifications) {
-    await notificationService.initialize();
+    await notificationService.initialize(
+      labels: _notificationLabelsForSystemLocale(),
+    );
   }
 
   runApp(
@@ -97,5 +100,20 @@ Future<void> bootstrap({
       ],
       child: const App(),
     ),
+  );
+}
+
+NotificationLabels _notificationLabelsForSystemLocale() {
+  final locale = PlatformDispatcher.instance.locale;
+  final supportedLocale = AppLocalizations.supportedLocales
+          .any((supported) => supported.languageCode == locale.languageCode)
+      ? locale
+      : const Locale('en');
+  final l10n = lookupAppLocalizations(supportedLocale);
+
+  return NotificationLabels(
+    noticeChannelName: l10n.notificationNoticeChannelName,
+    noticeChannelDescription: l10n.notificationNoticeChannelDescription,
+    noticeFallbackTitle: l10n.notificationNoticeFallbackTitle,
   );
 }

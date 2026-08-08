@@ -1,0 +1,83 @@
+{
+  "@@locale": "ko",
+  "sharedHomeTab": "홈",
+  "@sharedHomeTab": {
+    "description": "하단 내비게이션 홈 탭"
+  },
+  "sharedHousingTab": "주거",
+  "@sharedHousingTab": {
+    "description": "하단 내비게이션 주거 탭과 주거 계산 카테고리 제목"
+  },
+  "sharedHousingHeadline": "계약과 임대료를\n비교하세요",
+  "@sharedHousingHeadline": {
+    "description": "주거 계산 카테고리 헤드라인"
+  },
+  "sharedHousingDescription": "전세, 월세, 반전세, 계약 갱신처럼 집 계약에 직접 연결되는 계산입니다.",
+  "@sharedHousingDescription": {
+    "description": "주거 계산 카테고리 설명"
+  },
+  "sharedFinanceTab": "금융",
+  "@sharedFinanceTab": {
+    "description": "하단 내비게이션 금융 탭과 금융 계산 카테고리 제목"
+  },
+  "sharedFinanceHeadline": "대출과 세금을\n따져보세요",
+  "@sharedFinanceHeadline": {
+    "description": "금융 계산 카테고리 헤드라인"
+  },
+  "sharedFinanceDescription": "대출 부담, 월 고정비, 세액공제, 거래 비용을 한곳에 모았습니다.",
+  "@sharedFinanceDescription": {
+    "description": "금융 계산 카테고리 설명"
+  },
+  "sharedRecentTab": "최근계산",
+  "@sharedRecentTab": {
+    "description": "하단 내비게이션 최근 계산 탭"
+  },
+  "sharedSettingsTab": "설정",
+  "@sharedSettingsTab": {
+    "description": "하단 내비게이션 설정 탭"
+  },
+  "sharedResetAmount": "초기화",
+  "@sharedResetAmount": {
+    "description": "금액 입력 보조 버튼 초기화"
+  },
+  "sharedPercentHint": "예: 3.5",
+  "@sharedPercentHint": {
+    "description": "퍼센트 입력 필드 예시 힌트"
+  },
+  "sharedShareAction": "공유",
+  "@sharedShareAction": {
+    "description": "결과 액션 공유 버튼"
+  },
+  "sharedExportPdfAction": "PDF 내보내기",
+  "@sharedExportPdfAction": {
+    "description": "결과 액션 PDF 내보내기 버튼"
+  },
+  "sharedDisclaimerMain": "본 앱은 전세, 월세, 대출 이자, 월 고정비 등을 단순 계산하기 위한 참고용 도구입니다.\n실제 대출 가능 여부, 금리, 세금, 보증금 반환 가능성, 계약 위험도는 금융기관, 세무사, 공인중개사 등 전문가에게 반드시 확인하시기 바랍니다.\n본 앱의 계산 결과는 법적·금융적 판단의 근거로 사용할 수 없습니다.",
+  "@sharedDisclaimerMain": {
+    "description": "설정과 공용 면책 박스에 표시하는 긴 면책 문구"
+  },
+  "sharedDisclaimerShort": "본 계산 결과는 참고용입니다. 실제 계약 전 전문가에게 확인하세요.",
+  "@sharedDisclaimerShort": {
+    "description": "계산 결과 하단에 표시하는 짧은 면책 문구"
+  },
+  "sharedAdLabel": "광고",
+  "@sharedAdLabel": {
+    "description": "결과 화면 광고 배너 라벨"
+  },
+  "sharedOfflineBanner": "오프라인 상태입니다",
+  "@sharedOfflineBanner": {
+    "description": "네트워크가 끊겼을 때 표시하는 배너 문구"
+  },
+  "notificationNoticeChannelName": "공지사항",
+  "@notificationNoticeChannelName": {
+    "description": "공지사항 푸시 알림 Android 채널명"
+  },
+  "notificationNoticeChannelDescription": "새 공지사항 알림",
+  "@notificationNoticeChannelDescription": {
+    "description": "공지사항 푸시 알림 Android 채널 설명"
+  },
+  "notificationNoticeFallbackTitle": "공지사항",
+  "@notificationNoticeFallbackTitle": {
+    "description": "원격 푸시에 제목이 없을 때 쓰는 기본 제목"
+  }
+}

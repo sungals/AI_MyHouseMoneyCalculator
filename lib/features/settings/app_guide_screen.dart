@@ -1,8 +1,25 @@
 import 'package:flutter/material.dart';
 
 import '../../core/constants/app_constants.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_text_styles.dart';
+import '../../core/theme/app_palette.dart';
+import '../../core/theme/app_typography.dart';
+import '../../l10n/gen/app_localizations.dart';
+
+// 기능별 강조색. 팔레트에 대응 토큰이 없어 이 화면 안에서만 쓰는 상수다.
+// 라이트 기준 값이므로 다크에서는 _accent 로 밝기를 올려 쓴다.
+const _accentSemiRent = Color(0xFF7C3AED);
+const _accentDsrDti = Color(0xFF0F766E);
+const _accentTaxDeduction = Color(0xFF0891B2);
+const _accentBrokerage = Color(0xFF9333EA);
+const _accentAcquisition = Color(0xFFBE123C);
+
+/// 강조색을 현재 밝기에 맞춘다. 다크에서 원색을 그대로 쓰면 어두운 surface 위
+/// 저대비가 되므로 명도만 올린다. 색상(hue)은 유지해 기능별 구분을 지킨다.
+Color _accent(BuildContext context, Color base) {
+  if (Theme.of(context).brightness != Brightness.dark) return base;
+  final hsl = HSLColor.fromColor(base);
+  return hsl.withLightness((hsl.lightness + 0.25).clamp(0.0, 1.0)).toColor();
+}
 
 class AppGuideScreen extends StatefulWidget {
   const AppGuideScreen({super.key});
@@ -15,103 +32,133 @@ class _AppGuideScreenState extends State<AppGuideScreen> {
   final _controller = PageController();
   int _page = 0;
 
-  late final List<Widget> _pages;
-
   @override
-  void initState() {
-    super.initState();
-    _pages = [
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  /// 페이지 목록은 로케일과 테마에 의존하므로 build 에서 만든다.
+  /// initState 에서 만들면 언어를 바꿔도 이전 언어가 남는다.
+  List<Widget> _buildPages(BuildContext context, AppLocalizations l10n) {
+    return [
       _wrapPage(const _IntroPanel()),
-      _wrapPage(const _CategoryPage(
-        title: '임대차 계산',
-        subtitle: '전월세 비용 비교와 반전세 적정가를 확인합니다.',
+      _wrapPage(_CategoryPage(
+        title: l10n.guideCategoryLeaseTitle,
+        subtitle: l10n.guideCategoryLeaseSubtitle,
         cards: [
           _FeatureGuideCard(
             icon: Icons.compare_arrows_rounded,
-            color: AppColors.primary,
-            title: '전세 vs 월세 비교',
-            summary: '전세 대출이자와 월세를 같은 기간 기준으로 비교합니다.',
-            steps: ['전세 보증금, 대출금, 금리 입력', '월세 보증금과 월세 입력', '월 비용과 총 비용 차이 확인'],
-            preview: _JeonseMoonsePreview(),
+            color: context.palette.primary,
+            title: l10n.guideJeonseRentTitle,
+            summary: l10n.guideJeonseRentSummary,
+            steps: [
+              l10n.guideJeonseRentStep1,
+              l10n.guideJeonseRentStep2,
+              l10n.guideJeonseRentStep3,
+            ],
+            preview: const _JeonseMoonsePreview(),
           ),
           _FeatureGuideCard(
             icon: Icons.swap_horiz_rounded,
-            color: Color(0xFF7C3AED),
-            title: '반전세 계산',
-            summary: '보증금 차액을 월세로 바꿨을 때 적정한지 확인합니다.',
-            steps: ['기존 보증금과 변경 보증금 입력', '월세와 전월세 전환율 입력', '과하거나 유리한 월세인지 확인'],
-            preview: _HalfJeonsePreview(),
+            color: _accent(context, _accentSemiRent),
+            title: l10n.guideSemiRentTitle,
+            summary: l10n.guideSemiRentSummary,
+            steps: [
+              l10n.guideSemiRentStep1,
+              l10n.guideSemiRentStep2,
+              l10n.guideSemiRentStep3,
+            ],
+            preview: const _HalfJeonsePreview(),
           ),
         ],
       )),
-      _wrapPage(const _CategoryPage(
-        title: '대출 · 금융',
-        subtitle: '대출 이자, 상환 한도, 월 지출을 계산합니다.',
+      _wrapPage(_CategoryPage(
+        title: l10n.guideCategoryFinanceTitle,
+        subtitle: l10n.guideCategoryFinanceSubtitle,
         cards: [
           _FeatureGuideCard(
             icon: Icons.account_balance_rounded,
-            color: AppColors.warning,
-            title: '대출이자 계산',
-            summary: '대출금, 금리, 기간으로 월 이자와 총 이자를 계산합니다.',
-            steps: ['대출금 입력', '연 금리와 개월 수 입력', '월 이자와 기간 총 이자 확인'],
-            preview: _LoanInterestPreview(),
+            color: context.palette.warning,
+            title: l10n.guideLoanInterestTitle,
+            summary: l10n.guideLoanInterestSummary,
+            steps: [
+              l10n.guideLoanInterestStep1,
+              l10n.guideLoanInterestStep2,
+              l10n.guideLoanInterestStep3,
+            ],
+            preview: const _LoanInterestPreview(),
           ),
           _FeatureGuideCard(
             icon: Icons.speed_rounded,
-            color: Color(0xFF0F766E),
-            title: 'DSR/DTI 계산',
-            summary: '연소득 대비 대출 상환 부담을 비율로 확인합니다.',
-            steps: ['연소득 입력', '주택담보대출과 기타 대출 입력', 'DSR/DTI 비율 확인'],
-            preview: _DsrDtiPreview(),
+            color: _accent(context, _accentDsrDti),
+            title: l10n.guideDsrDtiTitle,
+            summary: l10n.guideDsrDtiSummary,
+            steps: [
+              l10n.guideDsrDtiStep1,
+              l10n.guideDsrDtiStep2,
+              l10n.guideDsrDtiStep3,
+            ],
+            preview: const _DsrDtiPreview(),
           ),
           _FeatureGuideCard(
             icon: Icons.receipt_long_rounded,
-            color: AppColors.positive,
-            title: '월 고정비 계산',
-            summary: '주거비와 생활비를 합산해 월 지출 구조를 봅니다.',
-            steps: ['월세, 관리비, 통신비 등 항목 입력', '월 합계와 연간 합계 확인', '저장 후 반복 지출 비교'],
-            preview: _MonthlyFixedPreview(),
+            color: context.palette.positive,
+            title: l10n.guideMonthlyExpenseTitle,
+            summary: l10n.guideMonthlyExpenseSummary,
+            steps: [
+              l10n.guideMonthlyExpenseStep1,
+              l10n.guideMonthlyExpenseStep2,
+              l10n.guideMonthlyExpenseStep3,
+            ],
+            preview: const _MonthlyFixedPreview(),
           ),
         ],
       )),
-      _wrapPage(const _CategoryPage(
-        title: '세금 · 비용',
-        subtitle: '주거 관련 세금과 비용을 간이 계산합니다.',
+      _wrapPage(_CategoryPage(
+        title: l10n.guideCategoryTaxTitle,
+        subtitle: l10n.guideCategoryTaxSubtitle,
         cards: [
           _FeatureGuideCard(
             icon: Icons.receipt_outlined,
-            color: Color(0xFF0891B2),
-            title: '연말정산 세액공제',
-            summary: '월세와 전세대출 관련 공제 가능 금액을 간이 계산합니다.',
-            steps: ['소득과 주거 유형 선택', '월세 또는 전세대출 조건 입력', '예상 공제액 확인'],
-            preview: _TaxDeductionPreview(),
+            color: _accent(context, _accentTaxDeduction),
+            title: l10n.guideTaxDeductionTitle,
+            summary: l10n.guideTaxDeductionSummary,
+            steps: [
+              l10n.guideTaxDeductionStep1,
+              l10n.guideTaxDeductionStep2,
+              l10n.guideTaxDeductionStep3,
+            ],
+            preview: const _TaxDeductionPreview(),
           ),
           _FeatureGuideCard(
             icon: Icons.handshake_outlined,
-            color: Color(0xFF9333EA),
-            title: '중개보수 계산',
-            summary: '매매와 임대차 중개보수 상한을 빠르게 확인합니다.',
-            steps: ['거래 유형 선택', '거래 금액 입력', '상한 요율과 예상 보수 확인'],
-            preview: _BrokerFeePreview(),
+            color: _accent(context, _accentBrokerage),
+            title: l10n.guideBrokerageFeeTitle,
+            summary: l10n.guideBrokerageFeeSummary,
+            steps: [
+              l10n.guideBrokerageFeeStep1,
+              l10n.guideBrokerageFeeStep2,
+              l10n.guideBrokerageFeeStep3,
+            ],
+            preview: const _BrokerFeePreview(),
           ),
           _FeatureGuideCard(
             icon: Icons.account_balance_wallet_outlined,
-            color: Color(0xFFBE123C),
-            title: '취득세 계산',
-            summary: '취득가액, 보유 주택 수, 지역 조건으로 간이 계산합니다.',
-            steps: ['취득가액 입력', '보유 주택 수와 조정지역 여부 선택', '세율과 예상 세액 확인'],
-            preview: _AcquisitionTaxPreview(),
+            color: _accent(context, _accentAcquisition),
+            title: l10n.guideAcquisitionTaxTitle,
+            summary: l10n.guideAcquisitionTaxSummary,
+            steps: [
+              l10n.guideAcquisitionTaxStep1,
+              l10n.guideAcquisitionTaxStep2,
+              l10n.guideAcquisitionTaxStep3,
+            ],
+            preview: const _AcquisitionTaxPreview(),
           ),
         ],
       )),
       _wrapPage(const _LastPage()),
     ];
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
   }
 
   Widget _wrapPage(Widget child) {
@@ -128,20 +175,23 @@ class _AppGuideScreenState extends State<AppGuideScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final pages = _buildPages(context, l10n);
+
     return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(title: const Text('앱 설명 및 사용법')),
+      backgroundColor: context.palette.background,
+      appBar: AppBar(title: Text(l10n.guideTitle)),
       body: Column(
         children: [
           Expanded(
             child: PageView(
               controller: _controller,
               onPageChanged: (i) => setState(() => _page = i),
-              children: _pages,
+              children: pages,
             ),
           ),
           _PageDots(
-            count: _pages.length,
+            count: pages.length,
             current: _page,
             onTap: (i) => _controller.animateToPage(
               i,
@@ -171,6 +221,7 @@ class _PageDots extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final primary = context.palette.primary;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(count, (i) {
@@ -185,9 +236,7 @@ class _PageDots extends StatelessWidget {
               width: active ? 18 : 6,
               height: 6,
               decoration: BoxDecoration(
-                color: active
-                    ? AppColors.primary
-                    : AppColors.primary.withOpacity(0.22),
+                color: active ? primary : primary.withOpacity(0.22),
                 borderRadius: BorderRadius.circular(3),
               ),
             ),
@@ -205,12 +254,14 @@ class _IntroPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final palette = context.palette;
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: palette.surface,
         borderRadius: BorderRadius.circular(AppConstants.cardRadius),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: palette.cardBorder),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -231,11 +282,11 @@ class _IntroPanel extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(AppConstants.appName, style: AppTextStyles.heading2),
+                    Text(l10n.appTitle, style: context.typography.heading2),
                     const SizedBox(height: 4),
                     Text(
-                      '계산부터 저장, 공유까지 한 흐름으로 사용하는 생활금융 계산 앱입니다.',
-                      style: AppTextStyles.bodySecondary,
+                      l10n.guideIntroTagline,
+                      style: context.typography.bodySecondary,
                     ),
                   ],
                 ),
@@ -255,35 +306,41 @@ class _StaticFlowPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final palette = context.palette;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFFF3F6FF),
+        // 원래 고정 hex 였다. 다크에서 배경만 밝아지므로 팔레트에서 파생시킨다.
+        color: Color.alphaBlend(
+          palette.primary.withOpacity(0.04),
+          palette.background,
+        ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: palette.cardBorder),
       ),
-      child: const Column(
+      child: Column(
         children: [
           _StaticFlowItem(
             icon: Icons.touch_app_outlined,
-            color: AppColors.primary,
-            title: '1. 계산기 선택',
-            body: '홈에서 필요한 주거 비용 계산기를 고릅니다.',
+            color: palette.primary,
+            title: l10n.guideFlowStep1Title,
+            body: l10n.guideFlowStep1Body,
           ),
-          _StaticFlowArrow(),
+          const _StaticFlowArrow(),
           _StaticFlowItem(
             icon: Icons.edit_note_outlined,
-            color: AppColors.warning,
-            title: '2. 금액과 조건 입력',
-            body: '입력 금액은 3억2천만원처럼 한글 금액으로 함께 표시됩니다.',
+            color: palette.warning,
+            title: l10n.guideFlowStep2Title,
+            body: l10n.guideFlowStep2Body,
           ),
-          _StaticFlowArrow(),
+          const _StaticFlowArrow(),
           _StaticFlowItem(
             icon: Icons.bar_chart_rounded,
-            color: AppColors.positive,
-            title: '3. 결과 저장과 공유',
-            body: '계산 결과를 저장하고 최근계산 탭에서 PDF/CSV로 내보냅니다.',
+            color: palette.positive,
+            title: l10n.guideFlowStep3Title,
+            body: l10n.guideFlowStep3Body,
           ),
         ],
       ),
@@ -306,6 +363,7 @@ class _StaticFlowItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final typo = context.typography;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -323,9 +381,9 @@ class _StaticFlowItem extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: AppTextStyles.heading3.copyWith(fontSize: 16)),
+              Text(title, style: typo.heading3.copyWith(fontSize: 16)),
               const SizedBox(height: 4),
-              Text(body, style: AppTextStyles.bodySecondary),
+              Text(body, style: typo.bodySecondary),
             ],
           ),
         ),
@@ -339,11 +397,11 @@ class _StaticFlowArrow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.only(left: 19, top: 8, bottom: 8),
+    return Padding(
+      padding: const EdgeInsets.only(left: 19, top: 8, bottom: 8),
       child: SizedBox(
         height: 16,
-        child: VerticalDivider(color: AppColors.divider),
+        child: VerticalDivider(color: context.palette.divider),
       ),
     );
   }
@@ -364,12 +422,13 @@ class _CategoryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final typo = context.typography;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: AppTextStyles.heading2),
+        Text(title, style: typo.heading2),
         const SizedBox(height: 4),
-        Text(subtitle, style: AppTextStyles.bodySecondary),
+        Text(subtitle, style: typo.bodySecondary),
         const SizedBox(height: 16),
         ...cards.map((card) => Padding(
               padding: const EdgeInsets.only(bottom: 12),
@@ -401,12 +460,14 @@ class _FeatureGuideCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+    final typo = context.typography;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: palette.surface,
         borderRadius: BorderRadius.circular(AppConstants.cardRadius),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: palette.cardBorder),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -428,9 +489,9 @@ class _FeatureGuideCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: AppTextStyles.heading3),
+                    Text(title, style: typo.heading3),
                     const SizedBox(height: 4),
-                    Text(summary, style: AppTextStyles.bodySecondary),
+                    Text(summary, style: typo.bodySecondary),
                   ],
                 ),
               ),
@@ -482,7 +543,9 @@ class _GuideStepRow extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 10),
-          Expanded(child: Text(text, style: AppTextStyles.bodySecondary)),
+          Expanded(
+            child: Text(text, style: context.typography.bodySecondary),
+          ),
         ],
       ),
     );
@@ -562,7 +625,7 @@ class _TableRow extends StatelessWidget {
         children: [
           Expanded(
             flex: 3,
-            child: Text(label, style: AppTextStyles.bodySecondary),
+            child: Text(label, style: context.typography.bodySecondary),
           ),
           Expanded(
             flex: 2,
@@ -572,7 +635,7 @@ class _TableRow extends StatelessWidget {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: valueColor ?? AppColors.textPrimary,
+                color: valueColor ?? context.palette.textPrimary,
               ),
             ),
           ),
@@ -590,6 +653,9 @@ class _JeonseMoonsePreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final palette = context.palette;
+    final typo = context.typography;
     return Column(
       children: [
         Row(
@@ -598,26 +664,23 @@ class _JeonseMoonsePreview extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.08),
+                  color: palette.primary.withOpacity(0.08),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('전세 월비용',
-                        style: AppTextStyles.caption
-                            .copyWith(color: AppColors.primary)),
+                    Text(l10n.guidePreviewJeonseMonthlyLabel,
+                        style: typo.caption.copyWith(color: palette.primary)),
                     const SizedBox(height: 6),
-                    Text('대출이자',
-                        style:
-                            AppTextStyles.bodySecondary.copyWith(fontSize: 11)),
-                    Text('+ 자기자본 기회비용',
-                        style:
-                            AppTextStyles.bodySecondary.copyWith(fontSize: 11)),
+                    Text(l10n.guidePreviewJeonseItem1,
+                        style: typo.bodySecondary.copyWith(fontSize: 11)),
+                    Text(l10n.guidePreviewJeonseItem2,
+                        style: typo.bodySecondary.copyWith(fontSize: 11)),
                     const SizedBox(height: 6),
-                    const Text('월 116만원',
+                    Text(l10n.guidePreviewJeonseAmount,
                         style: TextStyle(
-                            color: AppColors.primary,
+                            color: palette.primary,
                             fontWeight: FontWeight.w700)),
                   ],
                 ),
@@ -628,26 +691,23 @@ class _JeonseMoonsePreview extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppColors.warning.withOpacity(0.08),
+                  color: palette.warning.withOpacity(0.08),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('월세 월비용',
-                        style: AppTextStyles.caption
-                            .copyWith(color: AppColors.warning)),
+                    Text(l10n.guidePreviewRentMonthlyLabel,
+                        style: typo.caption.copyWith(color: palette.warning)),
                     const SizedBox(height: 6),
-                    Text('월세 + 관리비',
-                        style:
-                            AppTextStyles.bodySecondary.copyWith(fontSize: 11)),
-                    Text('+ 보증금 기회비용',
-                        style:
-                            AppTextStyles.bodySecondary.copyWith(fontSize: 11)),
+                    Text(l10n.guidePreviewRentItem1,
+                        style: typo.bodySecondary.copyWith(fontSize: 11)),
+                    Text(l10n.guidePreviewRentItem2,
+                        style: typo.bodySecondary.copyWith(fontSize: 11)),
                     const SizedBox(height: 6),
-                    const Text('월 145만원',
+                    Text(l10n.guidePreviewRentAmount,
                         style: TextStyle(
-                            color: AppColors.warning,
+                            color: palette.warning,
                             fontWeight: FontWeight.w700)),
                   ],
                 ),
@@ -660,15 +720,15 @@ class _JeonseMoonsePreview extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
           decoration: BoxDecoration(
-            color: AppColors.primary.withOpacity(0.05),
+            color: palette.primary.withOpacity(0.05),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: const Text(
-            '기회비용 = 보증금 × 시중금리 ÷ 12',
+          child: Text(
+            l10n.guidePreviewOpportunityCostFormula,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 11,
-              color: AppColors.primary,
+              color: palette.primary,
               fontWeight: FontWeight.w600,
               fontFamily: 'monospace',
             ),
@@ -685,56 +745,59 @@ class _HalfJeonsePreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final palette = context.palette;
+    final color = _accent(context, _accentSemiRent);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _FormulaBox(
-          formula: '적정월세 = (전세금 − 보증금) × 전환율 ÷ 12',
-          color: Color(0xFF7C3AED),
+        _FormulaBox(
+          formula: l10n.guidePreviewSemiRentFormula,
+          color: color,
         ),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: const Color(0xFF7C3AED).withOpacity(0.07),
+            color: color.withOpacity(0.07),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: const Row(
+          child: Row(
             children: [
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('전환율 법정 상한',
+                    Text(l10n.guidePreviewConversionCapLabel,
                         style: TextStyle(
-                            fontSize: 11, color: AppColors.textSecondary)),
-                    SizedBox(height: 4),
-                    Text('기준금리 + 2%p',
+                            fontSize: 11, color: palette.textSecondary)),
+                    const SizedBox(height: 4),
+                    Text(l10n.guidePreviewConversionCapValue,
                         style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF7C3AED))),
+                            color: color)),
                   ],
                 ),
               ),
               SizedBox(
                   width: 1,
                   height: 36,
-                  child: ColoredBox(color: AppColors.divider)),
-              SizedBox(width: 12),
+                  child: ColoredBox(color: palette.divider)),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('현재 전환율 예시',
+                    Text(l10n.guidePreviewConversionExampleLabel,
                         style: TextStyle(
-                            fontSize: 11, color: AppColors.textSecondary)),
-                    SizedBox(height: 4),
-                    Text('약 4.5%',
+                            fontSize: 11, color: palette.textSecondary)),
+                    const SizedBox(height: 4),
+                    Text(l10n.guidePreviewConversionExampleValue,
                         style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF7C3AED))),
+                            color: color)),
                   ],
                 ),
               ),
@@ -752,18 +815,21 @@ class _LoanInterestPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final palette = context.palette;
+    final typo = context.typography;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _FormulaBox(
-          formula: '월 이자 = 대출금 × 연이율 ÷ 12\n총 이자 = 월 이자 × 기간(개월)',
-          color: AppColors.warning,
+        _FormulaBox(
+          formula: l10n.guidePreviewLoanFormula,
+          color: palette.warning,
         ),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: AppColors.warning.withOpacity(0.07),
+            color: palette.warning.withOpacity(0.07),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Column(
@@ -772,22 +838,25 @@ class _LoanInterestPreview extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('예시: 3억2천 × 4.0% ÷ 12', style: AppTextStyles.caption),
-                  _InfoChip(label: '단리(거치식)', color: AppColors.warning),
+                  Text(l10n.guidePreviewLoanExample, style: typo.caption),
+                  _InfoChip(
+                    label: l10n.guidePreviewLoanInterestType,
+                    color: palette.warning,
+                  ),
                 ],
               ),
               const SizedBox(height: 6),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('월 이자',
+                  Text(l10n.guidePreviewLoanMonthlyLabel,
                       style: TextStyle(
-                          fontSize: 13, color: AppColors.textSecondary)),
-                  Text('1,066,667원',
+                          fontSize: 13, color: palette.textSecondary)),
+                  Text(l10n.guidePreviewLoanMonthlyValue,
                       style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.warning)),
+                          color: palette.warning)),
                 ],
               ),
             ],
@@ -802,17 +871,19 @@ class _LoanInterestPreview extends StatelessWidget {
 class _MonthlyFixedPreview extends StatelessWidget {
   const _MonthlyFixedPreview();
 
-  static const _categories = [
-    (Icons.home_outlined, '주거비'),
-    (Icons.settings_outlined, '관리비'),
-    (Icons.phone_outlined, '통신비'),
-    (Icons.directions_bus_outlined, '교통비'),
-    (Icons.health_and_safety_outlined, '보험료'),
-    (Icons.subscriptions_outlined, '구독료'),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final palette = context.palette;
+    final categories = <(IconData, String)>[
+      (Icons.home_outlined, l10n.guidePreviewExpenseHousing),
+      (Icons.settings_outlined, l10n.guidePreviewExpenseMaintenance),
+      (Icons.phone_outlined, l10n.guidePreviewExpenseCommunication),
+      (Icons.directions_bus_outlined, l10n.guidePreviewExpenseTransport),
+      (Icons.health_and_safety_outlined, l10n.guidePreviewExpenseInsurance),
+      (Icons.subscriptions_outlined, l10n.guidePreviewExpenseSubscription),
+    ];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -823,20 +894,20 @@ class _MonthlyFixedPreview extends StatelessWidget {
           mainAxisSpacing: 6,
           crossAxisSpacing: 6,
           childAspectRatio: 2.4,
-          children: _categories
+          children: categories
               .map((c) => Container(
                     decoration: BoxDecoration(
-                      color: AppColors.positive.withOpacity(0.08),
+                      color: palette.positive.withOpacity(0.08),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(c.$1, size: 13, color: AppColors.positive),
+                        Icon(c.$1, size: 13, color: palette.positive),
                         const SizedBox(width: 4),
                         Text(c.$2,
-                            style: const TextStyle(
-                                fontSize: 11, color: AppColors.textSecondary)),
+                            style: TextStyle(
+                                fontSize: 11, color: palette.textSecondary)),
                       ],
                     ),
                   ))
@@ -846,20 +917,19 @@ class _MonthlyFixedPreview extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
-            color: AppColors.positive.withOpacity(0.1),
+            color: palette.positive.withOpacity(0.1),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: const Row(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('월 합계 → 연간 합계',
-                  style:
-                      TextStyle(fontSize: 12, color: AppColors.textSecondary)),
-              Text('× 12개월 자동 계산',
+              Text(l10n.guidePreviewMonthlyToYearly,
+                  style: TextStyle(fontSize: 12, color: palette.textSecondary)),
+              Text(l10n.guidePreviewTimesTwelve,
                   style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.positive)),
+                      color: palette.positive)),
             ],
           ),
         ),
@@ -874,7 +944,8 @@ class _TaxDeductionPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const color = Color(0xFF0891B2);
+    final l10n = AppLocalizations.of(context);
+    final color = _accent(context, _accentTaxDeduction);
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -882,35 +953,45 @@ class _TaxDeductionPreview extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: color.withOpacity(0.15)),
       ),
-      child: const Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Icon(Icons.home_outlined, size: 14, color: color),
-              SizedBox(width: 4),
-              Text('월세 세액공제',
+              const SizedBox(width: 4),
+              Text(l10n.guidePreviewRentTaxCreditHeader,
                   style: TextStyle(
                       fontSize: 12, fontWeight: FontWeight.w700, color: color)),
             ],
           ),
-          SizedBox(height: 6),
-          _TableRow(label: '총급여 5,500만원 이하', value: '17%', valueColor: color),
-          _TableRow(label: '5,500 ~ 8,000만원', value: '15%', valueColor: color),
-          _TableRow(label: '8,000만원 초과', value: '공제 불가'),
-          Divider(height: 16),
+          const SizedBox(height: 6),
+          _TableRow(
+              label: l10n.guidePreviewSalaryUnder55,
+              value: '17%',
+              valueColor: color),
+          _TableRow(
+              label: l10n.guidePreviewSalary55To80,
+              value: '15%',
+              valueColor: color),
+          _TableRow(
+              label: l10n.guidePreviewSalaryOver80,
+              value: l10n.guidePreviewNotDeductible),
+          const Divider(height: 16),
           Row(
             children: [
               Icon(Icons.apartment_outlined, size: 14, color: color),
-              SizedBox(width: 4),
-              Text('전세대출 소득공제',
+              const SizedBox(width: 4),
+              Text(l10n.guidePreviewJeonseLoanDeductionHeader,
                   style: TextStyle(
                       fontSize: 12, fontWeight: FontWeight.w700, color: color)),
             ],
           ),
-          SizedBox(height: 6),
+          const SizedBox(height: 6),
           _TableRow(
-              label: '원리금 상환액 × 40%', value: '한도 300만원', valueColor: color),
+              label: l10n.guidePreviewPrincipalAndInterest,
+              value: l10n.guidePreviewDeductionLimit,
+              valueColor: color),
         ],
       ),
     );
@@ -923,28 +1004,35 @@ class _DsrDtiPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    final l10n = AppLocalizations.of(context);
+    final palette = context.palette;
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _FormulaBox(
-          formula:
-              'DSR = 모든대출 연간 원리금 ÷ 연소득 × 100%\nDTI = (주담대 원리금 + 기타 이자) ÷ 연소득 × 100%',
-          color: Color(0xFF0F766E),
+          formula: l10n.guidePreviewDsrDtiFormula,
+          color: _accent(context, _accentDsrDti),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         Row(
           children: [
             Expanded(
                 child: _DsrBand(
-                    label: '안전', range: '~40%', color: AppColors.positive)),
-            SizedBox(width: 4),
+                    label: l10n.guidePreviewBandSafe,
+                    range: '~40%',
+                    color: palette.positive)),
+            const SizedBox(width: 4),
             Expanded(
                 child: _DsrBand(
-                    label: '주의', range: '40~60%', color: AppColors.warning)),
-            SizedBox(width: 4),
+                    label: l10n.guidePreviewBandCaution,
+                    range: '40~60%',
+                    color: palette.warning)),
+            const SizedBox(width: 4),
             Expanded(
                 child: _DsrBand(
-                    label: '위험', range: '60%+', color: AppColors.danger)),
+                    label: l10n.guidePreviewBandRisk,
+                    range: '60%+',
+                    color: palette.danger)),
           ],
         ),
       ],
@@ -992,7 +1080,9 @@ class _BrokerFeePreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const color = Color(0xFF9333EA);
+    final l10n = AppLocalizations.of(context);
+    final palette = context.palette;
+    final color = _accent(context, _accentBrokerage);
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -1000,21 +1090,21 @@ class _BrokerFeePreview extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: color.withOpacity(0.15)),
       ),
-      child: const Column(
+      child: Column(
         children: [
           Row(
             children: [
               Expanded(
                 flex: 3,
-                child: Text('거래 유형 / 금액',
+                child: Text(l10n.guidePreviewDealTypeAmount,
                     style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textSecondary)),
+                        color: palette.textSecondary)),
               ),
               Expanded(
                 flex: 2,
-                child: Text('상한 요율',
+                child: Text(l10n.guidePreviewMaxRate,
                     textAlign: TextAlign.end,
                     style: TextStyle(
                         fontSize: 11,
@@ -1023,16 +1113,16 @@ class _BrokerFeePreview extends StatelessWidget {
               ),
             ],
           ),
-          Divider(height: 12),
-          _TableRow(label: '매매 · 5억 미만', value: '0.4%'),
-          _TableRow(label: '매매 · 5억 이상', value: '0.5~0.7%'),
-          _TableRow(label: '임대차 · 1억 미만', value: '0.3%'),
-          _TableRow(label: '임대차 · 1억 이상', value: '0.4~0.5%'),
-          Divider(height: 12),
+          const Divider(height: 12),
+          _TableRow(label: l10n.guidePreviewSaleUnder500M, value: '0.4%'),
+          _TableRow(label: l10n.guidePreviewSaleOver500M, value: '0.5~0.7%'),
+          _TableRow(label: l10n.guidePreviewLeaseUnder100M, value: '0.3%'),
+          _TableRow(label: l10n.guidePreviewLeaseOver100M, value: '0.4~0.5%'),
+          const Divider(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              _InfoChip(label: '부가세 10% 별도', color: color),
+              _InfoChip(label: l10n.guidePreviewVatSeparate, color: color),
             ],
           ),
         ],
@@ -1047,7 +1137,9 @@ class _AcquisitionTaxPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const color = Color(0xFFBE123C);
+    final l10n = AppLocalizations.of(context);
+    final palette = context.palette;
+    final color = _accent(context, _accentAcquisition);
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -1055,21 +1147,21 @@ class _AcquisitionTaxPreview extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: color.withOpacity(0.15)),
       ),
-      child: const Column(
+      child: Column(
         children: [
           Row(
             children: [
               Expanded(
                 flex: 3,
-                child: Text('보유 주택 수 / 조건',
+                child: Text(l10n.guidePreviewHomesAndCondition,
                     style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textSecondary)),
+                        color: palette.textSecondary)),
               ),
               Expanded(
                 flex: 2,
-                child: Text('세율',
+                child: Text(l10n.guidePreviewTaxRate,
                     textAlign: TextAlign.end,
                     style: TextStyle(
                         fontSize: 11,
@@ -1078,16 +1170,21 @@ class _AcquisitionTaxPreview extends StatelessWidget {
               ),
             ],
           ),
-          Divider(height: 12),
-          _TableRow(label: '1주택 · 6억 이하', value: '1%'),
-          _TableRow(label: '1주택 · 6~9억', value: '1~3% 구간'),
-          _TableRow(label: '1주택 · 9억 초과', value: '3%'),
-          _TableRow(label: '2주택 (조정지역)', value: '8%'),
-          _TableRow(label: '3주택 이상', value: '12%', valueColor: color),
-          Divider(height: 12),
+          const Divider(height: 12),
+          _TableRow(label: l10n.guidePreviewOneHomeUnder600M, value: '1%'),
+          _TableRow(
+              label: l10n.guidePreviewOneHome600To900M,
+              value: l10n.guidePreviewRateBand1To3),
+          _TableRow(label: l10n.guidePreviewOneHomeOver900M, value: '3%'),
+          _TableRow(label: l10n.guidePreviewTwoHomesRegulated, value: '8%'),
+          _TableRow(
+              label: l10n.guidePreviewThreeOrMoreHomes,
+              value: '12%',
+              valueColor: color),
+          const Divider(height: 12),
           Row(
             children: [
-              _InfoChip(label: '농특세·교육세 포함 시 추가', color: color),
+              _InfoChip(label: l10n.guidePreviewSurtaxNote, color: color),
             ],
           ),
         ],
@@ -1103,88 +1200,91 @@ class _LastPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final palette = context.palette;
+    final typo = context.typography;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('저장한 계산 활용', style: AppTextStyles.heading2),
+        Text(l10n.guideSavedTitle, style: typo.heading2),
         const SizedBox(height: 10),
         _GuidePanel(
           child: Column(
             children: [
               _VisualFlowStep(
                   icon: Icons.save_outlined,
-                  title: '결과 저장',
-                  body: '계산 결과 화면에서 저장하면 최근계산 탭에 기록됩니다.'),
-              _FlowDivider(),
+                  title: l10n.guideSaveResultTitle,
+                  body: l10n.guideSaveResultBody),
+              const _FlowDivider(),
               _VisualFlowStep(
                   icon: Icons.star_border,
-                  title: '즐겨찾기와 메모',
-                  body: '자주 보는 계산은 즐겨찾기하고, 상세 화면에서 메모를 남길 수 있습니다.'),
-              _FlowDivider(),
+                  title: l10n.guideFavoriteMemoTitle,
+                  body: l10n.guideFavoriteMemoBody),
+              const _FlowDivider(),
               _VisualFlowStep(
                   icon: Icons.picture_as_pdf_outlined,
-                  title: 'PDF/CSV 공유',
-                  body: '상세 화면에서 PDF와 CSV로 내보내거나 공유합니다.'),
+                  title: l10n.guideExportShareTitle,
+                  body: l10n.guideExportShareBody),
             ],
           ),
         ),
-        SizedBox(height: 16),
-        Text('계정, 동기화, 공지', style: AppTextStyles.heading2),
-        SizedBox(height: 10),
+        const SizedBox(height: 16),
+        Text(l10n.guideAccountSyncTitle, style: typo.heading2),
+        const SizedBox(height: 10),
         _GuidePanel(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _InlineVisualHeader(
                 icon: Icons.cloud_sync_outlined,
-                title: '로그인하면 기록이 동기화됩니다',
-                color: AppColors.primary,
+                title: l10n.guideSyncHeader,
+                color: palette.primary,
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Text(
-                '오프라인 상태에서는 로컬에 먼저 저장되고, 네트워크가 가능할 때 서버와 맞춰집니다.',
-                style: AppTextStyles.bodySecondary,
+                l10n.guideSyncBody,
+                style: typo.bodySecondary,
               ),
-              SizedBox(height: 14),
-              _SyncIllustration(),
-              SizedBox(height: 14),
+              const SizedBox(height: 14),
+              const _SyncIllustration(),
+              const SizedBox(height: 14),
               _InlineVisualHeader(
                 icon: Icons.lock_outline,
-                title: 'PIN과 생체인증으로 앱 재진입 보호',
-                color: AppColors.positive,
+                title: l10n.guidePinBiometricHeader,
+                color: palette.positive,
               ),
             ],
           ),
         ),
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
         _GuidePanel(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _InlineVisualHeader(
                 icon: Icons.campaign_outlined,
-                title: '공지와 푸시 알림',
-                color: AppColors.warning,
+                title: l10n.guideNoticePushHeader,
+                color: palette.warning,
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Text(
-                '공지사항은 설정에서 확인할 수 있고, 로그인 상태에서 푸시 알림을 켜면 새 공지 등록 시 알림을 받을 수 있습니다.',
-                style: AppTextStyles.bodySecondary,
+                l10n.guideNoticePushBody,
+                style: typo.bodySecondary,
               ),
             ],
           ),
         ),
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
         _GuidePanel(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.info_outline, color: AppColors.textSecondary),
-              SizedBox(width: 10),
+              Icon(Icons.info_outline, color: palette.textSecondary),
+              const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  '앱의 계산 결과는 입력값을 기준으로 한 참고용 간이 계산입니다. 실제 대출, 세금, 중개보수, 계약 조건은 지역, 시점, 개인 상황, 관련 법령에 따라 달라질 수 있으므로 최종 결정 전 전문가 또는 공식 기관을 통해 확인해야 합니다.',
-                  style: AppTextStyles.disclaimer,
+                  l10n.guideDisclaimer,
+                  style: typo.disclaimer,
                 ),
               ),
             ],
@@ -1204,12 +1304,13 @@ class _GuidePanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: palette.surface,
         borderRadius: BorderRadius.circular(AppConstants.cardRadius),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: palette.cardBorder),
       ),
       child: child,
     );
@@ -1229,6 +1330,8 @@ class _VisualFlowStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+    final typo = context.typography;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1236,19 +1339,19 @@ class _VisualFlowStep extends StatelessWidget {
           width: 38,
           height: 38,
           decoration: BoxDecoration(
-            color: AppColors.primary.withOpacity(0.1),
+            color: palette.primary.withOpacity(0.1),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(icon, color: AppColors.primary, size: 21),
+          child: Icon(icon, color: palette.primary, size: 21),
         ),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: AppTextStyles.heading3.copyWith(fontSize: 16)),
+              Text(title, style: typo.heading3.copyWith(fontSize: 16)),
               const SizedBox(height: 4),
-              Text(body, style: AppTextStyles.bodySecondary),
+              Text(body, style: typo.bodySecondary),
             ],
           ),
         ),
@@ -1262,10 +1365,12 @@ class _FlowDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.only(left: 18, top: 8, bottom: 8),
+    return Padding(
+      padding: const EdgeInsets.only(left: 18, top: 8, bottom: 8),
       child: SizedBox(
-          height: 18, child: VerticalDivider(color: AppColors.divider)),
+        height: 18,
+        child: VerticalDivider(color: context.palette.divider),
+      ),
     );
   }
 }
@@ -1289,7 +1394,7 @@ class _InlineVisualHeader extends StatelessWidget {
         const SizedBox(width: 8),
         Expanded(
             child: Text(title,
-                style: AppTextStyles.heading3.copyWith(fontSize: 16))),
+                style: context.typography.heading3.copyWith(fontSize: 16))),
       ],
     );
   }
@@ -1300,14 +1405,25 @@ class _SyncIllustration extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Row(
+    final l10n = AppLocalizations.of(context);
+    return Row(
       children: [
-        Expanded(child: _SyncNode(icon: Icons.phone_android, label: '앱')),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8),
-          child: Icon(Icons.sync_alt, color: AppColors.primary),
+        Expanded(
+          child: _SyncNode(
+            icon: Icons.phone_android,
+            label: l10n.guideSyncNodeApp,
+          ),
         ),
-        Expanded(child: _SyncNode(icon: Icons.cloud_outlined, label: '서버')),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Icon(Icons.sync_alt, color: context.palette.primary),
+        ),
+        Expanded(
+          child: _SyncNode(
+            icon: Icons.cloud_outlined,
+            label: l10n.guideSyncNodeServer,
+          ),
+        ),
       ],
     );
   }
@@ -1324,17 +1440,18 @@ class _SyncNode extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 14),
       decoration: BoxDecoration(
-        color: AppColors.primary.withOpacity(0.07),
+        color: palette.primary.withOpacity(0.07),
         borderRadius: BorderRadius.circular(14),
       ),
       child: Column(
         children: [
-          Icon(icon, color: AppColors.primary),
+          Icon(icon, color: palette.primary),
           const SizedBox(height: 6),
-          Text(label, style: AppTextStyles.caption),
+          Text(label, style: context.typography.caption),
         ],
       ),
     );

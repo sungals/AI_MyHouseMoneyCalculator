@@ -1,0 +1,503 @@
+{
+  "@@locale": "ko",
+  "guideTitle": "앱 설명 및 사용법",
+  "@guideTitle": {
+    "description": "앱 가이드 화면 앱바 제목"
+  },
+  "guideIntroTagline": "계산부터 저장, 공유까지 한 흐름으로 사용하는 생활금융 계산 앱입니다.",
+  "@guideIntroTagline": {
+    "description": "첫 페이지 앱 소개 한 줄"
+  },
+  "guideFlowStep1Title": "1. 계산기 선택",
+  "@guideFlowStep1Title": {
+    "description": "사용 흐름 1단계 제목"
+  },
+  "guideFlowStep1Body": "홈에서 필요한 주거 비용 계산기를 고릅니다.",
+  "@guideFlowStep1Body": {
+    "description": "사용 흐름 1단계 설명"
+  },
+  "guideFlowStep2Title": "2. 금액과 조건 입력",
+  "@guideFlowStep2Title": {
+    "description": "사용 흐름 2단계 제목"
+  },
+  "guideFlowStep2Body": "입력 금액은 3억2천만원처럼 한글 금액으로 함께 표시됩니다.",
+  "@guideFlowStep2Body": {
+    "description": "사용 흐름 2단계 설명. 금액 보조 표기 안내"
+  },
+  "guideFlowStep3Title": "3. 결과 저장과 공유",
+  "@guideFlowStep3Title": {
+    "description": "사용 흐름 3단계 제목"
+  },
+  "guideFlowStep3Body": "계산 결과를 저장하고 최근계산 탭에서 PDF/CSV로 내보냅니다.",
+  "@guideFlowStep3Body": {
+    "description": "사용 흐름 3단계 설명"
+  },
+  "guideCategoryLeaseTitle": "임대차 계산",
+  "@guideCategoryLeaseTitle": {
+    "description": "임대차 카테고리 페이지 제목"
+  },
+  "guideCategoryLeaseSubtitle": "전월세 비용 비교와 반전세 적정가를 확인합니다.",
+  "@guideCategoryLeaseSubtitle": {
+    "description": "임대차 카테고리 페이지 부제"
+  },
+  "guideCategoryFinanceTitle": "대출 · 금융",
+  "@guideCategoryFinanceTitle": {
+    "description": "대출·금융 카테고리 페이지 제목"
+  },
+  "guideCategoryFinanceSubtitle": "대출 이자, 상환 한도, 월 지출을 계산합니다.",
+  "@guideCategoryFinanceSubtitle": {
+    "description": "대출·금융 카테고리 페이지 부제"
+  },
+  "guideCategoryTaxTitle": "세금 · 비용",
+  "@guideCategoryTaxTitle": {
+    "description": "세금·비용 카테고리 페이지 제목"
+  },
+  "guideCategoryTaxSubtitle": "주거 관련 세금과 비용을 간이 계산합니다.",
+  "@guideCategoryTaxSubtitle": {
+    "description": "세금·비용 카테고리 페이지 부제"
+  },
+  "guideJeonseRentTitle": "전세 vs 월세 비교",
+  "@guideJeonseRentTitle": {
+    "description": "전세·월세 비교 계산기 가이드 카드 제목"
+  },
+  "guideJeonseRentSummary": "전세 대출이자와 월세를 같은 기간 기준으로 비교합니다.",
+  "@guideJeonseRentSummary": {
+    "description": "전세·월세 비교 계산기 요약"
+  },
+  "guideJeonseRentStep1": "전세 보증금, 대출금, 금리 입력",
+  "@guideJeonseRentStep1": {
+    "description": "전세·월세 비교 1단계"
+  },
+  "guideJeonseRentStep2": "월세 보증금과 월세 입력",
+  "@guideJeonseRentStep2": {
+    "description": "전세·월세 비교 2단계"
+  },
+  "guideJeonseRentStep3": "월 비용과 총 비용 차이 확인",
+  "@guideJeonseRentStep3": {
+    "description": "전세·월세 비교 3단계"
+  },
+  "guideSemiRentTitle": "반전세 계산",
+  "@guideSemiRentTitle": {
+    "description": "반전세 계산기 가이드 카드 제목"
+  },
+  "guideSemiRentSummary": "보증금 차액을 월세로 바꿨을 때 적정한지 확인합니다.",
+  "@guideSemiRentSummary": {
+    "description": "반전세 계산기 요약"
+  },
+  "guideSemiRentStep1": "기존 보증금과 변경 보증금 입력",
+  "@guideSemiRentStep1": {
+    "description": "반전세 1단계"
+  },
+  "guideSemiRentStep2": "월세와 전월세 전환율 입력",
+  "@guideSemiRentStep2": {
+    "description": "반전세 2단계"
+  },
+  "guideSemiRentStep3": "과하거나 유리한 월세인지 확인",
+  "@guideSemiRentStep3": {
+    "description": "반전세 3단계"
+  },
+  "guideLoanInterestTitle": "대출이자 계산",
+  "@guideLoanInterestTitle": {
+    "description": "대출이자 계산기 가이드 카드 제목"
+  },
+  "guideLoanInterestSummary": "대출금, 금리, 기간으로 월 이자와 총 이자를 계산합니다.",
+  "@guideLoanInterestSummary": {
+    "description": "대출이자 계산기 요약"
+  },
+  "guideLoanInterestStep1": "대출금 입력",
+  "@guideLoanInterestStep1": {
+    "description": "대출이자 1단계"
+  },
+  "guideLoanInterestStep2": "연 금리와 개월 수 입력",
+  "@guideLoanInterestStep2": {
+    "description": "대출이자 2단계"
+  },
+  "guideLoanInterestStep3": "월 이자와 기간 총 이자 확인",
+  "@guideLoanInterestStep3": {
+    "description": "대출이자 3단계"
+  },
+  "guideDsrDtiTitle": "DSR/DTI 계산",
+  "@guideDsrDtiTitle": {
+    "description": "DSR/DTI 계산기 가이드 카드 제목"
+  },
+  "guideDsrDtiSummary": "연소득 대비 대출 상환 부담을 비율로 확인합니다.",
+  "@guideDsrDtiSummary": {
+    "description": "DSR/DTI 계산기 요약"
+  },
+  "guideDsrDtiStep1": "연소득 입력",
+  "@guideDsrDtiStep1": {
+    "description": "DSR/DTI 1단계"
+  },
+  "guideDsrDtiStep2": "주택담보대출과 기타 대출 입력",
+  "@guideDsrDtiStep2": {
+    "description": "DSR/DTI 2단계"
+  },
+  "guideDsrDtiStep3": "DSR/DTI 비율 확인",
+  "@guideDsrDtiStep3": {
+    "description": "DSR/DTI 3단계"
+  },
+  "guideMonthlyExpenseTitle": "월 고정비 계산",
+  "@guideMonthlyExpenseTitle": {
+    "description": "월 고정비 계산기 가이드 카드 제목"
+  },
+  "guideMonthlyExpenseSummary": "주거비와 생활비를 합산해 월 지출 구조를 봅니다.",
+  "@guideMonthlyExpenseSummary": {
+    "description": "월 고정비 계산기 요약"
+  },
+  "guideMonthlyExpenseStep1": "월세, 관리비, 통신비 등 항목 입력",
+  "@guideMonthlyExpenseStep1": {
+    "description": "월 고정비 1단계"
+  },
+  "guideMonthlyExpenseStep2": "월 합계와 연간 합계 확인",
+  "@guideMonthlyExpenseStep2": {
+    "description": "월 고정비 2단계"
+  },
+  "guideMonthlyExpenseStep3": "저장 후 반복 지출 비교",
+  "@guideMonthlyExpenseStep3": {
+    "description": "월 고정비 3단계"
+  },
+  "guideTaxDeductionTitle": "연말정산 세액공제",
+  "@guideTaxDeductionTitle": {
+    "description": "연말정산 세액공제 계산기 가이드 카드 제목"
+  },
+  "guideTaxDeductionSummary": "월세와 전세대출 관련 공제 가능 금액을 간이 계산합니다.",
+  "@guideTaxDeductionSummary": {
+    "description": "연말정산 세액공제 계산기 요약"
+  },
+  "guideTaxDeductionStep1": "소득과 주거 유형 선택",
+  "@guideTaxDeductionStep1": {
+    "description": "세액공제 1단계"
+  },
+  "guideTaxDeductionStep2": "월세 또는 전세대출 조건 입력",
+  "@guideTaxDeductionStep2": {
+    "description": "세액공제 2단계"
+  },
+  "guideTaxDeductionStep3": "예상 공제액 확인",
+  "@guideTaxDeductionStep3": {
+    "description": "세액공제 3단계"
+  },
+  "guideBrokerageFeeTitle": "중개보수 계산",
+  "@guideBrokerageFeeTitle": {
+    "description": "중개보수 계산기 가이드 카드 제목"
+  },
+  "guideBrokerageFeeSummary": "매매와 임대차 중개보수 상한을 빠르게 확인합니다.",
+  "@guideBrokerageFeeSummary": {
+    "description": "중개보수 계산기 요약"
+  },
+  "guideBrokerageFeeStep1": "거래 유형 선택",
+  "@guideBrokerageFeeStep1": {
+    "description": "중개보수 1단계"
+  },
+  "guideBrokerageFeeStep2": "거래 금액 입력",
+  "@guideBrokerageFeeStep2": {
+    "description": "중개보수 2단계"
+  },
+  "guideBrokerageFeeStep3": "상한 요율과 예상 보수 확인",
+  "@guideBrokerageFeeStep3": {
+    "description": "중개보수 3단계"
+  },
+  "guideAcquisitionTaxTitle": "취득세 계산",
+  "@guideAcquisitionTaxTitle": {
+    "description": "취득세 계산기 가이드 카드 제목"
+  },
+  "guideAcquisitionTaxSummary": "취득가액, 보유 주택 수, 지역 조건으로 간이 계산합니다.",
+  "@guideAcquisitionTaxSummary": {
+    "description": "취득세 계산기 요약"
+  },
+  "guideAcquisitionTaxStep1": "취득가액 입력",
+  "@guideAcquisitionTaxStep1": {
+    "description": "취득세 1단계"
+  },
+  "guideAcquisitionTaxStep2": "보유 주택 수와 조정지역 여부 선택",
+  "@guideAcquisitionTaxStep2": {
+    "description": "취득세 2단계"
+  },
+  "guideAcquisitionTaxStep3": "세율과 예상 세액 확인",
+  "@guideAcquisitionTaxStep3": {
+    "description": "취득세 3단계"
+  },
+  "guidePreviewJeonseMonthlyLabel": "전세 월비용",
+  "@guidePreviewJeonseMonthlyLabel": {
+    "description": "전세·월세 비교 미리보기 좌측 카드 제목"
+  },
+  "guidePreviewJeonseItem1": "대출이자",
+  "@guidePreviewJeonseItem1": {
+    "description": "전세 월비용 구성 항목"
+  },
+  "guidePreviewJeonseItem2": "+ 자기자본 기회비용",
+  "@guidePreviewJeonseItem2": {
+    "description": "전세 월비용 구성 항목"
+  },
+  "guidePreviewJeonseAmount": "월 116만원",
+  "@guidePreviewJeonseAmount": {
+    "description": "전세 월비용 예시 금액. 실제 계산값이 아닌 화면 예시"
+  },
+  "guidePreviewRentMonthlyLabel": "월세 월비용",
+  "@guidePreviewRentMonthlyLabel": {
+    "description": "전세·월세 비교 미리보기 우측 카드 제목"
+  },
+  "guidePreviewRentItem1": "월세 + 관리비",
+  "@guidePreviewRentItem1": {
+    "description": "월세 월비용 구성 항목"
+  },
+  "guidePreviewRentItem2": "+ 보증금 기회비용",
+  "@guidePreviewRentItem2": {
+    "description": "월세 월비용 구성 항목"
+  },
+  "guidePreviewRentAmount": "월 145만원",
+  "@guidePreviewRentAmount": {
+    "description": "월세 월비용 예시 금액. 실제 계산값이 아닌 화면 예시"
+  },
+  "guidePreviewOpportunityCostFormula": "기회비용 = 보증금 × 시중금리 ÷ 12",
+  "@guidePreviewOpportunityCostFormula": {
+    "description": "기회비용 산식"
+  },
+  "guidePreviewSemiRentFormula": "적정월세 = (전세금 − 보증금) × 전환율 ÷ 12",
+  "@guidePreviewSemiRentFormula": {
+    "description": "반전세 적정월세 산식"
+  },
+  "guidePreviewConversionCapLabel": "전환율 법정 상한",
+  "@guidePreviewConversionCapLabel": {
+    "description": "전월세 전환율 법정 상한 라벨"
+  },
+  "guidePreviewConversionCapValue": "기준금리 + 2%p",
+  "@guidePreviewConversionCapValue": {
+    "description": "전월세 전환율 법정 상한 값"
+  },
+  "guidePreviewConversionExampleLabel": "현재 전환율 예시",
+  "@guidePreviewConversionExampleLabel": {
+    "description": "전월세 전환율 예시 라벨"
+  },
+  "guidePreviewConversionExampleValue": "약 4.5%",
+  "@guidePreviewConversionExampleValue": {
+    "description": "전월세 전환율 예시 값"
+  },
+  "guidePreviewLoanFormula": "월 이자 = 대출금 × 연이율 ÷ 12\n총 이자 = 월 이자 × 기간(개월)",
+  "@guidePreviewLoanFormula": {
+    "description": "대출이자 산식 두 줄"
+  },
+  "guidePreviewLoanExample": "예시: 3억2천 × 4.0% ÷ 12",
+  "@guidePreviewLoanExample": {
+    "description": "대출이자 계산 예시"
+  },
+  "guidePreviewLoanInterestType": "단리(거치식)",
+  "@guidePreviewLoanInterestType": {
+    "description": "대출이자 계산 방식 칩"
+  },
+  "guidePreviewLoanMonthlyLabel": "월 이자",
+  "@guidePreviewLoanMonthlyLabel": {
+    "description": "대출이자 미리보기 월 이자 라벨"
+  },
+  "guidePreviewLoanMonthlyValue": "1,066,667원",
+  "@guidePreviewLoanMonthlyValue": {
+    "description": "대출이자 미리보기 예시 금액"
+  },
+  "guidePreviewExpenseHousing": "주거비",
+  "@guidePreviewExpenseHousing": {
+    "description": "월 고정비 항목"
+  },
+  "guidePreviewExpenseMaintenance": "관리비",
+  "@guidePreviewExpenseMaintenance": {
+    "description": "월 고정비 항목"
+  },
+  "guidePreviewExpenseCommunication": "통신비",
+  "@guidePreviewExpenseCommunication": {
+    "description": "월 고정비 항목"
+  },
+  "guidePreviewExpenseTransport": "교통비",
+  "@guidePreviewExpenseTransport": {
+    "description": "월 고정비 항목"
+  },
+  "guidePreviewExpenseInsurance": "보험료",
+  "@guidePreviewExpenseInsurance": {
+    "description": "월 고정비 항목"
+  },
+  "guidePreviewExpenseSubscription": "구독료",
+  "@guidePreviewExpenseSubscription": {
+    "description": "월 고정비 항목"
+  },
+  "guidePreviewMonthlyToYearly": "월 합계 → 연간 합계",
+  "@guidePreviewMonthlyToYearly": {
+    "description": "월 고정비 합계 안내 좌측"
+  },
+  "guidePreviewTimesTwelve": "× 12개월 자동 계산",
+  "@guidePreviewTimesTwelve": {
+    "description": "월 고정비 합계 안내 우측"
+  },
+  "guidePreviewRentTaxCreditHeader": "월세 세액공제",
+  "@guidePreviewRentTaxCreditHeader": {
+    "description": "세액공제 미리보기 첫 표 제목"
+  },
+  "guidePreviewSalaryUnder55": "총급여 5,500만원 이하",
+  "@guidePreviewSalaryUnder55": {
+    "description": "월세 세액공제 소득 구간"
+  },
+  "guidePreviewSalary55To80": "5,500 ~ 8,000만원",
+  "@guidePreviewSalary55To80": {
+    "description": "월세 세액공제 소득 구간"
+  },
+  "guidePreviewSalaryOver80": "8,000만원 초과",
+  "@guidePreviewSalaryOver80": {
+    "description": "월세 세액공제 소득 구간"
+  },
+  "guidePreviewNotDeductible": "공제 불가",
+  "@guidePreviewNotDeductible": {
+    "description": "공제 대상이 아님을 나타내는 값"
+  },
+  "guidePreviewJeonseLoanDeductionHeader": "전세대출 소득공제",
+  "@guidePreviewJeonseLoanDeductionHeader": {
+    "description": "세액공제 미리보기 두 번째 표 제목"
+  },
+  "guidePreviewPrincipalAndInterest": "원리금 상환액 × 40%",
+  "@guidePreviewPrincipalAndInterest": {
+    "description": "전세대출 소득공제 계산 기준"
+  },
+  "guidePreviewDeductionLimit": "한도 300만원",
+  "@guidePreviewDeductionLimit": {
+    "description": "전세대출 소득공제 한도"
+  },
+  "guidePreviewDsrDtiFormula": "DSR = 모든대출 연간 원리금 ÷ 연소득 × 100%\nDTI = (주담대 원리금 + 기타 이자) ÷ 연소득 × 100%",
+  "@guidePreviewDsrDtiFormula": {
+    "description": "DSR/DTI 산식 두 줄"
+  },
+  "guidePreviewBandSafe": "안전",
+  "@guidePreviewBandSafe": {
+    "description": "DSR 구간 라벨"
+  },
+  "guidePreviewBandCaution": "주의",
+  "@guidePreviewBandCaution": {
+    "description": "DSR 구간 라벨"
+  },
+  "guidePreviewBandRisk": "위험",
+  "@guidePreviewBandRisk": {
+    "description": "DSR 구간 라벨"
+  },
+  "guidePreviewDealTypeAmount": "거래 유형 / 금액",
+  "@guidePreviewDealTypeAmount": {
+    "description": "중개보수 표 좌측 헤더"
+  },
+  "guidePreviewMaxRate": "상한 요율",
+  "@guidePreviewMaxRate": {
+    "description": "중개보수 표 우측 헤더"
+  },
+  "guidePreviewSaleUnder500M": "매매 · 5억 미만",
+  "@guidePreviewSaleUnder500M": {
+    "description": "중개보수 요율 구간"
+  },
+  "guidePreviewSaleOver500M": "매매 · 5억 이상",
+  "@guidePreviewSaleOver500M": {
+    "description": "중개보수 요율 구간"
+  },
+  "guidePreviewLeaseUnder100M": "임대차 · 1억 미만",
+  "@guidePreviewLeaseUnder100M": {
+    "description": "중개보수 요율 구간"
+  },
+  "guidePreviewLeaseOver100M": "임대차 · 1억 이상",
+  "@guidePreviewLeaseOver100M": {
+    "description": "중개보수 요율 구간"
+  },
+  "guidePreviewVatSeparate": "부가세 10% 별도",
+  "@guidePreviewVatSeparate": {
+    "description": "중개보수에 부가세가 별도임을 알리는 칩"
+  },
+  "guidePreviewHomesAndCondition": "보유 주택 수 / 조건",
+  "@guidePreviewHomesAndCondition": {
+    "description": "취득세 표 좌측 헤더"
+  },
+  "guidePreviewTaxRate": "세율",
+  "@guidePreviewTaxRate": {
+    "description": "취득세 표 우측 헤더"
+  },
+  "guidePreviewOneHomeUnder600M": "1주택 · 6억 이하",
+  "@guidePreviewOneHomeUnder600M": {
+    "description": "취득세 세율 구간"
+  },
+  "guidePreviewOneHome600To900M": "1주택 · 6~9억",
+  "@guidePreviewOneHome600To900M": {
+    "description": "취득세 세율 구간"
+  },
+  "guidePreviewOneHomeOver900M": "1주택 · 9억 초과",
+  "@guidePreviewOneHomeOver900M": {
+    "description": "취득세 세율 구간"
+  },
+  "guidePreviewTwoHomesRegulated": "2주택 (조정지역)",
+  "@guidePreviewTwoHomesRegulated": {
+    "description": "취득세 세율 구간"
+  },
+  "guidePreviewThreeOrMoreHomes": "3주택 이상",
+  "@guidePreviewThreeOrMoreHomes": {
+    "description": "취득세 세율 구간"
+  },
+  "guidePreviewRateBand1To3": "1~3% 구간",
+  "@guidePreviewRateBand1To3": {
+    "description": "취득세 누진 구간 값"
+  },
+  "guidePreviewSurtaxNote": "농특세·교육세 포함 시 추가",
+  "@guidePreviewSurtaxNote": {
+    "description": "취득세에 부가되는 세목 안내 칩"
+  },
+  "guideSavedTitle": "저장한 계산 활용",
+  "@guideSavedTitle": {
+    "description": "마지막 페이지 첫 섹션 제목"
+  },
+  "guideSaveResultTitle": "결과 저장",
+  "@guideSaveResultTitle": {
+    "description": "저장 흐름 1단계 제목"
+  },
+  "guideSaveResultBody": "계산 결과 화면에서 저장하면 최근계산 탭에 기록됩니다.",
+  "@guideSaveResultBody": {
+    "description": "저장 흐름 1단계 설명"
+  },
+  "guideFavoriteMemoTitle": "즐겨찾기와 메모",
+  "@guideFavoriteMemoTitle": {
+    "description": "저장 흐름 2단계 제목"
+  },
+  "guideFavoriteMemoBody": "자주 보는 계산은 즐겨찾기하고, 상세 화면에서 메모를 남길 수 있습니다.",
+  "@guideFavoriteMemoBody": {
+    "description": "저장 흐름 2단계 설명"
+  },
+  "guideExportShareTitle": "PDF/CSV 공유",
+  "@guideExportShareTitle": {
+    "description": "저장 흐름 3단계 제목"
+  },
+  "guideExportShareBody": "상세 화면에서 PDF와 CSV로 내보내거나 공유합니다.",
+  "@guideExportShareBody": {
+    "description": "저장 흐름 3단계 설명"
+  },
+  "guideAccountSyncTitle": "계정, 동기화, 공지",
+  "@guideAccountSyncTitle": {
+    "description": "마지막 페이지 두 번째 섹션 제목"
+  },
+  "guideSyncHeader": "로그인하면 기록이 동기화됩니다",
+  "@guideSyncHeader": {
+    "description": "동기화 안내 헤더"
+  },
+  "guideSyncBody": "오프라인 상태에서는 로컬에 먼저 저장되고, 네트워크가 가능할 때 서버와 맞춰집니다.",
+  "@guideSyncBody": {
+    "description": "동기화 동작 설명"
+  },
+  "guideSyncNodeApp": "앱",
+  "@guideSyncNodeApp": {
+    "description": "동기화 도식의 앱 쪽 노드"
+  },
+  "guideSyncNodeServer": "서버",
+  "@guideSyncNodeServer": {
+    "description": "동기화 도식의 서버 쪽 노드"
+  },
+  "guidePinBiometricHeader": "PIN과 생체인증으로 앱 재진입 보호",
+  "@guidePinBiometricHeader": {
+    "description": "잠금 안내 헤더"
+  },
+  "guideNoticePushHeader": "공지와 푸시 알림",
+  "@guideNoticePushHeader": {
+    "description": "공지 안내 헤더"
+  },
+  "guideNoticePushBody": "공지사항은 설정에서 확인할 수 있고, 로그인 상태에서 푸시 알림을 켜면 새 공지 등록 시 알림을 받을 수 있습니다.",
+  "@guideNoticePushBody": {
+    "description": "공지·푸시 알림 설명"
+  },
+  "guideDisclaimer": "앱의 계산 결과는 입력값을 기준으로 한 참고용 간이 계산입니다. 실제 대출, 세금, 중개보수, 계약 조건은 지역, 시점, 개인 상황, 관련 법령에 따라 달라질 수 있으므로 최종 결정 전 전문가 또는 공식 기관을 통해 확인해야 합니다.",
+  "@guideDisclaimer": {
+    "description": "가이드 마지막 면책 문구"
+  }
+}

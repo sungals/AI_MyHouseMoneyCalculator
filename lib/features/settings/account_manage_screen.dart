@@ -4,8 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../../core/constants/app_constants.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_text_styles.dart';
+import '../../core/theme/app_palette.dart';
+import '../../core/theme/app_typography.dart';
+import '../../l10n/gen/app_localizations.dart';
 import '../auth/auth_notifier.dart';
 
 class AccountManageScreen extends ConsumerWidget {
@@ -13,11 +14,13 @@ class AccountManageScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final palette = context.palette;
     final email = FirebaseAuth.instance.currentUser?.email ?? '';
 
     return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(title: const Text('계정 관리')),
+      backgroundColor: palette.background,
+      appBar: AppBar(title: Text(l10n.settingsAccountManage)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(
           horizontal: AppConstants.horizontalPadding,
@@ -30,15 +33,15 @@ class AccountManageScreen extends ConsumerWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppColors.surface,
+                color: palette.surface,
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: AppColors.cardBorder),
+                border: Border.all(color: palette.cardBorder),
               ),
               child: Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.account_circle_outlined,
-                    color: AppColors.primary,
+                    color: palette.primary,
                     size: 22,
                   ),
                   const SizedBox(width: 12),
@@ -51,28 +54,31 @@ class AccountManageScreen extends ConsumerWidget {
             const SizedBox(height: 40),
             Padding(
               padding: const EdgeInsets.only(left: 4, bottom: 8),
-              child: Text('위험 구역', style: AppTextStyles.label),
+              child: Text(
+                l10n.settingsDangerZone,
+                style: context.typography.label,
+              ),
             ),
             Container(
               decoration: BoxDecoration(
-                color: AppColors.surface,
+                color: palette.surface,
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: AppColors.danger.withOpacity(0.4)),
+                border: Border.all(color: palette.danger.withOpacity(0.4)),
               ),
               clipBehavior: Clip.antiAlias,
               child: ListTile(
-                leading: const Icon(
+                leading: Icon(
                   Icons.person_remove_outlined,
-                  color: AppColors.danger,
+                  color: palette.danger,
                   size: 22,
                 ),
-                title: const Text(
-                  '회원탈퇴',
-                  style: TextStyle(fontSize: 15, color: AppColors.danger),
+                title: Text(
+                  l10n.settingsDeleteAccount,
+                  style: TextStyle(fontSize: 15, color: palette.danger),
                 ),
-                trailing: const Icon(
+                trailing: Icon(
                   Icons.chevron_right,
-                  color: AppColors.textSecondary,
+                  color: palette.textSecondary,
                   size: 20,
                 ),
                 onTap: () => _deleteAccount(context, ref),
@@ -84,8 +90,8 @@ class AccountManageScreen extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4),
               child: Text(
-                '탈퇴하면 계정과 저장된 모든 계산 기록이 삭제되며 되돌릴 수 없습니다.',
-                style: AppTextStyles.caption,
+                l10n.settingsDeleteAccountCaption,
+                style: context.typography.caption,
               ),
             ),
           ],
@@ -95,22 +101,23 @@ class AccountManageScreen extends ConsumerWidget {
   }
 
   Future<void> _deleteAccount(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context);
+    final palette = context.palette;
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('회원탈퇴'),
-        content: const Text(
-          '탈퇴하면 계정과 저장된 모든 계산 기록이 삭제됩니다.\n이 작업은 되돌릴 수 없습니다.',
-        ),
+        title: Text(l10n.settingsDeleteAccount),
+        content: Text(l10n.settingsDeleteAccountConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('취소'),
+            child: Text(l10n.commonCancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            style: TextButton.styleFrom(foregroundColor: AppColors.danger),
-            child: const Text('탈퇴하기'),
+            style: TextButton.styleFrom(foregroundColor: palette.danger),
+            child: Text(l10n.settingsDeleteAccountAction),
           ),
         ],
       ),
@@ -125,8 +132,8 @@ class AccountManageScreen extends ConsumerWidget {
     if (error != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('오류: $error'),
-          backgroundColor: AppColors.danger,
+          content: Text(l10n.settingsErrorWithMessage(error)),
+          backgroundColor: palette.danger,
         ),
       );
       return;

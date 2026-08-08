@@ -1,0 +1,23 @@
+{
+  "@@locale": "en",
+  "sharedHomeTab": "Home",
+  "sharedHousingTab": "Housing",
+  "sharedHousingHeadline": "Compare contracts\nand rent",
+  "sharedHousingDescription": "Calculators for jeonse, wolse, semi-rent, and lease renewal decisions.",
+  "sharedFinanceTab": "Finance",
+  "sharedFinanceHeadline": "Check loans\nand taxes",
+  "sharedFinanceDescription": "Loan burden, monthly fixed costs, tax credits, and transaction costs in one place.",
+  "sharedRecentTab": "Recent",
+  "sharedSettingsTab": "Settings",
+  "sharedResetAmount": "Reset",
+  "sharedPercentHint": "e.g. 3.5",
+  "sharedShareAction": "Share",
+  "sharedExportPdfAction": "Export PDF",
+  "sharedDisclaimerMain": "This app is a reference calculator for housing contracts, rent, loans, taxes, and fixed monthly costs.\nConfirm actual loan eligibility, interest rates, taxes, deposit return risk, and contract risk with qualified professionals.\nDo not use these results as the sole basis for legal or financial decisions.",
+  "sharedDisclaimerShort": "These results are for reference only. Confirm details before signing.",
+  "sharedAdLabel": "Ad",
+  "sharedOfflineBanner": "You are offline",
+  "notificationNoticeChannelName": "Notices",
+  "notificationNoticeChannelDescription": "New notice alerts",
+  "notificationNoticeFallbackTitle": "Notice"
+}

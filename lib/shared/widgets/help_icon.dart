@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_palette.dart';
+import '../../l10n/gen/app_localizations.dart';
 
 class HelpIcon extends StatelessWidget {
   final String title;
@@ -9,6 +10,9 @@ class HelpIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+    final l10n = AppLocalizations.of(context);
+
     return GestureDetector(
       onTap: () => showDialog(
         context: context,
@@ -17,8 +21,8 @@ class HelpIcon extends StatelessWidget {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           title: Row(
             children: [
-              const Icon(Icons.info_outline_rounded,
-                  size: 20, color: AppColors.primary),
+              Icon(Icons.info_outline_rounded,
+                  size: 20, color: palette.primary),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(title,
@@ -28,20 +32,20 @@ class HelpIcon extends StatelessWidget {
             ],
           ),
           content: Text(body,
-              style: const TextStyle(
-                  fontSize: 14, height: 1.65, color: AppColors.textPrimary)),
+              style: TextStyle(
+                  fontSize: 14, height: 1.65, color: palette.textPrimary)),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('확인'),
+              child: Text(l10n.commonConfirm),
             ),
           ],
         ),
       ),
-      child: const Padding(
-        padding: EdgeInsets.all(4),
+      child: Padding(
+        padding: const EdgeInsets.all(4),
         child: Icon(Icons.help_outline_rounded,
-            size: 18, color: AppColors.textSecondary),
+            size: 18, color: palette.textSecondary),
       ),
     );
   }

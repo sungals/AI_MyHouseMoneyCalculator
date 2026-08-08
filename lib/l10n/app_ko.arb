@@ -63,5 +63,1094 @@
   "settingsLanguageEnglish": "English",
   "@settingsLanguageEnglish": {
     "description": "언어 옵션. 두 로케일에서 동일하게 표기"
+  },
+  "guideTitle": "앱 설명 및 사용법",
+  "@guideTitle": {
+    "description": "앱 가이드 화면 앱바 제목"
+  },
+  "guideIntroTagline": "계산부터 저장, 공유까지 한 흐름으로 사용하는 생활금융 계산 앱입니다.",
+  "@guideIntroTagline": {
+    "description": "첫 페이지 앱 소개 한 줄"
+  },
+  "guideFlowStep1Title": "1. 계산기 선택",
+  "@guideFlowStep1Title": {
+    "description": "사용 흐름 1단계 제목"
+  },
+  "guideFlowStep1Body": "홈에서 필요한 주거 비용 계산기를 고릅니다.",
+  "@guideFlowStep1Body": {
+    "description": "사용 흐름 1단계 설명"
+  },
+  "guideFlowStep2Title": "2. 금액과 조건 입력",
+  "@guideFlowStep2Title": {
+    "description": "사용 흐름 2단계 제목"
+  },
+  "guideFlowStep2Body": "입력 금액은 3억2천만원처럼 한글 금액으로 함께 표시됩니다.",
+  "@guideFlowStep2Body": {
+    "description": "사용 흐름 2단계 설명. 금액 보조 표기 안내"
+  },
+  "guideFlowStep3Title": "3. 결과 저장과 공유",
+  "@guideFlowStep3Title": {
+    "description": "사용 흐름 3단계 제목"
+  },
+  "guideFlowStep3Body": "계산 결과를 저장하고 최근계산 탭에서 PDF/CSV로 내보냅니다.",
+  "@guideFlowStep3Body": {
+    "description": "사용 흐름 3단계 설명"
+  },
+  "guideCategoryLeaseTitle": "임대차 계산",
+  "@guideCategoryLeaseTitle": {
+    "description": "임대차 카테고리 페이지 제목"
+  },
+  "guideCategoryLeaseSubtitle": "전월세 비용 비교와 반전세 적정가를 확인합니다.",
+  "@guideCategoryLeaseSubtitle": {
+    "description": "임대차 카테고리 페이지 부제"
+  },
+  "guideCategoryFinanceTitle": "대출 · 금융",
+  "@guideCategoryFinanceTitle": {
+    "description": "대출·금융 카테고리 페이지 제목"
+  },
+  "guideCategoryFinanceSubtitle": "대출 이자, 상환 한도, 월 지출을 계산합니다.",
+  "@guideCategoryFinanceSubtitle": {
+    "description": "대출·금융 카테고리 페이지 부제"
+  },
+  "guideCategoryTaxTitle": "세금 · 비용",
+  "@guideCategoryTaxTitle": {
+    "description": "세금·비용 카테고리 페이지 제목"
+  },
+  "guideCategoryTaxSubtitle": "주거 관련 세금과 비용을 간이 계산합니다.",
+  "@guideCategoryTaxSubtitle": {
+    "description": "세금·비용 카테고리 페이지 부제"
+  },
+  "guideJeonseRentTitle": "전세 vs 월세 비교",
+  "@guideJeonseRentTitle": {
+    "description": "전세·월세 비교 계산기 가이드 카드 제목"
+  },
+  "guideJeonseRentSummary": "전세 대출이자와 월세를 같은 기간 기준으로 비교합니다.",
+  "@guideJeonseRentSummary": {
+    "description": "전세·월세 비교 계산기 요약"
+  },
+  "guideJeonseRentStep1": "전세 보증금, 대출금, 금리 입력",
+  "@guideJeonseRentStep1": {
+    "description": "전세·월세 비교 1단계"
+  },
+  "guideJeonseRentStep2": "월세 보증금과 월세 입력",
+  "@guideJeonseRentStep2": {
+    "description": "전세·월세 비교 2단계"
+  },
+  "guideJeonseRentStep3": "월 비용과 총 비용 차이 확인",
+  "@guideJeonseRentStep3": {
+    "description": "전세·월세 비교 3단계"
+  },
+  "guideSemiRentTitle": "반전세 계산",
+  "@guideSemiRentTitle": {
+    "description": "반전세 계산기 가이드 카드 제목"
+  },
+  "guideSemiRentSummary": "보증금 차액을 월세로 바꿨을 때 적정한지 확인합니다.",
+  "@guideSemiRentSummary": {
+    "description": "반전세 계산기 요약"
+  },
+  "guideSemiRentStep1": "기존 보증금과 변경 보증금 입력",
+  "@guideSemiRentStep1": {
+    "description": "반전세 1단계"
+  },
+  "guideSemiRentStep2": "월세와 전월세 전환율 입력",
+  "@guideSemiRentStep2": {
+    "description": "반전세 2단계"
+  },
+  "guideSemiRentStep3": "과하거나 유리한 월세인지 확인",
+  "@guideSemiRentStep3": {
+    "description": "반전세 3단계"
+  },
+  "guideLoanInterestTitle": "대출이자 계산",
+  "@guideLoanInterestTitle": {
+    "description": "대출이자 계산기 가이드 카드 제목"
+  },
+  "guideLoanInterestSummary": "대출금, 금리, 기간으로 월 이자와 총 이자를 계산합니다.",
+  "@guideLoanInterestSummary": {
+    "description": "대출이자 계산기 요약"
+  },
+  "guideLoanInterestStep1": "대출금 입력",
+  "@guideLoanInterestStep1": {
+    "description": "대출이자 1단계"
+  },
+  "guideLoanInterestStep2": "연 금리와 개월 수 입력",
+  "@guideLoanInterestStep2": {
+    "description": "대출이자 2단계"
+  },
+  "guideLoanInterestStep3": "월 이자와 기간 총 이자 확인",
+  "@guideLoanInterestStep3": {
+    "description": "대출이자 3단계"
+  },
+  "guideDsrDtiTitle": "DSR/DTI 계산",
+  "@guideDsrDtiTitle": {
+    "description": "DSR/DTI 계산기 가이드 카드 제목"
+  },
+  "guideDsrDtiSummary": "연소득 대비 대출 상환 부담을 비율로 확인합니다.",
+  "@guideDsrDtiSummary": {
+    "description": "DSR/DTI 계산기 요약"
+  },
+  "guideDsrDtiStep1": "연소득 입력",
+  "@guideDsrDtiStep1": {
+    "description": "DSR/DTI 1단계"
+  },
+  "guideDsrDtiStep2": "주택담보대출과 기타 대출 입력",
+  "@guideDsrDtiStep2": {
+    "description": "DSR/DTI 2단계"
+  },
+  "guideDsrDtiStep3": "DSR/DTI 비율 확인",
+  "@guideDsrDtiStep3": {
+    "description": "DSR/DTI 3단계"
+  },
+  "guideMonthlyExpenseTitle": "월 고정비 계산",
+  "@guideMonthlyExpenseTitle": {
+    "description": "월 고정비 계산기 가이드 카드 제목"
+  },
+  "guideMonthlyExpenseSummary": "주거비와 생활비를 합산해 월 지출 구조를 봅니다.",
+  "@guideMonthlyExpenseSummary": {
+    "description": "월 고정비 계산기 요약"
+  },
+  "guideMonthlyExpenseStep1": "월세, 관리비, 통신비 등 항목 입력",
+  "@guideMonthlyExpenseStep1": {
+    "description": "월 고정비 1단계"
+  },
+  "guideMonthlyExpenseStep2": "월 합계와 연간 합계 확인",
+  "@guideMonthlyExpenseStep2": {
+    "description": "월 고정비 2단계"
+  },
+  "guideMonthlyExpenseStep3": "저장 후 반복 지출 비교",
+  "@guideMonthlyExpenseStep3": {
+    "description": "월 고정비 3단계"
+  },
+  "guideTaxDeductionTitle": "연말정산 세액공제",
+  "@guideTaxDeductionTitle": {
+    "description": "연말정산 세액공제 계산기 가이드 카드 제목"
+  },
+  "guideTaxDeductionSummary": "월세와 전세대출 관련 공제 가능 금액을 간이 계산합니다.",
+  "@guideTaxDeductionSummary": {
+    "description": "연말정산 세액공제 계산기 요약"
+  },
+  "guideTaxDeductionStep1": "소득과 주거 유형 선택",
+  "@guideTaxDeductionStep1": {
+    "description": "세액공제 1단계"
+  },
+  "guideTaxDeductionStep2": "월세 또는 전세대출 조건 입력",
+  "@guideTaxDeductionStep2": {
+    "description": "세액공제 2단계"
+  },
+  "guideTaxDeductionStep3": "예상 공제액 확인",
+  "@guideTaxDeductionStep3": {
+    "description": "세액공제 3단계"
+  },
+  "guideBrokerageFeeTitle": "중개보수 계산",
+  "@guideBrokerageFeeTitle": {
+    "description": "중개보수 계산기 가이드 카드 제목"
+  },
+  "guideBrokerageFeeSummary": "매매와 임대차 중개보수 상한을 빠르게 확인합니다.",
+  "@guideBrokerageFeeSummary": {
+    "description": "중개보수 계산기 요약"
+  },
+  "guideBrokerageFeeStep1": "거래 유형 선택",
+  "@guideBrokerageFeeStep1": {
+    "description": "중개보수 1단계"
+  },
+  "guideBrokerageFeeStep2": "거래 금액 입력",
+  "@guideBrokerageFeeStep2": {
+    "description": "중개보수 2단계"
+  },
+  "guideBrokerageFeeStep3": "상한 요율과 예상 보수 확인",
+  "@guideBrokerageFeeStep3": {
+    "description": "중개보수 3단계"
+  },
+  "guideAcquisitionTaxTitle": "취득세 계산",
+  "@guideAcquisitionTaxTitle": {
+    "description": "취득세 계산기 가이드 카드 제목"
+  },
+  "guideAcquisitionTaxSummary": "취득가액, 보유 주택 수, 지역 조건으로 간이 계산합니다.",
+  "@guideAcquisitionTaxSummary": {
+    "description": "취득세 계산기 요약"
+  },
+  "guideAcquisitionTaxStep1": "취득가액 입력",
+  "@guideAcquisitionTaxStep1": {
+    "description": "취득세 1단계"
+  },
+  "guideAcquisitionTaxStep2": "보유 주택 수와 조정지역 여부 선택",
+  "@guideAcquisitionTaxStep2": {
+    "description": "취득세 2단계"
+  },
+  "guideAcquisitionTaxStep3": "세율과 예상 세액 확인",
+  "@guideAcquisitionTaxStep3": {
+    "description": "취득세 3단계"
+  },
+  "guidePreviewJeonseMonthlyLabel": "전세 월비용",
+  "@guidePreviewJeonseMonthlyLabel": {
+    "description": "전세·월세 비교 미리보기 좌측 카드 제목"
+  },
+  "guidePreviewJeonseItem1": "대출이자",
+  "@guidePreviewJeonseItem1": {
+    "description": "전세 월비용 구성 항목"
+  },
+  "guidePreviewJeonseItem2": "+ 자기자본 기회비용",
+  "@guidePreviewJeonseItem2": {
+    "description": "전세 월비용 구성 항목"
+  },
+  "guidePreviewJeonseAmount": "월 116만원",
+  "@guidePreviewJeonseAmount": {
+    "description": "전세 월비용 예시 금액. 실제 계산값이 아닌 화면 예시"
+  },
+  "guidePreviewRentMonthlyLabel": "월세 월비용",
+  "@guidePreviewRentMonthlyLabel": {
+    "description": "전세·월세 비교 미리보기 우측 카드 제목"
+  },
+  "guidePreviewRentItem1": "월세 + 관리비",
+  "@guidePreviewRentItem1": {
+    "description": "월세 월비용 구성 항목"
+  },
+  "guidePreviewRentItem2": "+ 보증금 기회비용",
+  "@guidePreviewRentItem2": {
+    "description": "월세 월비용 구성 항목"
+  },
+  "guidePreviewRentAmount": "월 145만원",
+  "@guidePreviewRentAmount": {
+    "description": "월세 월비용 예시 금액. 실제 계산값이 아닌 화면 예시"
+  },
+  "guidePreviewOpportunityCostFormula": "기회비용 = 보증금 × 시중금리 ÷ 12",
+  "@guidePreviewOpportunityCostFormula": {
+    "description": "기회비용 산식"
+  },
+  "guidePreviewSemiRentFormula": "적정월세 = (전세금 − 보증금) × 전환율 ÷ 12",
+  "@guidePreviewSemiRentFormula": {
+    "description": "반전세 적정월세 산식"
+  },
+  "guidePreviewConversionCapLabel": "전환율 법정 상한",
+  "@guidePreviewConversionCapLabel": {
+    "description": "전월세 전환율 법정 상한 라벨"
+  },
+  "guidePreviewConversionCapValue": "기준금리 + 2%p",
+  "@guidePreviewConversionCapValue": {
+    "description": "전월세 전환율 법정 상한 값"
+  },
+  "guidePreviewConversionExampleLabel": "현재 전환율 예시",
+  "@guidePreviewConversionExampleLabel": {
+    "description": "전월세 전환율 예시 라벨"
+  },
+  "guidePreviewConversionExampleValue": "약 4.5%",
+  "@guidePreviewConversionExampleValue": {
+    "description": "전월세 전환율 예시 값"
+  },
+  "guidePreviewLoanFormula": "월 이자 = 대출금 × 연이율 ÷ 12\n총 이자 = 월 이자 × 기간(개월)",
+  "@guidePreviewLoanFormula": {
+    "description": "대출이자 산식 두 줄"
+  },
+  "guidePreviewLoanExample": "예시: 3억2천 × 4.0% ÷ 12",
+  "@guidePreviewLoanExample": {
+    "description": "대출이자 계산 예시"
+  },
+  "guidePreviewLoanInterestType": "단리(거치식)",
+  "@guidePreviewLoanInterestType": {
+    "description": "대출이자 계산 방식 칩"
+  },
+  "guidePreviewLoanMonthlyLabel": "월 이자",
+  "@guidePreviewLoanMonthlyLabel": {
+    "description": "대출이자 미리보기 월 이자 라벨"
+  },
+  "guidePreviewLoanMonthlyValue": "1,066,667원",
+  "@guidePreviewLoanMonthlyValue": {
+    "description": "대출이자 미리보기 예시 금액"
+  },
+  "guidePreviewExpenseHousing": "주거비",
+  "@guidePreviewExpenseHousing": {
+    "description": "월 고정비 항목"
+  },
+  "guidePreviewExpenseMaintenance": "관리비",
+  "@guidePreviewExpenseMaintenance": {
+    "description": "월 고정비 항목"
+  },
+  "guidePreviewExpenseCommunication": "통신비",
+  "@guidePreviewExpenseCommunication": {
+    "description": "월 고정비 항목"
+  },
+  "guidePreviewExpenseTransport": "교통비",
+  "@guidePreviewExpenseTransport": {
+    "description": "월 고정비 항목"
+  },
+  "guidePreviewExpenseInsurance": "보험료",
+  "@guidePreviewExpenseInsurance": {
+    "description": "월 고정비 항목"
+  },
+  "guidePreviewExpenseSubscription": "구독료",
+  "@guidePreviewExpenseSubscription": {
+    "description": "월 고정비 항목"
+  },
+  "guidePreviewMonthlyToYearly": "월 합계 → 연간 합계",
+  "@guidePreviewMonthlyToYearly": {
+    "description": "월 고정비 합계 안내 좌측"
+  },
+  "guidePreviewTimesTwelve": "× 12개월 자동 계산",
+  "@guidePreviewTimesTwelve": {
+    "description": "월 고정비 합계 안내 우측"
+  },
+  "guidePreviewRentTaxCreditHeader": "월세 세액공제",
+  "@guidePreviewRentTaxCreditHeader": {
+    "description": "세액공제 미리보기 첫 표 제목"
+  },
+  "guidePreviewSalaryUnder55": "총급여 5,500만원 이하",
+  "@guidePreviewSalaryUnder55": {
+    "description": "월세 세액공제 소득 구간"
+  },
+  "guidePreviewSalary55To80": "5,500 ~ 8,000만원",
+  "@guidePreviewSalary55To80": {
+    "description": "월세 세액공제 소득 구간"
+  },
+  "guidePreviewSalaryOver80": "8,000만원 초과",
+  "@guidePreviewSalaryOver80": {
+    "description": "월세 세액공제 소득 구간"
+  },
+  "guidePreviewNotDeductible": "공제 불가",
+  "@guidePreviewNotDeductible": {
+    "description": "공제 대상이 아님을 나타내는 값"
+  },
+  "guidePreviewJeonseLoanDeductionHeader": "전세대출 소득공제",
+  "@guidePreviewJeonseLoanDeductionHeader": {
+    "description": "세액공제 미리보기 두 번째 표 제목"
+  },
+  "guidePreviewPrincipalAndInterest": "원리금 상환액 × 40%",
+  "@guidePreviewPrincipalAndInterest": {
+    "description": "전세대출 소득공제 계산 기준"
+  },
+  "guidePreviewDeductionLimit": "한도 300만원",
+  "@guidePreviewDeductionLimit": {
+    "description": "전세대출 소득공제 한도"
+  },
+  "guidePreviewDsrDtiFormula": "DSR = 모든대출 연간 원리금 ÷ 연소득 × 100%\nDTI = (주담대 원리금 + 기타 이자) ÷ 연소득 × 100%",
+  "@guidePreviewDsrDtiFormula": {
+    "description": "DSR/DTI 산식 두 줄"
+  },
+  "guidePreviewBandSafe": "안전",
+  "@guidePreviewBandSafe": {
+    "description": "DSR 구간 라벨"
+  },
+  "guidePreviewBandCaution": "주의",
+  "@guidePreviewBandCaution": {
+    "description": "DSR 구간 라벨"
+  },
+  "guidePreviewBandRisk": "위험",
+  "@guidePreviewBandRisk": {
+    "description": "DSR 구간 라벨"
+  },
+  "guidePreviewDealTypeAmount": "거래 유형 / 금액",
+  "@guidePreviewDealTypeAmount": {
+    "description": "중개보수 표 좌측 헤더"
+  },
+  "guidePreviewMaxRate": "상한 요율",
+  "@guidePreviewMaxRate": {
+    "description": "중개보수 표 우측 헤더"
+  },
+  "guidePreviewSaleUnder500M": "매매 · 5억 미만",
+  "@guidePreviewSaleUnder500M": {
+    "description": "중개보수 요율 구간"
+  },
+  "guidePreviewSaleOver500M": "매매 · 5억 이상",
+  "@guidePreviewSaleOver500M": {
+    "description": "중개보수 요율 구간"
+  },
+  "guidePreviewLeaseUnder100M": "임대차 · 1억 미만",
+  "@guidePreviewLeaseUnder100M": {
+    "description": "중개보수 요율 구간"
+  },
+  "guidePreviewLeaseOver100M": "임대차 · 1억 이상",
+  "@guidePreviewLeaseOver100M": {
+    "description": "중개보수 요율 구간"
+  },
+  "guidePreviewVatSeparate": "부가세 10% 별도",
+  "@guidePreviewVatSeparate": {
+    "description": "중개보수에 부가세가 별도임을 알리는 칩"
+  },
+  "guidePreviewHomesAndCondition": "보유 주택 수 / 조건",
+  "@guidePreviewHomesAndCondition": {
+    "description": "취득세 표 좌측 헤더"
+  },
+  "guidePreviewTaxRate": "세율",
+  "@guidePreviewTaxRate": {
+    "description": "취득세 표 우측 헤더"
+  },
+  "guidePreviewOneHomeUnder600M": "1주택 · 6억 이하",
+  "@guidePreviewOneHomeUnder600M": {
+    "description": "취득세 세율 구간"
+  },
+  "guidePreviewOneHome600To900M": "1주택 · 6~9억",
+  "@guidePreviewOneHome600To900M": {
+    "description": "취득세 세율 구간"
+  },
+  "guidePreviewOneHomeOver900M": "1주택 · 9억 초과",
+  "@guidePreviewOneHomeOver900M": {
+    "description": "취득세 세율 구간"
+  },
+  "guidePreviewTwoHomesRegulated": "2주택 (조정지역)",
+  "@guidePreviewTwoHomesRegulated": {
+    "description": "취득세 세율 구간"
+  },
+  "guidePreviewThreeOrMoreHomes": "3주택 이상",
+  "@guidePreviewThreeOrMoreHomes": {
+    "description": "취득세 세율 구간"
+  },
+  "guidePreviewRateBand1To3": "1~3% 구간",
+  "@guidePreviewRateBand1To3": {
+    "description": "취득세 누진 구간 값"
+  },
+  "guidePreviewSurtaxNote": "농특세·교육세 포함 시 추가",
+  "@guidePreviewSurtaxNote": {
+    "description": "취득세에 부가되는 세목 안내 칩"
+  },
+  "guideSavedTitle": "저장한 계산 활용",
+  "@guideSavedTitle": {
+    "description": "마지막 페이지 첫 섹션 제목"
+  },
+  "guideSaveResultTitle": "결과 저장",
+  "@guideSaveResultTitle": {
+    "description": "저장 흐름 1단계 제목"
+  },
+  "guideSaveResultBody": "계산 결과 화면에서 저장하면 최근계산 탭에 기록됩니다.",
+  "@guideSaveResultBody": {
+    "description": "저장 흐름 1단계 설명"
+  },
+  "guideFavoriteMemoTitle": "즐겨찾기와 메모",
+  "@guideFavoriteMemoTitle": {
+    "description": "저장 흐름 2단계 제목"
+  },
+  "guideFavoriteMemoBody": "자주 보는 계산은 즐겨찾기하고, 상세 화면에서 메모를 남길 수 있습니다.",
+  "@guideFavoriteMemoBody": {
+    "description": "저장 흐름 2단계 설명"
+  },
+  "guideExportShareTitle": "PDF/CSV 공유",
+  "@guideExportShareTitle": {
+    "description": "저장 흐름 3단계 제목"
+  },
+  "guideExportShareBody": "상세 화면에서 PDF와 CSV로 내보내거나 공유합니다.",
+  "@guideExportShareBody": {
+    "description": "저장 흐름 3단계 설명"
+  },
+  "guideAccountSyncTitle": "계정, 동기화, 공지",
+  "@guideAccountSyncTitle": {
+    "description": "마지막 페이지 두 번째 섹션 제목"
+  },
+  "guideSyncHeader": "로그인하면 기록이 동기화됩니다",
+  "@guideSyncHeader": {
+    "description": "동기화 안내 헤더"
+  },
+  "guideSyncBody": "오프라인 상태에서는 로컬에 먼저 저장되고, 네트워크가 가능할 때 서버와 맞춰집니다.",
+  "@guideSyncBody": {
+    "description": "동기화 동작 설명"
+  },
+  "guideSyncNodeApp": "앱",
+  "@guideSyncNodeApp": {
+    "description": "동기화 도식의 앱 쪽 노드"
+  },
+  "guideSyncNodeServer": "서버",
+  "@guideSyncNodeServer": {
+    "description": "동기화 도식의 서버 쪽 노드"
+  },
+  "guidePinBiometricHeader": "PIN과 생체인증으로 앱 재진입 보호",
+  "@guidePinBiometricHeader": {
+    "description": "잠금 안내 헤더"
+  },
+  "guideNoticePushHeader": "공지와 푸시 알림",
+  "@guideNoticePushHeader": {
+    "description": "공지 안내 헤더"
+  },
+  "guideNoticePushBody": "공지사항은 설정에서 확인할 수 있고, 로그인 상태에서 푸시 알림을 켜면 새 공지 등록 시 알림을 받을 수 있습니다.",
+  "@guideNoticePushBody": {
+    "description": "공지·푸시 알림 설명"
+  },
+  "guideDisclaimer": "앱의 계산 결과는 입력값을 기준으로 한 참고용 간이 계산입니다. 실제 대출, 세금, 중개보수, 계약 조건은 지역, 시점, 개인 상황, 관련 법령에 따라 달라질 수 있으므로 최종 결정 전 전문가 또는 공식 기관을 통해 확인해야 합니다.",
+  "@guideDisclaimer": {
+    "description": "가이드 마지막 면책 문구"
+  },
+  "settingsTitle": "설정",
+  "@settingsTitle": {
+    "description": "설정 화면 앱바 제목"
+  },
+  "settingsSectionAccount": "계정",
+  "@settingsSectionAccount": {
+    "description": "설정 화면 계정 섹션 라벨"
+  },
+  "settingsSignedIn": "로그인됨",
+  "@settingsSignedIn": {
+    "description": "이메일을 알 수 없을 때 표시하는 로그인 상태 문구"
+  },
+  "settingsAccountManage": "계정 관리",
+  "@settingsAccountManage": {
+    "description": "계정 관리 화면으로 가는 항목이자 그 화면의 제목"
+  },
+  "settingsSignIn": "로그인",
+  "@settingsSignIn": {
+    "description": "로그인 화면으로 가는 항목"
+  },
+  "settingsSectionSecurity": "보안",
+  "@settingsSectionSecurity": {
+    "description": "설정 화면 보안 섹션 라벨"
+  },
+  "settingsQuickLoginEnabled": "간편로그인 사용 중",
+  "@settingsQuickLoginEnabled": {
+    "description": "PIN 간편로그인이 켜져 있을 때의 항목 제목"
+  },
+  "settingsQuickLoginSetup": "간편로그인 설정",
+  "@settingsQuickLoginSetup": {
+    "description": "PIN 간편로그인이 꺼져 있을 때의 항목 제목"
+  },
+  "settingsQuickLoginDisable": "해제",
+  "@settingsQuickLoginDisable": {
+    "description": "간편로그인을 끄는 버튼"
+  },
+  "settingsPinChange": "PIN 변경",
+  "@settingsPinChange": {
+    "description": "PIN 변경 화면으로 가는 항목"
+  },
+  "settingsBiometricReset": "생체인증 재설정",
+  "@settingsBiometricReset": {
+    "description": "생체인증을 지우고 다시 설정하는 항목"
+  },
+  "settingsRequireAuthOnLaunch": "앱 재진입 시 인증",
+  "@settingsRequireAuthOnLaunch": {
+    "description": "앱을 다시 열 때 인증을 요구할지 정하는 스위치"
+  },
+  "settingsSectionNotification": "알림",
+  "@settingsSectionNotification": {
+    "description": "설정 화면 알림 섹션 라벨"
+  },
+  "settingsNoticePush": "공지 알림",
+  "@settingsNoticePush": {
+    "description": "공지 푸시 알림 수신 스위치"
+  },
+  "settingsSectionThemeLanguage": "테마·언어",
+  "@settingsSectionThemeLanguage": {
+    "description": "설정 화면 테마·언어 섹션 라벨"
+  },
+  "settingsSectionAppInfo": "앱 정보",
+  "@settingsSectionAppInfo": {
+    "description": "설정 화면 앱 정보 섹션 라벨"
+  },
+  "settingsAppGuide": "앱 사용법",
+  "@settingsAppGuide": {
+    "description": "앱 가이드 화면으로 가는 항목"
+  },
+  "settingsNotices": "공지사항",
+  "@settingsNotices": {
+    "description": "공지사항 목록·상세 화면 제목이자 설정의 진입 항목"
+  },
+  "settingsVersion": "버전",
+  "@settingsVersion": {
+    "description": "앱 버전 표시 항목 라벨"
+  },
+  "settingsSectionLegal": "약관",
+  "@settingsSectionLegal": {
+    "description": "설정 화면 약관 섹션 라벨"
+  },
+  "settingsTermsOfService": "이용약관",
+  "@settingsTermsOfService": {
+    "description": "이용약관 화면으로 가는 항목"
+  },
+  "settingsPrivacyPolicy": "개인정보 처리방침",
+  "@settingsPrivacyPolicy": {
+    "description": "개인정보 처리방침 화면으로 가는 항목"
+  },
+  "settingsOpenSourceLicenses": "오픈소스 라이선스",
+  "@settingsOpenSourceLicenses": {
+    "description": "오픈소스 라이선스 목록을 여는 항목"
+  },
+  "settingsSignOut": "로그아웃",
+  "@settingsSignOut": {
+    "description": "로그아웃 항목"
+  },
+  "settingsSectionAdmin": "관리자",
+  "@settingsSectionAdmin": {
+    "description": "관리자 계정에만 보이는 섹션 라벨"
+  },
+  "settingsManageNotices": "공지사항 관리",
+  "@settingsManageNotices": {
+    "description": "관리자용 공지 관리 화면으로 가는 항목"
+  },
+  "settingsDangerZone": "위험 구역",
+  "@settingsDangerZone": {
+    "description": "계정 관리 화면의 되돌릴 수 없는 작업 섹션 라벨"
+  },
+  "settingsDeleteAccount": "회원탈퇴",
+  "@settingsDeleteAccount": {
+    "description": "회원탈퇴 항목이자 확인 다이얼로그 제목"
+  },
+  "settingsDeleteAccountCaption": "탈퇴하면 계정과 저장된 모든 계산 기록이 삭제되며 되돌릴 수 없습니다.",
+  "@settingsDeleteAccountCaption": {
+    "description": "회원탈퇴 항목 아래의 보조 설명"
+  },
+  "settingsDeleteAccountConfirm": "탈퇴하면 계정과 저장된 모든 계산 기록이 삭제됩니다.\n이 작업은 되돌릴 수 없습니다.",
+  "@settingsDeleteAccountConfirm": {
+    "description": "회원탈퇴 확인 다이얼로그 본문"
+  },
+  "settingsDeleteAccountAction": "탈퇴하기",
+  "@settingsDeleteAccountAction": {
+    "description": "회원탈퇴 확인 다이얼로그의 실행 버튼"
+  },
+  "settingsErrorWithMessage": "오류: {message}",
+  "@settingsErrorWithMessage": {
+    "description": "회원탈퇴 실패 스낵바",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsNoticesEmpty": "등록된 공지사항이 없습니다",
+  "@settingsNoticesEmpty": {
+    "description": "공지사항 목록이 비었을 때"
+  },
+  "settingsNoticesLoadError": "공지사항을 불러오지 못했습니다\n{error}",
+  "@settingsNoticesLoadError": {
+    "description": "공지사항 목록·상세를 불러오지 못했을 때",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsNoticeNotFound": "공지사항을 찾을 수 없습니다",
+  "@settingsNoticeNotFound": {
+    "description": "요청한 공지가 삭제되었거나 없을 때"
+  },
+  "monthlyExpenseTitle": "월 고정비 계산",
+  "@monthlyExpenseTitle": {
+    "description": "월 고정비 계산 화면 앱바 제목"
+  },
+  "monthlyExpenseSectionTitle": "월 고정 지출",
+  "@monthlyExpenseSectionTitle": {
+    "description": "입력 섹션 제목"
+  },
+  "monthlyExpenseHelpTitle": "월 고정비란?",
+  "@monthlyExpenseHelpTitle": {
+    "description": "입력 섹션 도움말 다이얼로그 제목"
+  },
+  "monthlyExpenseHelpBody": "매달 일정하게 나가는 생활 고정 지출 항목입니다.\n\n• 주거비: 월세 또는 전세 대출 월 이자\n• 관리비: 건물 관리·공용 시설 이용 비용\n• 통신비: 핸드폰·인터넷 요금\n• 교통비: 교통카드·주유비 등\n• 보험료: 생명보험·실손보험 등 월 납부 보험\n• 구독료: 넷플릭스·스포티파이 등 구독 서비스\n• 식비: 외식비·식재료비\n• 기타: 그 외 고정 지출\n\n0원인 항목은 결과에서 제외됩니다.",
+  "@monthlyExpenseHelpBody": {
+    "description": "입력 섹션 도움말 본문. 항목별 설명"
+  },
+  "monthlyExpenseHousingFieldLabel": "주거비 (월세/이자)",
+  "@monthlyExpenseHousingFieldLabel": {
+    "description": "주거비 입력 필드 라벨. 결과 표의 '주거비'보다 설명이 길다"
+  },
+  "monthlyExpenseCategoryHousing": "주거비",
+  "@monthlyExpenseCategoryHousing": {
+    "description": "지출 항목 이름 - 주거비"
+  },
+  "monthlyExpenseCategoryMaintenance": "관리비",
+  "@monthlyExpenseCategoryMaintenance": {
+    "description": "지출 항목 이름 - 관리비"
+  },
+  "monthlyExpenseCategoryCommunication": "통신비",
+  "@monthlyExpenseCategoryCommunication": {
+    "description": "지출 항목 이름 - 통신비"
+  },
+  "monthlyExpenseCategoryTransportation": "교통비",
+  "@monthlyExpenseCategoryTransportation": {
+    "description": "지출 항목 이름 - 교통비"
+  },
+  "monthlyExpenseCategoryInsurance": "보험료",
+  "@monthlyExpenseCategoryInsurance": {
+    "description": "지출 항목 이름 - 보험료"
+  },
+  "monthlyExpenseCategorySubscription": "구독료",
+  "@monthlyExpenseCategorySubscription": {
+    "description": "지출 항목 이름 - 구독료"
+  },
+  "monthlyExpenseCategoryFood": "식비",
+  "@monthlyExpenseCategoryFood": {
+    "description": "지출 항목 이름 - 식비"
+  },
+  "monthlyExpenseCategoryOther": "기타",
+  "@monthlyExpenseCategoryOther": {
+    "description": "지출 항목 이름 - 기타"
+  },
+  "monthlyExpenseCalculate": "계산하기",
+  "@monthlyExpenseCalculate": {
+    "description": "계산 실행 버튼"
+  },
+  "monthlyExpenseResultTitle": "계산 결과",
+  "@monthlyExpenseResultTitle": {
+    "description": "결과 카드 상단 라벨"
+  },
+  "monthlyExpenseMonthlyTotalLabel": "월 합계",
+  "@monthlyExpenseMonthlyTotalLabel": {
+    "description": "결과 카드 월 합계 행 라벨"
+  },
+  "monthlyExpenseAnnualTotalLabel": "연간 합계",
+  "@monthlyExpenseAnnualTotalLabel": {
+    "description": "결과 카드 연간 합계 행 라벨"
+  },
+  "monthlyExpenseSaved": "계산 결과가 저장되었습니다.",
+  "@monthlyExpenseSaved": {
+    "description": "이력 저장 완료 스낵바"
+  },
+  "monthlyExpenseShareSubject": "월 고정비 계산 결과",
+  "@monthlyExpenseShareSubject": {
+    "description": "공유 시트 제목과 메일 제목"
+  },
+  "monthlyExpenseShareHeader": "[{appName}] 월 고정비 계산 결과",
+  "@monthlyExpenseShareHeader": {
+    "description": "공유 본문 첫 줄",
+    "placeholders": {
+      "appName": {
+        "type": "String"
+      }
+    }
+  },
+  "monthlyExpenseShareLine": "{label}: {amount}",
+  "@monthlyExpenseShareLine": {
+    "description": "공유 본문의 항목별 줄",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "monthlyExpenseShareMonthlyTotal": "월 합계: {amount}",
+  "@monthlyExpenseShareMonthlyTotal": {
+    "description": "공유 본문 월 합계 줄",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "monthlyExpenseShareAnnualTotal": "연간 합계: {amount}",
+  "@monthlyExpenseShareAnnualTotal": {
+    "description": "공유 본문 연간 합계 줄",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "monthlyExpenseShareDisclaimer": "※ 본 계산 결과는 참고용입니다.",
+  "@monthlyExpenseShareDisclaimer": {
+    "description": "공유 본문 마지막 줄 면책 문구"
+  },
+  "loanInterestTitle": "대출이자 계산",
+  "@loanInterestTitle": {
+    "description": "대출이자 계산 화면 앱바 제목"
+  },
+  "loanInterestSectionTitle": "대출 조건",
+  "@loanInterestSectionTitle": {
+    "description": "입력 섹션 제목"
+  },
+  "loanInterestHelpTitle": "대출이자 계산이란?",
+  "@loanInterestHelpTitle": {
+    "description": "입력 섹션 도움말 다이얼로그 제목"
+  },
+  "loanInterestHelpBody": "단리(이자만 납부) 방식으로 월 이자와 총 이자를 계산합니다.\n\n• 대출금: 은행에서 빌리는 원금\n• 연이율: 연간 적용 이자율 (예: 4.5%)\n• 대출 기간: 이자를 납부할 기간 (개월)\n\n월 이자 = 대출금 × 연이율 ÷ 12\n총 이자 = 월 이자 × 대출 기간\n\n원리금 균등 상환(원금도 함께 갚는 방식)과는\n계산 방법이 다릅니다.",
+  "@loanInterestHelpBody": {
+    "description": "입력 섹션 도움말 본문. 계산식과 한계 설명"
+  },
+  "loanInterestAmountLabel": "대출금",
+  "@loanInterestAmountLabel": {
+    "description": "대출 원금 입력 필드 라벨"
+  },
+  "loanInterestRateLabel": "연이율",
+  "@loanInterestRateLabel": {
+    "description": "연이율 입력 필드 라벨"
+  },
+  "loanInterestMonthsLabel": "대출 기간",
+  "@loanInterestMonthsLabel": {
+    "description": "대출 기간 입력 필드 라벨"
+  },
+  "loanInterestMonthsHint": "예: 24",
+  "@loanInterestMonthsHint": {
+    "description": "대출 기간 입력 힌트"
+  },
+  "loanInterestMonthsSuffix": "개월",
+  "@loanInterestMonthsSuffix": {
+    "description": "대출 기간 입력 필드 접미사 단위"
+  },
+  "loanInterestMonthsValue": "{months}개월",
+  "@loanInterestMonthsValue": {
+    "description": "PDF 입력값 요약의 대출 기간 값",
+    "placeholders": {
+      "months": {
+        "type": "int"
+      }
+    }
+  },
+  "loanInterestCalculate": "계산하기",
+  "@loanInterestCalculate": {
+    "description": "계산 실행 버튼"
+  },
+  "loanInterestResultTitle": "계산 결과",
+  "@loanInterestResultTitle": {
+    "description": "결과 카드 상단 라벨"
+  },
+  "loanInterestMonthlyInterestLabel": "월 이자",
+  "@loanInterestMonthlyInterestLabel": {
+    "description": "결과 카드 월 이자 행 라벨"
+  },
+  "loanInterestTotalInterestLabel": "{months}개월 총 이자",
+  "@loanInterestTotalInterestLabel": {
+    "description": "결과 카드 총 이자 행 라벨",
+    "placeholders": {
+      "months": {
+        "type": "int"
+      }
+    }
+  },
+  "loanInterestSaved": "계산 결과가 저장되었습니다.",
+  "@loanInterestSaved": {
+    "description": "이력 저장 완료 스낵바"
+  },
+  "loanInterestShareSubject": "대출이자 계산 결과",
+  "@loanInterestShareSubject": {
+    "description": "공유 시트 제목과 메일 제목"
+  },
+  "loanInterestShareHeader": "[{appName}] 대출이자 계산 결과",
+  "@loanInterestShareHeader": {
+    "description": "공유 본문 첫 줄",
+    "placeholders": {
+      "appName": {
+        "type": "String"
+      }
+    }
+  },
+  "loanInterestShareLoanAmount": "대출금: {amount}",
+  "@loanInterestShareLoanAmount": {
+    "description": "공유 본문 대출금 줄",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "loanInterestShareMonthlyInterest": "월 이자: {amount}",
+  "@loanInterestShareMonthlyInterest": {
+    "description": "공유 본문 월 이자 줄",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "loanInterestShareTotalInterest": "{months}개월 총 이자: {amount}",
+  "@loanInterestShareTotalInterest": {
+    "description": "공유 본문 총 이자 줄",
+    "placeholders": {
+      "months": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "loanInterestShareDisclaimer": "※ 본 계산 결과는 참고용입니다. 실제 계약 전 전문가에게 확인하세요.",
+  "@loanInterestShareDisclaimer": {
+    "description": "공유 본문 마지막 줄 면책 문구"
+  },
+  "taxDeductionTitle": "연말정산 세액공제",
+  "@taxDeductionTitle": {
+    "description": "연말정산 세액공제 화면 앱바 제목"
+  },
+  "taxDeductionPdfTitle": "연말정산 세액공제 결과",
+  "@taxDeductionPdfTitle": {
+    "description": "PDF 내보내기 문서 제목"
+  },
+  "taxDeductionPdfRentRate": "월세 공제율",
+  "@taxDeductionPdfRentRate": {
+    "description": "PDF 결과 표의 월세 공제율 항목. 표가 평면이라 '월세'를 붙여 구분한다"
+  },
+  "taxDeductionPdfRentTaxCredit": "월세 세액공제",
+  "@taxDeductionPdfRentTaxCredit": {
+    "description": "PDF 결과 표의 월세 세액공제액 항목"
+  },
+  "taxDeductionPdfLoanTaxSaving": "전세대출 절세액",
+  "@taxDeductionPdfLoanTaxSaving": {
+    "description": "PDF 결과 표의 전세대출 절세액 항목"
+  },
+  "taxDeductionIncomeSection": "소득 정보",
+  "@taxDeductionIncomeSection": {
+    "description": "소득 입력 섹션 제목"
+  },
+  "taxDeductionAnnualSalaryLabel": "연간 총급여",
+  "@taxDeductionAnnualSalaryLabel": {
+    "description": "연간 총급여 입력 필드 라벨"
+  },
+  "taxDeductionIncomeTaxRateLabel": "소득세율 (과세표준 기준)",
+  "@taxDeductionIncomeTaxRateLabel": {
+    "description": "소득세율 슬라이더 라벨"
+  },
+  "taxDeductionRentSection": "월세 세액공제",
+  "@taxDeductionRentSection": {
+    "description": "월세 세액공제 입력·결과 섹션 제목"
+  },
+  "taxDeductionRentRateGuide": "총급여 5,500만원 이하 17% / 7,000만원 이하 15% / 초과 0%",
+  "@taxDeductionRentRateGuide": {
+    "description": "총급여 구간별 월세 세액공제율 안내"
+  },
+  "taxDeductionMonthlyRentLabel": "월세 (월)",
+  "@taxDeductionMonthlyRentLabel": {
+    "description": "월세 입력 필드 라벨. 월 단위 금액"
+  },
+  "taxDeductionLoanSection": "전세대출 원리금 소득공제",
+  "@taxDeductionLoanSection": {
+    "description": "전세대출 원리금 소득공제 입력 섹션 제목"
+  },
+  "taxDeductionLoanGuide": "연 상환액의 40% 소득공제, 연 400만원 한도",
+  "@taxDeductionLoanGuide": {
+    "description": "전세대출 원리금 소득공제 요율과 한도 안내"
+  },
+  "taxDeductionAnnualRepaymentLabel": "연간 원리금 상환액",
+  "@taxDeductionAnnualRepaymentLabel": {
+    "description": "연간 원리금 상환액 입력 필드 라벨"
+  },
+  "taxDeductionCalculate": "계산하기",
+  "@taxDeductionCalculate": {
+    "description": "계산 실행 버튼"
+  },
+  "taxDeductionRentRateRowLabel": "공제율",
+  "@taxDeductionRentRateRowLabel": {
+    "description": "결과 카드 월세 공제율 행 라벨"
+  },
+  "taxDeductionEligibleAnnualRentLabel": "공제 대상 연 월세",
+  "@taxDeductionEligibleAnnualRentLabel": {
+    "description": "결과 카드 공제 대상 연 월세 행 라벨"
+  },
+  "taxDeductionRentTaxCreditLabel": "세액공제액",
+  "@taxDeductionRentTaxCreditLabel": {
+    "description": "결과 카드 월세 세액공제액 행 라벨"
+  },
+  "taxDeductionLoanResultSection": "전세대출 소득공제",
+  "@taxDeductionLoanResultSection": {
+    "description": "결과 카드 전세대출 소득공제 섹션 제목"
+  },
+  "taxDeductionEligibleRepaymentLabel": "공제 대상 상환액",
+  "@taxDeductionEligibleRepaymentLabel": {
+    "description": "결과 카드 공제 대상 상환액 행 라벨"
+  },
+  "taxDeductionIncomeDeductionLabel": "소득공제액 (40%)",
+  "@taxDeductionIncomeDeductionLabel": {
+    "description": "결과 카드 소득공제액 행 라벨. 상환액의 40%"
+  },
+  "taxDeductionLoanTaxSavingLabel": "절세액 (세율 {rate}%)",
+  "@taxDeductionLoanTaxSavingLabel": {
+    "description": "결과 카드 전세대출 절세액 행 라벨",
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "taxDeductionTotalBenefitLabel": "연간 총 절세 혜택",
+  "@taxDeductionTotalBenefitLabel": {
+    "description": "결과 카드 연간 총 절세 혜택 행 라벨"
+  },
+  "taxDeductionMessageIncomeTooHigh": "총급여 7천만원 초과로 월세 세액공제 대상이 아닙니다.",
+  "@taxDeductionMessageIncomeTooHigh": {
+    "description": "총급여가 월세 세액공제 한도를 넘고 다른 공제도 없을 때의 결과 문구"
+  },
+  "taxDeductionMessageIncomeTooHighWithLoan": "총급여 7천만원 초과로 월세 세액공제는 받을 수 없지만, 전세대출 소득공제로 연간 최대 {amount} 아낄 수 있어요.",
+  "@taxDeductionMessageIncomeTooHighWithLoan": {
+    "description": "월세 세액공제는 못 받지만 전세대출 소득공제 절세액이 있을 때의 결과 문구",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "taxDeductionMessageHasBenefit": "연간 최대 {amount} 세금을 아낄 수 있어요!",
+  "@taxDeductionMessageHasBenefit": {
+    "description": "절세 혜택이 있을 때의 결과 문구",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "taxDeductionMessageNoInput": "해당하는 공제 항목을 입력해 주세요.",
+  "@taxDeductionMessageNoInput": {
+    "description": "공제 대상 입력이 없어 혜택이 0일 때의 결과 문구"
+  },
+  "sharedHomeTab": "홈",
+  "@sharedHomeTab": {
+    "description": "하단 내비게이션 홈 탭"
+  },
+  "sharedHousingTab": "주거",
+  "@sharedHousingTab": {
+    "description": "하단 내비게이션 주거 탭과 주거 계산 카테고리 제목"
+  },
+  "sharedHousingHeadline": "계약과 임대료를\n비교하세요",
+  "@sharedHousingHeadline": {
+    "description": "주거 계산 카테고리 헤드라인"
+  },
+  "sharedHousingDescription": "전세, 월세, 반전세, 계약 갱신처럼 집 계약에 직접 연결되는 계산입니다.",
+  "@sharedHousingDescription": {
+    "description": "주거 계산 카테고리 설명"
+  },
+  "sharedFinanceTab": "금융",
+  "@sharedFinanceTab": {
+    "description": "하단 내비게이션 금융 탭과 금융 계산 카테고리 제목"
+  },
+  "sharedFinanceHeadline": "대출과 세금을\n따져보세요",
+  "@sharedFinanceHeadline": {
+    "description": "금융 계산 카테고리 헤드라인"
+  },
+  "sharedFinanceDescription": "대출 부담, 월 고정비, 세액공제, 거래 비용을 한곳에 모았습니다.",
+  "@sharedFinanceDescription": {
+    "description": "금융 계산 카테고리 설명"
+  },
+  "sharedRecentTab": "최근계산",
+  "@sharedRecentTab": {
+    "description": "하단 내비게이션 최근 계산 탭"
+  },
+  "sharedSettingsTab": "설정",
+  "@sharedSettingsTab": {
+    "description": "하단 내비게이션 설정 탭"
+  },
+  "sharedResetAmount": "초기화",
+  "@sharedResetAmount": {
+    "description": "금액 입력 보조 버튼 초기화"
+  },
+  "sharedPercentHint": "예: 3.5",
+  "@sharedPercentHint": {
+    "description": "퍼센트 입력 필드 예시 힌트"
+  },
+  "sharedShareAction": "공유",
+  "@sharedShareAction": {
+    "description": "결과 액션 공유 버튼"
+  },
+  "sharedExportPdfAction": "PDF 내보내기",
+  "@sharedExportPdfAction": {
+    "description": "결과 액션 PDF 내보내기 버튼"
+  },
+  "sharedDisclaimerMain": "본 앱은 전세, 월세, 대출 이자, 월 고정비 등을 단순 계산하기 위한 참고용 도구입니다.\n실제 대출 가능 여부, 금리, 세금, 보증금 반환 가능성, 계약 위험도는 금융기관, 세무사, 공인중개사 등 전문가에게 반드시 확인하시기 바랍니다.\n본 앱의 계산 결과는 법적·금융적 판단의 근거로 사용할 수 없습니다.",
+  "@sharedDisclaimerMain": {
+    "description": "설정과 공용 면책 박스에 표시하는 긴 면책 문구"
+  },
+  "sharedDisclaimerShort": "본 계산 결과는 참고용입니다. 실제 계약 전 전문가에게 확인하세요.",
+  "@sharedDisclaimerShort": {
+    "description": "계산 결과 하단에 표시하는 짧은 면책 문구"
+  },
+  "sharedAdLabel": "광고",
+  "@sharedAdLabel": {
+    "description": "결과 화면 광고 배너 라벨"
+  },
+  "sharedOfflineBanner": "오프라인 상태입니다",
+  "@sharedOfflineBanner": {
+    "description": "네트워크가 끊겼을 때 표시하는 배너 문구"
+  },
+  "notificationNoticeChannelName": "공지사항",
+  "@notificationNoticeChannelName": {
+    "description": "공지사항 푸시 알림 Android 채널명"
+  },
+  "notificationNoticeChannelDescription": "새 공지사항 알림",
+  "@notificationNoticeChannelDescription": {
+    "description": "공지사항 푸시 알림 Android 채널 설명"
+  },
+  "notificationNoticeFallbackTitle": "공지사항",
+  "@notificationNoticeFallbackTitle": {
+    "description": "원격 푸시에 제목이 없을 때 쓰는 기본 제목"
   }
 }

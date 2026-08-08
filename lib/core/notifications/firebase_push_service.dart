@@ -173,11 +173,11 @@ class FirebasePushService {
   }) {
     final title = message.notification?.title ??
         message.data['title'] as String? ??
-        '공지사항';
+        notificationService.noticeFallbackTitle;
     final body =
         message.notification?.body ?? message.data['body'] as String? ?? '';
 
-    if (body.isEmpty && title == '공지사항') {
+    if (body.isEmpty && title == notificationService.noticeFallbackTitle) {
       return Future<void>.value();
     }
 

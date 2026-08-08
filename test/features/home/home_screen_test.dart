@@ -6,6 +6,7 @@ import 'package:house_money_calculator/data/local/calculation_history_store.dart
 import 'package:house_money_calculator/data/models/calculation_history.dart';
 import 'package:house_money_calculator/data/repositories/calculation_history_repository.dart';
 import 'package:house_money_calculator/features/shared/main_shell.dart';
+import 'package:house_money_calculator/l10n/gen/app_localizations.dart';
 import 'package:house_money_calculator/providers/calculation_history_provider.dart';
 
 void main() {
@@ -29,7 +30,12 @@ void main() {
         overrides: [
           calculationHistoryRepositoryProvider.overrideWithValue(repo),
         ],
-        child: MaterialApp.router(routerConfig: router),
+        child: MaterialApp.router(
+          locale: const Locale('ko'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: router,
+        ),
       ),
     );
     await tester.pumpAndSettle();

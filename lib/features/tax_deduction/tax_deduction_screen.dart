@@ -5,14 +5,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:screenshot/screenshot.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/extensions/number_format_extension.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_text_styles.dart';
+import '../../core/theme/app_palette.dart';
+import '../../core/theme/app_typography.dart';
 import '../../core/utils/calculation_pdf_exporter.dart';
 import '../../core/utils/money_formatter.dart';
 import '../../core/utils/pdf_export_labels_ko.dart';
 import '../../core/utils/validators.dart';
 import '../../domain/entities/tax_deduction_input.dart';
 import '../../domain/entities/tax_deduction_result.dart';
+import '../../l10n/gen/app_localizations.dart';
 import '../../shared/widgets/disclaimer_box.dart';
 import '../../shared/widgets/money_input_field.dart';
 import '../../shared/widgets/primary_button.dart';
@@ -70,31 +71,45 @@ class _TaxDeductionScreenState extends ConsumerState<TaxDeductionScreen> {
     final result = ref.read(taxDeductionControllerProvider);
     if (result == null) return;
 
+    final l10n = AppLocalizations.of(context);
     final imageBytes = await _captureResultImage();
     if (!mounted) return;
+    // 계약서 §7: 문서 틀(kKoreanPdfExportLabels)은 pdf* 키가 S10에 있어 Phase 2까지
+    // 한국어 고정이다. 본문 항목은 이 슬라이스 소유이므로 지역화한다.
     await CalculationPdfExporter.share(
       context,
       labels: kKoreanPdfExportLabels,
-      title: '연말정산 세액공제 결과',
-      summary: _messageText(result),
+      title: l10n.taxDeductionPdfTitle,
+      summary: _messageText(result, l10n),
       resultImageBytes: imageBytes,
       input: {
-        '연간 총급여': MoneyFormatter.formatWithWon(
+        l10n.taxDeductionAnnualSalaryLabel: MoneyFormatter.formatWithWon(
             MoneyFormatter.parse(_annualSalary.text)),
-        '소득세율': '${_incomeTaxRate.toStringAsFixed(0)}%',
-        '월세': MoneyFormatter.formatWithWon(
+        l10n.taxDeductionIncomeTaxRateLabel:
+            '${_incomeTaxRate.toStringAsFixed(0)}%',
+        l10n.taxDeductionMonthlyRentLabel: MoneyFormatter.formatWithWon(
             MoneyFormatter.parse(_monthlyRent.text)),
-        '연간 원리금 상환액': MoneyFormatter.formatWithWon(
+        l10n.taxDeductionAnnualRepaymentLabel: MoneyFormatter.formatWithWon(
           MoneyFormatter.parse(_annualLoanRepayment.text),
         ),
       },
       result: {
-        '월세 공제율': '${result.rentDeductionRate}%',
-        '공제 대상 연 월세': result.eligibleAnnualRent.wonFormat,
-        '월세 세액공제': result.rentTaxCredit.wonFormat,
-        '공제 대상 상환액': result.eligibleRepayment.wonFormat,
-        '전세대출 절세액': result.loanTaxSaving.wonFormat,
-        '연간 총 절세 혜택': result.totalTaxBenefit.wonFormat,
+        // 공제율이 0%면 공제 대상 연 월세가 계산은 되지만 실제로 공제되는 금액이
+        // 아니다. 결과 카드와 같은 조건으로 걸러 오해를 막는다.
+        if (result.rentTaxCredit > 0) ...{
+          l10n.taxDeductionPdfRentRate: '${result.rentDeductionRate}%',
+          l10n.taxDeductionEligibleAnnualRentLabel:
+              result.eligibleAnnualRent.wonFormat,
+          l10n.taxDeductionPdfRentTaxCredit: result.rentTaxCredit.wonFormat,
+        },
+        if (result.loanTaxSaving > 0) ...{
+          l10n.taxDeductionEligibleRepaymentLabel:
+              result.eligibleRepayment.wonFormat,
+          l10n.taxDeductionIncomeDeductionLabel:
+              result.incomeDeductionAmount.wonFormat,
+          l10n.taxDeductionPdfLoanTaxSaving: result.loanTaxSaving.wonFormat,
+        },
+        l10n.taxDeductionTotalBenefitLabel: result.totalTaxBenefit.wonFormat,
       },
     );
   }
@@ -107,10 +122,13 @@ class _TaxDeductionScreenState extends ConsumerState<TaxDeductionScreen> {
   @override
   Widget build(BuildContext context) {
     final result = ref.watch(taxDeductionControllerProvider);
+    final l10n = AppLocalizations.of(context);
+    final palette = context.palette;
+    final typography = context.typography;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(title: const Text('연말정산 세액공제')),
+      backgroundColor: palette.background,
+      appBar: AppBar(title: Text(l10n.taxDeductionTitle)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppConstants.horizontalPadding),
         child: Column(
@@ -122,10 +140,10 @@ class _TaxDeductionScreenState extends ConsumerState<TaxDeductionScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const _SectionTitle('소득 정보'),
+                  _SectionTitle(l10n.taxDeductionIncomeSection),
                   const SizedBox(height: 12),
                   MoneyInputField(
-                    label: '연간 총급여',
+                    label: l10n.taxDeductionAnnualSalaryLabel,
                     controller: _annualSalary,
                     focusNode: _fn1,
                     nextFocusNode: _fn2,
@@ -136,7 +154,7 @@ class _TaxDeductionScreenState extends ConsumerState<TaxDeductionScreen> {
                   ),
                   const SizedBox(height: 20),
                   SliderRateField(
-                    label: '소득세율 (과세표준 기준)',
+                    label: l10n.taxDeductionIncomeTaxRateLabel,
                     value: _incomeTaxRate,
                     min: 6.0,
                     max: 45.0,
@@ -144,15 +162,15 @@ class _TaxDeductionScreenState extends ConsumerState<TaxDeductionScreen> {
                     onChanged: (v) => setState(() => _incomeTaxRate = v),
                   ),
                   const SizedBox(height: 24),
-                  const _SectionTitle('월세 세액공제'),
+                  _SectionTitle(l10n.taxDeductionRentSection),
                   const SizedBox(height: 4),
                   Text(
-                    '총급여 5,500만원 이하 17% / 7,000만원 이하 15% / 초과 0%',
-                    style: AppTextStyles.caption,
+                    l10n.taxDeductionRentRateGuide,
+                    style: typography.caption,
                   ),
                   const SizedBox(height: 12),
                   MoneyInputField(
-                    label: '월세 (월)',
+                    label: l10n.taxDeductionMonthlyRentLabel,
                     controller: _monthlyRent,
                     focusNode: _fn2,
                     nextFocusNode: _fn3,
@@ -161,15 +179,15 @@ class _TaxDeductionScreenState extends ConsumerState<TaxDeductionScreen> {
                     sliderDivisions: 60,
                   ),
                   const SizedBox(height: 24),
-                  const _SectionTitle('전세대출 원리금 소득공제'),
+                  _SectionTitle(l10n.taxDeductionLoanSection),
                   const SizedBox(height: 4),
                   Text(
-                    '연 상환액의 40% 소득공제, 연 400만원 한도',
-                    style: AppTextStyles.caption,
+                    l10n.taxDeductionLoanGuide,
+                    style: typography.caption,
                   ),
                   const SizedBox(height: 12),
                   MoneyInputField(
-                    label: '연간 원리금 상환액',
+                    label: l10n.taxDeductionAnnualRepaymentLabel,
                     controller: _annualLoanRepayment,
                     focusNode: _fn3,
                     textInputAction: TextInputAction.done,
@@ -181,7 +199,8 @@ class _TaxDeductionScreenState extends ConsumerState<TaxDeductionScreen> {
               ),
             ),
             const SizedBox(height: 24),
-            PrimaryButton(label: '계산하기', onPressed: _calculate),
+            PrimaryButton(
+                label: l10n.taxDeductionCalculate, onPressed: _calculate),
             if (result != null) ...[
               const SizedBox(height: 24),
               Screenshot(
@@ -190,41 +209,41 @@ class _TaxDeductionScreenState extends ConsumerState<TaxDeductionScreen> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: AppColors.surface,
+                    color: palette.surface,
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: AppColors.cardBorder),
+                    border: Border.all(color: palette.cardBorder),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _messageText(result),
-                        style: AppTextStyles.heading3.copyWith(
+                        _messageText(result, l10n),
+                        style: typography.heading3.copyWith(
                           color: result.totalTaxBenefit > 0
-                              ? AppColors.positive
-                              : AppColors.textSecondary,
+                              ? palette.positive
+                              : palette.textSecondary,
                         ),
                       ),
                       if (result.rentTaxCredit > 0) ...[
                         const SizedBox(height: 20),
                         const Divider(),
                         const SizedBox(height: 16),
-                        const _ResultSectionTitle('월세 세액공제'),
+                        _ResultSectionTitle(l10n.taxDeductionRentSection),
                         const SizedBox(height: 10),
                         _Row(
-                          label: '공제율',
+                          label: l10n.taxDeductionRentRateRowLabel,
                           value: '${result.rentDeductionRate}%',
                         ),
                         const SizedBox(height: 8),
                         _Row(
-                          label: '공제 대상 연 월세',
+                          label: l10n.taxDeductionEligibleAnnualRentLabel,
                           value: result.eligibleAnnualRent.wonFormat,
                         ),
                         const SizedBox(height: 8),
                         _Row(
-                          label: '세액공제액',
+                          label: l10n.taxDeductionRentTaxCreditLabel,
                           value: result.rentTaxCredit.wonFormat,
-                          valueColor: AppColors.positive,
+                          valueColor: palette.positive,
                           isBold: true,
                         ),
                       ],
@@ -232,23 +251,23 @@ class _TaxDeductionScreenState extends ConsumerState<TaxDeductionScreen> {
                         const SizedBox(height: 20),
                         const Divider(),
                         const SizedBox(height: 16),
-                        const _ResultSectionTitle('전세대출 소득공제'),
+                        _ResultSectionTitle(l10n.taxDeductionLoanResultSection),
                         const SizedBox(height: 10),
                         _Row(
-                          label: '공제 대상 상환액',
+                          label: l10n.taxDeductionEligibleRepaymentLabel,
                           value: result.eligibleRepayment.wonFormat,
                         ),
                         const SizedBox(height: 8),
                         _Row(
-                          label: '소득공제액 (40%)',
+                          label: l10n.taxDeductionIncomeDeductionLabel,
                           value: result.incomeDeductionAmount.wonFormat,
                         ),
                         const SizedBox(height: 8),
                         _Row(
-                          label:
-                              '절세액 (세율 ${_incomeTaxRate.toStringAsFixed(0)}%)',
+                          label: l10n.taxDeductionLoanTaxSavingLabel(
+                              _incomeTaxRate.toStringAsFixed(0)),
                           value: result.loanTaxSaving.wonFormat,
-                          valueColor: AppColors.positive,
+                          valueColor: palette.positive,
                           isBold: true,
                         ),
                       ],
@@ -257,9 +276,9 @@ class _TaxDeductionScreenState extends ConsumerState<TaxDeductionScreen> {
                         const Divider(),
                         const SizedBox(height: 16),
                         _Row(
-                          label: '연간 총 절세 혜택',
+                          label: l10n.taxDeductionTotalBenefitLabel,
                           value: result.totalTaxBenefit.wonFormat,
-                          valueColor: AppColors.primary,
+                          valueColor: palette.primary,
                           isBold: true,
                         ),
                       ],
@@ -282,14 +301,23 @@ class _TaxDeductionScreenState extends ConsumerState<TaxDeductionScreen> {
   }
 }
 
-String _messageText(TaxDeductionResult result) {
+String _messageText(TaxDeductionResult result, AppLocalizations l10n) {
   switch (result.message) {
     case TaxDeductionMessage.incomeTooHighForRentTaxCredit:
-      return '총급여 7천만원 초과로 월세 세액공제 대상이 아닙니다.';
+      // 계산기는 "월세 공제 대상 아님"만 알려준다. 전세대출 절세액이 있으면
+      // 그 문구만 보여줄 경우 아래 결과 행과 앞뒤가 맞지 않으므로 함께 말한다.
+      if (result.loanTaxSaving > 0) {
+        return l10n.taxDeductionMessageIncomeTooHighWithLoan(
+          MoneyFormatter.formatWithWon(result.loanTaxSaving),
+        );
+      }
+      return l10n.taxDeductionMessageIncomeTooHigh;
     case TaxDeductionMessage.hasTaxBenefit:
-      return '연간 최대 ${MoneyFormatter.formatWithWon(result.totalTaxBenefit)} 세금을 아낄 수 있어요!';
+      return l10n.taxDeductionMessageHasBenefit(
+        MoneyFormatter.formatWithWon(result.totalTaxBenefit),
+      );
     case TaxDeductionMessage.noDeductionInput:
-      return '해당하는 공제 항목을 입력해 주세요.';
+      return l10n.taxDeductionMessageNoInput;
   }
 }
 
@@ -301,10 +329,9 @@ class _SectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: const TextStyle(
+      style: context.typography.label.copyWith(
         fontSize: 15,
         fontWeight: FontWeight.w600,
-        color: AppColors.textSecondary,
       ),
     );
   }
@@ -318,7 +345,7 @@ class _ResultSectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: AppTextStyles.label.copyWith(fontWeight: FontWeight.w600),
+      style: context.typography.label.copyWith(fontWeight: FontWeight.w600),
     );
   }
 }
@@ -338,19 +365,22 @@ class _Row extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+    final typography = context.typography;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: AppTextStyles.bodySecondary),
+        Text(label, style: typography.bodySecondary),
         Text(
           value,
           style: isBold
-              ? AppTextStyles.body.copyWith(
+              ? typography.body.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: valueColor ?? AppColors.textPrimary,
+                  color: valueColor ?? palette.textPrimary,
                 )
-              : AppTextStyles.body.copyWith(
-                  color: valueColor ?? AppColors.textPrimary,
+              : typography.body.copyWith(
+                  color: valueColor ?? palette.textPrimary,
                 ),
         ),
       ],

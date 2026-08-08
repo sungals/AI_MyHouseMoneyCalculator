@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_palette.dart';
+import '../../l10n/gen/app_localizations.dart';
 import '../history/history_screen.dart';
 import '../home/calculator_category_screen.dart';
 import '../home/calculator_menu.dart';
@@ -30,58 +31,61 @@ class _MainShellState extends State<MainShell> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final palette = context.palette;
+
     return Scaffold(
       body: _LazyIndexedStack(
         index: _selectedIndex,
         visitedIndexes: _visitedIndexes,
         children: [
-          const HomeScreen(),
-          const CalculatorCategoryScreen(
-            title: '주거',
-            headline: '계약과 임대료를\n비교하세요',
-            description: '전세, 월세, 반전세, 계약 갱신처럼 집 계약에 직접 연결되는 계산입니다.',
+          HomeScreen(),
+          CalculatorCategoryScreen(
+            title: l10n.sharedHousingTab,
+            headline: l10n.sharedHousingHeadline,
+            description: l10n.sharedHousingDescription,
             items: CalculatorMenus.housing,
           ),
-          const CalculatorCategoryScreen(
-            title: '금융',
-            headline: '대출과 세금을\n따져보세요',
-            description: '대출 부담, 월 고정비, 세액공제, 거래 비용을 한곳에 모았습니다.',
+          CalculatorCategoryScreen(
+            title: l10n.sharedFinanceTab,
+            headline: l10n.sharedFinanceHeadline,
+            description: l10n.sharedFinanceDescription,
             items: CalculatorMenus.finance,
           ),
           HistoryScreen(key: ValueKey(_historyRefreshKey)),
-          const SettingsScreen(),
+          SettingsScreen(),
         ],
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
         onDestinationSelected: _selectDestination,
-        backgroundColor: AppColors.surface,
-        indicatorColor: AppColors.primary.withOpacity(0.12),
-        destinations: const [
+        backgroundColor: palette.surface,
+        indicatorColor: palette.primary.withOpacity(0.12),
+        destinations: [
           NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home, color: AppColors.primary),
-            label: '홈',
+            icon: const Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home, color: palette.primary),
+            label: l10n.sharedHomeTab,
           ),
           NavigationDestination(
-            icon: Icon(Icons.apartment_outlined),
-            selectedIcon: Icon(Icons.apartment, color: AppColors.primary),
-            label: '주거',
+            icon: const Icon(Icons.apartment_outlined),
+            selectedIcon: Icon(Icons.apartment, color: palette.primary),
+            label: l10n.sharedHousingTab,
           ),
           NavigationDestination(
-            icon: Icon(Icons.calculate_outlined),
-            selectedIcon: Icon(Icons.calculate, color: AppColors.primary),
-            label: '금융',
+            icon: const Icon(Icons.calculate_outlined),
+            selectedIcon: Icon(Icons.calculate, color: palette.primary),
+            label: l10n.sharedFinanceTab,
           ),
           NavigationDestination(
-            icon: Icon(Icons.history_outlined),
-            selectedIcon: Icon(Icons.history, color: AppColors.primary),
-            label: '최근계산',
+            icon: const Icon(Icons.history_outlined),
+            selectedIcon: Icon(Icons.history, color: palette.primary),
+            label: l10n.sharedRecentTab,
           ),
           NavigationDestination(
-            icon: Icon(Icons.settings_outlined),
-            selectedIcon: Icon(Icons.settings, color: AppColors.primary),
-            label: '설정',
+            icon: const Icon(Icons.settings_outlined),
+            selectedIcon: Icon(Icons.settings, color: palette.primary),
+            label: l10n.sharedSettingsTab,
           ),
         ],
       ),

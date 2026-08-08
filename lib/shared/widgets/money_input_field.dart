@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import '../../core/utils/money_formatter.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_text_styles.dart';
+import '../../core/theme/app_palette.dart';
+import '../../core/theme/app_typography.dart';
+import '../../l10n/gen/app_localizations.dart';
 
 class MoneyInputField extends StatefulWidget {
   final String label;
@@ -158,6 +159,8 @@ class _MoneyInputFieldState extends State<MoneyInputField> {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -195,8 +198,8 @@ class _MoneyInputFieldState extends State<MoneyInputField> {
               min: widget.sliderMin,
               max: widget.sliderMax!,
               divisions: widget.sliderDivisions,
-              activeColor: AppColors.primary,
-              inactiveColor: AppColors.divider,
+              activeColor: palette.primary,
+              inactiveColor: palette.divider,
               onChanged: _onSliderChanged,
             ),
           ),
@@ -241,6 +244,7 @@ class _QuickButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final list = amounts ?? _defaultAmounts;
+    final l10n = AppLocalizations.of(context);
     return Wrap(
       spacing: 6,
       runSpacing: 6,
@@ -248,7 +252,7 @@ class _QuickButtons extends StatelessWidget {
         for (final a in list)
           _Chip(label: '+${_label(a)}', onTap: () => onAdd(a), isPlus: true),
         _Chip(label: '⌫', onTap: onDelete, isDelete: true),
-        _Chip(label: '초기화', onTap: onReset, isReset: true),
+        _Chip(label: l10n.sharedResetAmount, onTap: onReset, isReset: true),
       ],
     );
   }
@@ -271,22 +275,24 @@ class _Chip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+    final typography = context.typography;
     final Color bg;
     final Color border;
     final Color text;
 
     if (isReset) {
-      bg = AppColors.background;
-      border = AppColors.divider;
-      text = AppColors.textSecondary;
+      bg = palette.background;
+      border = palette.divider;
+      text = palette.textSecondary;
     } else if (isDelete) {
       bg = const Color(0xFFFFF7ED);
       border = const Color(0xFFFDBA74);
       text = const Color(0xFFEA580C);
     } else {
-      bg = AppColors.primary.withOpacity(0.08);
-      border = AppColors.primary.withOpacity(0.3);
-      text = AppColors.primary;
+      bg = palette.primary.withOpacity(0.08);
+      border = palette.primary.withOpacity(0.3);
+      text = palette.primary;
     }
 
     return GestureDetector(
@@ -300,7 +306,7 @@ class _Chip extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: AppTextStyles.caption.copyWith(
+          style: typography.caption.copyWith(
             color: text,
             fontWeight: FontWeight.w600,
           ),

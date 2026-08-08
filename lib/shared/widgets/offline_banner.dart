@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_palette.dart';
+import '../../l10n/gen/app_localizations.dart';
 
 class OfflineBanner extends StatelessWidget {
   final bool isOffline;
@@ -13,22 +14,22 @@ class OfflineBanner extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    return const Material(
-      color: AppColors.danger,
+    return Material(
+      color: context.palette.danger,
       child: SizedBox(
         height: 36,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.wifi_off,
               color: Colors.white,
               size: 16,
             ),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             Text(
-              '오프라인 상태입니다',
-              style: TextStyle(
+              AppLocalizations.of(context).sharedOfflineBanner,
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 13,
               ),

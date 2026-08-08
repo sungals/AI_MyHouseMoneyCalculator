@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:screenshot/screenshot.dart';
 import '../../core/constants/app_constants.dart';
-import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_palette.dart';
+import '../../core/theme/app_typography.dart';
 import '../../core/utils/calculation_pdf_exporter.dart';
 import '../../core/utils/money_formatter.dart';
 import '../../core/utils/pdf_export_labels_ko.dart';
 import '../../core/utils/share_helper.dart';
 import '../../core/utils/validators.dart';
+import '../../l10n/gen/app_localizations.dart';
 import '../../providers/calculation_history_provider.dart';
 import '../../data/models/calculation_history.dart';
 import '../../domain/entities/loan_interest_input.dart';
@@ -60,14 +62,18 @@ class _LoanInterestScreenState extends ConsumerState<LoanInterestScreen> {
     final result = ref.read(loanInterestControllerProvider);
     if (result == null) return;
 
+    final l10n = AppLocalizations.of(context);
     final repo = ref.read(calculationHistoryRepositoryProvider);
     await repo.init();
 
     final history = CalculationHistory(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       typeIndex: CalculationType.loanInterest.index,
-      title: '대출이자 계산',
-      summary: '월 이자 ${MoneyFormatter.formatWithWon(result.monthlyInterest)}',
+      // 계약서 §10: 저장 값은 지역화하지 않는다. 이력 화면이 title/summary를 그대로
+      // 표시하므로 로케일과 무관하게 한국어 표기를 유지한다.
+      title: CalculationType.loanInterest.label,
+      summary: '$_koMonthlyInterestLabel '
+          '${MoneyFormatter.formatWithWon(result.monthlyInterest)}',
       input: {
         'loanAmount': result.loanAmount,
         'interestRate': double.tryParse(_interestRate.text) ?? 0,
@@ -84,7 +90,7 @@ class _LoanInterestScreenState extends ConsumerState<LoanInterestScreen> {
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('계산 결과가 저장되었습니다.')),
+        SnackBar(content: Text(l10n.loanInterestSaved)),
       );
     }
   }
@@ -93,19 +99,29 @@ class _LoanInterestScreenState extends ConsumerState<LoanInterestScreen> {
     final result = ref.read(loanInterestControllerProvider);
     if (result == null) return;
 
-    final text = '''[어떤비용] 대출이자 계산 결과
-
-대출금: ${MoneyFormatter.formatWithWon(result.loanAmount)}
-월 이자: ${MoneyFormatter.formatWithWon(result.monthlyInterest)}
-${result.months}개월 총 이자: ${MoneyFormatter.formatWithWon(result.totalInterest)}
-
-※ 본 계산 결과는 참고용입니다. 실제 계약 전 전문가에게 확인하세요.''';
+    final l10n = AppLocalizations.of(context);
+    final lines = <String>[
+      l10n.loanInterestShareHeader(l10n.appTitle),
+      '',
+      l10n.loanInterestShareLoanAmount(
+        MoneyFormatter.formatWithWon(result.loanAmount),
+      ),
+      l10n.loanInterestShareMonthlyInterest(
+        MoneyFormatter.formatWithWon(result.monthlyInterest),
+      ),
+      l10n.loanInterestShareTotalInterest(
+        result.months,
+        MoneyFormatter.formatWithWon(result.totalInterest),
+      ),
+      '',
+      l10n.loanInterestShareDisclaimer,
+    ];
 
     ShareHelper.shareText(
       context,
-      text: text,
-      subject: '대출이자 계산 결과',
-      title: '대출이자 계산 결과',
+      text: lines.join('\n'),
+      subject: l10n.loanInterestShareSubject,
+      title: l10n.loanInterestShareSubject,
     );
   }
 
@@ -113,22 +129,30 @@ ${result.months}개월 총 이자: ${MoneyFormatter.formatWithWon(result.totalIn
     final result = ref.read(loanInterestControllerProvider);
     if (result == null) return;
 
+    final l10n = AppLocalizations.of(context);
     final imageBytes = await _captureResultImage();
     if (!mounted) return;
+    // 계약서 §7: 문서 틀(kKoreanPdfExportLabels)은 pdf* 키가 S10에 있어 Phase 2까지
+    // 한국어 고정이다. 본문 항목은 이 슬라이스 소유이므로 지역화한다.
     await CalculationPdfExporter.share(
       context,
       labels: kKoreanPdfExportLabels,
-      title: '대출이자 계산 결과',
-      summary: '월 이자 ${MoneyFormatter.formatWithWon(result.monthlyInterest)}',
+      title: l10n.loanInterestShareSubject,
+      summary: l10n.loanInterestShareMonthlyInterest(
+        MoneyFormatter.formatWithWon(result.monthlyInterest),
+      ),
       resultImageBytes: imageBytes,
       input: {
-        '대출금': MoneyFormatter.formatWithWon(result.loanAmount),
-        '연이율': '${_interestRate.text}%',
-        '대출 기간': '${result.months}개월',
+        l10n.loanInterestAmountLabel:
+            MoneyFormatter.formatWithWon(result.loanAmount),
+        l10n.loanInterestRateLabel: '${_interestRate.text}%',
+        l10n.loanInterestMonthsLabel:
+            l10n.loanInterestMonthsValue(result.months),
       },
       result: {
-        '월 이자': MoneyFormatter.formatWithWon(result.monthlyInterest),
-        '${result.months}개월 총 이자':
+        l10n.loanInterestMonthlyInterestLabel:
+            MoneyFormatter.formatWithWon(result.monthlyInterest),
+        l10n.loanInterestTotalInterestLabel(result.months):
             MoneyFormatter.formatWithWon(result.totalInterest),
       },
     );
@@ -142,10 +166,13 @@ ${result.months}개월 총 이자: ${MoneyFormatter.formatWithWon(result.totalIn
   @override
   Widget build(BuildContext context) {
     final result = ref.watch(loanInterestControllerProvider);
+    final l10n = AppLocalizations.of(context);
+    final palette = context.palette;
+    final typography = context.typography;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(title: const Text('대출이자 계산')),
+      backgroundColor: palette.background,
+      appBar: AppBar(title: Text(l10n.loanInterestTitle)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppConstants.horizontalPadding),
         child: Column(
@@ -157,21 +184,14 @@ ${result.months}개월 총 이자: ${MoneyFormatter.formatWithWon(result.totalIn
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const _SectionTitle(
-                    '대출 조건',
-                    helpTitle: '대출이자 계산이란?',
-                    helpBody: '단리(이자만 납부) 방식으로 월 이자와 총 이자를 계산합니다.\n\n'
-                        '• 대출금: 은행에서 빌리는 원금\n'
-                        '• 연이율: 연간 적용 이자율 (예: 4.5%)\n'
-                        '• 대출 기간: 이자를 납부할 기간 (개월)\n\n'
-                        '월 이자 = 대출금 × 연이율 ÷ 12\n'
-                        '총 이자 = 월 이자 × 대출 기간\n\n'
-                        '원리금 균등 상환(원금도 함께 갚는 방식)과는\n'
-                        '계산 방법이 다릅니다.',
+                  _SectionTitle(
+                    l10n.loanInterestSectionTitle,
+                    helpTitle: l10n.loanInterestHelpTitle,
+                    helpBody: l10n.loanInterestHelpBody,
                   ),
                   const SizedBox(height: 12),
                   MoneyInputField(
-                    label: '대출금',
+                    label: l10n.loanInterestAmountLabel,
                     controller: _loanAmount,
                     validator: Validators.requiredAmount,
                     sliderMax: 2000000000,
@@ -179,7 +199,7 @@ ${result.months}개월 총 이자: ${MoneyFormatter.formatWithWon(result.totalIn
                   ),
                   const SizedBox(height: 12),
                   PercentInputField(
-                    label: '연이율',
+                    label: l10n.loanInterestRateLabel,
                     controller: _interestRate,
                     validator: Validators.interestRate,
                   ),
@@ -189,17 +209,18 @@ ${result.months}개월 총 이자: ${MoneyFormatter.formatWithWon(result.totalIn
                     keyboardType: TextInputType.number,
                     textInputAction: TextInputAction.done,
                     validator: Validators.months,
-                    decoration: const InputDecoration(
-                      labelText: '대출 기간',
-                      hintText: '예: 24',
-                      suffixText: '개월',
+                    decoration: InputDecoration(
+                      labelText: l10n.loanInterestMonthsLabel,
+                      hintText: l10n.loanInterestMonthsHint,
+                      suffixText: l10n.loanInterestMonthsSuffix,
                     ),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 24),
-            PrimaryButton(label: '계산하기', onPressed: _calculate),
+            PrimaryButton(
+                label: l10n.loanInterestCalculate, onPressed: _calculate),
             if (result != null) ...[
               const SizedBox(height: 24),
               Screenshot(
@@ -208,33 +229,31 @@ ${result.months}개월 총 이자: ${MoneyFormatter.formatWithWon(result.totalIn
                   width: double.infinity,
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: AppColors.surface,
+                    color: palette.surface,
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: AppColors.cardBorder),
+                    border: Border.all(color: palette.cardBorder),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('계산 결과',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: AppColors.textSecondary,
-                          )),
+                      Text(l10n.loanInterestResultTitle,
+                          style: typography.bodySecondary),
                       const SizedBox(height: 16),
                       _ResultRow(
-                        label: '월 이자',
+                        label: l10n.loanInterestMonthlyInterestLabel,
                         value: MoneyFormatter.formatWithWon(
                             result.monthlyInterest),
                         isBold: true,
-                        valueColor: AppColors.primary,
+                        valueColor: palette.primary,
                       ),
                       const SizedBox(height: 10),
                       _ResultRow(
-                        label: '${result.months}개월 총 이자',
+                        label:
+                            l10n.loanInterestTotalInterestLabel(result.months),
                         value:
                             MoneyFormatter.formatWithWon(result.totalInterest),
                         isBold: true,
-                        valueColor: AppColors.danger,
+                        valueColor: palette.danger,
                       ),
                     ],
                   ),
@@ -260,6 +279,9 @@ ${result.months}개월 총 이자: ${MoneyFormatter.formatWithWon(result.totalIn
   }
 }
 
+/// 이력 요약에 저장되는 한국어 라벨. 계약서 §10에 따라 지역화하지 않는다.
+const String _koMonthlyInterestLabel = '월 이자';
+
 class _SectionTitle extends StatelessWidget {
   final String text;
   final String? helpTitle;
@@ -273,10 +295,9 @@ class _SectionTitle extends StatelessWidget {
       children: [
         Text(
           text,
-          style: const TextStyle(
+          style: context.typography.label.copyWith(
             fontSize: 15,
             fontWeight: FontWeight.w600,
-            color: AppColors.textSecondary,
           ),
         ),
         if (helpTitle != null) ...[
@@ -303,18 +324,19 @@ class _ResultRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+    final typography = context.typography;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label,
-            style:
-                const TextStyle(fontSize: 14, color: AppColors.textSecondary)),
+        Text(label, style: typography.bodySecondary),
         Text(
           value,
-          style: TextStyle(
+          style: typography.body.copyWith(
             fontSize: 18,
             fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-            color: valueColor ?? AppColors.textPrimary,
+            color: valueColor ?? palette.textPrimary,
           ),
         ),
       ],

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_text_styles.dart';
+import '../../core/theme/app_palette.dart';
+import '../../core/theme/app_typography.dart';
 
 class ResultSummaryCard extends StatelessWidget {
   final String title;
@@ -20,17 +20,20 @@ class ResultSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+    final typography = context.typography;
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: palette.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: palette.cardBorder),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: AppTextStyles.label),
+          Text(title, style: typography.label),
           const SizedBox(height: 8),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -38,8 +41,8 @@ class ResultSummaryCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   amount,
-                  style: AppTextStyles.resultAmount.copyWith(
-                    color: amountColor ?? AppColors.primary,
+                  style: typography.resultAmount.copyWith(
+                    color: amountColor ?? palette.primary,
                   ),
                 ),
               ),
@@ -48,7 +51,7 @@ class ResultSummaryCard extends StatelessWidget {
           ),
           if (subtitle != null) ...[
             const SizedBox(height: 6),
-            Text(subtitle!, style: AppTextStyles.bodySecondary),
+            Text(subtitle!, style: typography.bodySecondary),
           ],
         ],
       ),
