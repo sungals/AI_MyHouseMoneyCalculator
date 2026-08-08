@@ -14,6 +14,17 @@ void main() {
     expect(AppPalette.dark.surface, AppColors.darkSurface);
   });
 
+  test('dark 보조 텍스트는 배경과 카드 위에서 충분한 대비를 가진다', () {
+    expect(
+      _contrastRatio(AppPalette.dark.textSecondary, AppPalette.dark.background),
+      greaterThanOrEqualTo(7.0),
+    );
+    expect(
+      _contrastRatio(AppPalette.dark.textSecondary, AppPalette.dark.surface),
+      greaterThanOrEqualTo(7.0),
+    );
+  });
+
   test('copyWith는 지정한 필드만 바꾼다', () {
     final changed = AppPalette.light.copyWith(primary: const Color(0xFF000000));
     expect(changed.primary, const Color(0xFF000000));
@@ -63,4 +74,16 @@ void main() {
 
     expect(captured.surface, AppColors.surface);
   });
+}
+
+double _contrastRatio(Color foreground, Color background) {
+  final foregroundLuminance = foreground.computeLuminance();
+  final backgroundLuminance = background.computeLuminance();
+  final lighter = foregroundLuminance > backgroundLuminance
+      ? foregroundLuminance
+      : backgroundLuminance;
+  final darker = foregroundLuminance > backgroundLuminance
+      ? backgroundLuminance
+      : foregroundLuminance;
+  return (lighter + 0.05) / (darker + 0.05);
 }
