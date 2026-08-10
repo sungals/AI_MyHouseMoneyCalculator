@@ -211,6 +211,7 @@ Android:
 
 - applicationId: `com.sungals.houseMoneyCalculator`
 - compileSdk/targetSdk: `36`
+- minSdk: `23`
 - release signing: `android/key.properties`
 - 체크리스트: `docs/play-console-checklist.md`
 
