@@ -23,6 +23,15 @@ void main() {
     expect(AppTheme.dark.scaffoldBackgroundColor, AppPalette.dark.background);
   });
 
+  test('dark 테마의 리스트 텍스트는 본문색을 사용한다', () {
+    final theme = AppTheme.dark;
+    expect(theme.listTileTheme.textColor, AppPalette.dark.textPrimary);
+    expect(
+        theme.listTileTheme.titleTextStyle?.color, AppPalette.dark.textPrimary);
+    expect(theme.listTileTheme.leadingAndTrailingTextStyle?.color,
+        AppPalette.dark.textPrimary);
+  });
+
   test('light 테마의 시각 속성은 기존과 동일하다', () {
     final theme = AppTheme.light;
     expect(theme.useMaterial3, isTrue);

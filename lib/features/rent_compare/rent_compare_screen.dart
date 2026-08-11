@@ -28,7 +28,9 @@ import 'rent_compare_localizations.dart';
 import 'widgets/rent_compare_result_card.dart';
 
 class RentCompareScreen extends ConsumerStatefulWidget {
-  const RentCompareScreen({super.key});
+  final Map<String, dynamic>? initialInput;
+
+  const RentCompareScreen({super.key, this.initialInput});
 
   @override
   ConsumerState<RentCompareScreen> createState() => _RentCompareScreenState();
@@ -55,6 +57,50 @@ class _RentCompareScreenState extends ConsumerState<RentCompareScreen> {
   final _fn7 = FocusNode();
 
   double _depositInterestRate = 3.5;
+
+  @override
+  void initState() {
+    super.initState();
+    _applyInitialInput(widget.initialInput);
+  }
+
+  void _applyInitialInput(Map<String, dynamic>? input) {
+    if (input == null) return;
+    _setMoney(_jeonseDeposit, input['jeonseDeposit']);
+    _setMoney(_jeonseLoan, input['jeonseLoan']);
+    _setText(_interestRate, input['interestRate']);
+    _setMoney(_rentDeposit, input['monthlyRentDeposit']);
+    _setMoney(_monthlyRent, input['monthlyRent']);
+    _setMoney(_maintenance, input['maintenanceFee']);
+    _setText(_months, input['months']);
+    _depositInterestRate =
+        _doubleValue(input['depositInterestRate']) ?? _depositInterestRate;
+  }
+
+  void _setMoney(TextEditingController controller, Object? value) {
+    final amount = _intValue(value);
+    if (amount == null || amount <= 0) return;
+    controller.text = MoneyFormatter.format(amount);
+  }
+
+  void _setText(TextEditingController controller, Object? value) {
+    if (value == null) return;
+    controller.text = value.toString();
+  }
+
+  int? _intValue(Object? value) {
+    if (value is int) return value;
+    if (value is double) return value.round();
+    if (value is String) return int.tryParse(value.replaceAll(',', ''));
+    return null;
+  }
+
+  double? _doubleValue(Object? value) {
+    if (value is double) return value;
+    if (value is int) return value.toDouble();
+    if (value is String) return double.tryParse(value);
+    return null;
+  }
 
   @override
   void dispose() {
@@ -120,9 +166,11 @@ class _RentCompareScreenState extends ConsumerState<RentCompareScreen> {
         'jeonseDeposit': MoneyFormatter.parse(_jeonseDeposit.text),
         'jeonseLoan': MoneyFormatter.parse(_jeonseLoan.text),
         'interestRate': double.tryParse(_interestRate.text) ?? 0,
+        'monthlyRentDeposit': MoneyFormatter.parse(_rentDeposit.text),
         'monthlyRent': MoneyFormatter.parse(_monthlyRent.text),
         'maintenanceFee': MoneyFormatter.parse(_maintenance.text),
         'months': int.tryParse(_months.text) ?? 0,
+        'depositInterestRate': _depositInterestRate,
       },
       result: {
         'jeonseMonthlyCost': result.jeonseMonthlyCost,

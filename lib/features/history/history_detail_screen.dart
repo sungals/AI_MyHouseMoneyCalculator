@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -74,6 +75,34 @@ class _HistoryDetailScreenState extends ConsumerState<HistoryDetailScreen> {
       title: item.title,
     );
   }
+
+  void _recalculate() {
+    final item = _item;
+    if (item == null) return;
+
+    final route = _routeForType(item.type);
+    if (route == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('이 계산 기록은 다시 계산을 지원하지 않습니다.')),
+      );
+      return;
+    }
+
+    context.push(route, extra: Map<String, dynamic>.from(item.input));
+  }
+
+  String? _routeForType(CalculationType type) => switch (type) {
+        CalculationType.rentCompare => '/rent-compare',
+        CalculationType.semiRent => '/semi-rent',
+        CalculationType.loanInterest => '/loan-interest',
+        CalculationType.monthlyExpense => '/monthly-expense',
+        CalculationType.taxDeduction => '/tax-deduction',
+        CalculationType.dsrDti => '/dsr-dti',
+        CalculationType.brokerageFee => '/brokerage-fee',
+        CalculationType.acquisitionTax => '/acquisition-tax',
+        CalculationType.contractRenewal => '/contract-renewal',
+        CalculationType.jeonseRisk => '/jeonse-risk',
+      };
 
   Future<void> _toggleFavorite() async {
     final item = _item;
@@ -370,6 +399,15 @@ class _HistoryDetailScreenState extends ConsumerState<HistoryDetailScreen> {
                   Text('결과 요약', style: AppTextStyles.label),
                   const SizedBox(height: 8),
                   Text(item.summary, style: AppTextStyles.body),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: _recalculate,
+                      icon: const Icon(Icons.replay_outlined, size: 18),
+                      label: const Text('이 조건으로 다시 계산'),
+                    ),
+                  ),
                 ],
               ),
             ),

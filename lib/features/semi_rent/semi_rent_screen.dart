@@ -23,7 +23,9 @@ import '../../shared/widgets/result_action_buttons.dart';
 import 'semi_rent_controller.dart';
 
 class SemiRentScreen extends ConsumerStatefulWidget {
-  const SemiRentScreen({super.key});
+  final Map<String, dynamic>? initialInput;
+
+  const SemiRentScreen({super.key, this.initialInput});
 
   @override
   ConsumerState<SemiRentScreen> createState() => _SemiRentScreenState();
@@ -44,6 +46,35 @@ class _SemiRentScreenState extends ConsumerState<SemiRentScreen> {
   void initState() {
     super.initState();
     _conversionRate.text = '5.0';
+    _applyInitialInput(widget.initialInput);
+  }
+
+  void _applyInitialInput(Map<String, dynamic>? input) {
+    if (input == null) return;
+    _setMoney(_baseDeposit, input['baseDeposit']);
+    _setMoney(_convertedDeposit, input['convertedDeposit']);
+    _setMoney(_monthlyRent, input['monthlyRent']);
+    _setText(_conversionRate, input['conversionRate']);
+    _setMoney(_maintenance, input['maintenanceFee']);
+    _setText(_months, input['months']);
+  }
+
+  void _setMoney(TextEditingController controller, Object? value) {
+    final amount = _intValue(value);
+    if (amount == null || amount <= 0) return;
+    controller.text = MoneyFormatter.format(amount);
+  }
+
+  void _setText(TextEditingController controller, Object? value) {
+    if (value == null) return;
+    controller.text = value.toString();
+  }
+
+  int? _intValue(Object? value) {
+    if (value is int) return value;
+    if (value is double) return value.round();
+    if (value is String) return int.tryParse(value.replaceAll(',', ''));
+    return null;
   }
 
   @override
@@ -94,6 +125,7 @@ class _SemiRentScreenState extends ConsumerState<SemiRentScreen> {
         'convertedDeposit': MoneyFormatter.parse(_convertedDeposit.text),
         'monthlyRent': MoneyFormatter.parse(_monthlyRent.text),
         'conversionRate': double.tryParse(_conversionRate.text) ?? 0,
+        'maintenanceFee': MoneyFormatter.parse(_maintenance.text),
         'months': int.tryParse(_months.text) ?? 0,
       },
       result: {

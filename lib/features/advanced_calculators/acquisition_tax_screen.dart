@@ -20,7 +20,9 @@ import '../../shared/widgets/primary_button.dart';
 import '../../shared/widgets/result_action_buttons.dart';
 
 class AcquisitionTaxScreen extends ConsumerStatefulWidget {
-  const AcquisitionTaxScreen({super.key});
+  final Map<String, dynamic>? initialInput;
+
+  const AcquisitionTaxScreen({super.key, this.initialInput});
 
   @override
   ConsumerState<AcquisitionTaxScreen> createState() =>
@@ -35,6 +37,43 @@ class _AcquisitionTaxScreenState extends ConsumerState<AcquisitionTaxScreen> {
   bool _regulatedArea = false;
   int? _tax;
   double? _rate;
+
+  @override
+  void initState() {
+    super.initState();
+    _applyInitialInput(widget.initialInput);
+  }
+
+  void _applyInitialInput(Map<String, dynamic>? input) {
+    if (input == null) return;
+    _setMoney(_price, input['price']);
+    final houseCount = input['houseCount']?.toString();
+    if (houseCount == 'one' ||
+        houseCount == 'two' ||
+        houseCount == 'threePlus') {
+      _houseCount = houseCount!;
+    }
+    _regulatedArea = _boolValue(input['regulatedArea']) ?? _regulatedArea;
+  }
+
+  void _setMoney(TextEditingController controller, Object? value) {
+    final amount = _intValue(value);
+    if (amount == null || amount <= 0) return;
+    controller.text = MoneyFormatter.format(amount);
+  }
+
+  int? _intValue(Object? value) {
+    if (value is int) return value;
+    if (value is double) return value.round();
+    if (value is String) return int.tryParse(value.replaceAll(',', ''));
+    return null;
+  }
+
+  bool? _boolValue(Object? value) {
+    if (value is bool) return value;
+    if (value is String) return bool.tryParse(value);
+    return null;
+  }
 
   @override
   void dispose() {

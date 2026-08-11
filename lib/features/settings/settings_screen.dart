@@ -294,11 +294,22 @@ class _InfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     return ListTile(
-      leading: Icon(icon, color: context.palette.primary, size: 22),
-      title: Text(title, style: const TextStyle(fontSize: 15)),
+      leading: Icon(icon, color: palette.primary, size: 22),
+      title: Text(
+        title,
+        style: TextStyle(fontSize: 15, color: palette.textPrimary),
+      ),
       trailing: value != null
-          ? Text(value!, style: context.typography.bodySecondary)
+          ? Text(
+              value!,
+              style: TextStyle(
+                fontSize: 14,
+                color: palette.textPrimary,
+                fontWeight: FontWeight.w500,
+              ),
+            )
           : null,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16),
       visualDensity: VisualDensity.compact,
@@ -326,7 +337,7 @@ class _PinRow extends StatelessWidget {
       ),
       title: Text(
         enabled ? l10n.settingsQuickLoginEnabled : l10n.settingsQuickLoginSetup,
-        style: const TextStyle(fontSize: 15),
+        style: TextStyle(fontSize: 15, color: palette.textPrimary),
       ),
       trailing: enabled
           ? TextButton(
@@ -365,7 +376,7 @@ class _RequireAuthRow extends StatelessWidget {
       ),
       title: Text(
         AppLocalizations.of(context).settingsRequireAuthOnLaunch,
-        style: const TextStyle(fontSize: 15),
+        style: TextStyle(fontSize: 15, color: palette.textPrimary),
       ),
       value: pinState.requireAuthOnLaunch,
       onChanged: (v) =>
@@ -423,7 +434,7 @@ class _PushNotificationRowState extends State<_PushNotificationRow> {
             ),
       title: Text(
         AppLocalizations.of(context).settingsNoticePush,
-        style: const TextStyle(fontSize: 15),
+        style: TextStyle(fontSize: 15, color: palette.textPrimary),
       ),
       value: _enabled,
       onChanged: _saving ? null : _toggle,

@@ -88,6 +88,17 @@ class AppTheme {
         thickness: 1,
         space: 0,
       ),
+      listTileTheme: ListTileThemeData(
+        iconColor: palette.primary,
+        textColor: palette.textPrimary,
+        titleTextStyle: TextStyle(fontSize: 15, color: palette.textPrimary),
+        subtitleTextStyle: TextStyle(fontSize: 13, color: palette.textPrimary),
+        leadingAndTrailingTextStyle: TextStyle(
+          fontSize: 14,
+          color: palette.textPrimary,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
       textTheme: TextTheme(
         bodyLarge: typography.body,
         bodyMedium: typography.body,

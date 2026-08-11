@@ -20,7 +20,9 @@ import '../../shared/widgets/primary_button.dart';
 import '../../shared/widgets/result_action_buttons.dart';
 
 class BrokerageFeeScreen extends ConsumerStatefulWidget {
-  const BrokerageFeeScreen({super.key});
+  final Map<String, dynamic>? initialInput;
+
+  const BrokerageFeeScreen({super.key, this.initialInput});
 
   @override
   ConsumerState<BrokerageFeeScreen> createState() => _BrokerageFeeScreenState();
@@ -34,6 +36,36 @@ class _BrokerageFeeScreenState extends ConsumerState<BrokerageFeeScreen> {
   int? _fee;
   double? _rate;
   int? _cap;
+
+  @override
+  void initState() {
+    super.initState();
+    _applyInitialInput(widget.initialInput);
+  }
+
+  void _applyInitialInput(Map<String, dynamic>? input) {
+    if (input == null) return;
+    _setMoney(_price, input['transactionAmount']);
+    final transactionType = input['transactionType']?.toString();
+    if (transactionType == '임대차' || transactionType == 'lease') {
+      _type = 'lease';
+    } else if (transactionType == '매매' || transactionType == 'sale') {
+      _type = 'sale';
+    }
+  }
+
+  void _setMoney(TextEditingController controller, Object? value) {
+    final amount = _intValue(value);
+    if (amount == null || amount <= 0) return;
+    controller.text = MoneyFormatter.format(amount);
+  }
+
+  int? _intValue(Object? value) {
+    if (value is int) return value;
+    if (value is double) return value.round();
+    if (value is String) return int.tryParse(value.replaceAll(',', ''));
+    return null;
+  }
 
   @override
   void dispose() {

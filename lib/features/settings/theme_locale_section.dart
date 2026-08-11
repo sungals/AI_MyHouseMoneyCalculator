@@ -14,6 +14,7 @@ class ThemeLocaleSection extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final themeMode = ref.watch(themeModeNotifierProvider);
     final locale = ref.watch(localeNotifierProvider);
+    final palette = context.palette;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -21,22 +22,28 @@ class ThemeLocaleSection extends ConsumerWidget {
         ListTile(
           title: Text(
             l10n.settingsThemeLabel,
-            style: TextStyle(fontSize: 15, color: context.palette.textPrimary),
+            style: TextStyle(fontSize: 15, color: palette.textPrimary),
           ),
           trailing: Text(
             _themeLabel(l10n, themeMode),
-            style: TextStyle(color: context.palette.textSecondary),
+            style: TextStyle(
+              color: palette.textPrimary,
+              fontWeight: FontWeight.w500,
+            ),
           ),
           onTap: () => _pickTheme(context, ref, themeMode),
         ),
         ListTile(
           title: Text(
             l10n.settingsLanguageLabel,
-            style: TextStyle(fontSize: 15, color: context.palette.textPrimary),
+            style: TextStyle(fontSize: 15, color: palette.textPrimary),
           ),
           trailing: Text(
             _localeLabel(l10n, locale),
-            style: TextStyle(color: context.palette.textSecondary),
+            style: TextStyle(
+              color: palette.textPrimary,
+              fontWeight: FontWeight.w500,
+            ),
           ),
           onTap: () => _pickLocale(context, ref, locale),
         ),

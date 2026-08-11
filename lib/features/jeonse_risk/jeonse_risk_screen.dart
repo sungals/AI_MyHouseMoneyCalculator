@@ -24,7 +24,9 @@ import 'jeonse_risk_controller.dart';
 import 'jeonse_risk_localizations.dart';
 
 class JeonseRiskScreen extends ConsumerStatefulWidget {
-  const JeonseRiskScreen({super.key});
+  final Map<String, dynamic>? initialInput;
+
+  const JeonseRiskScreen({super.key, this.initialInput});
 
   @override
   ConsumerState<JeonseRiskScreen> createState() => _JeonseRiskScreenState();
@@ -43,6 +45,49 @@ class _JeonseRiskScreenState extends ConsumerState<JeonseRiskScreen> {
   bool _canJoinGuaranteeInsurance = false;
   bool _willReportMoveIn = true;
   bool _willGetFixedDate = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _applyInitialInput(widget.initialInput);
+  }
+
+  void _applyInitialInput(Map<String, dynamic>? input) {
+    if (input == null) return;
+    _setMoney(_marketPrice, input['marketPrice']);
+    _setMoney(_deposit, input['deposit']);
+    _setMoney(_seniorDebt, input['seniorDebt']);
+    _checkedRegistry = _boolValue(input['checkedRegistry']) ?? _checkedRegistry;
+    _ownerMatched = _boolValue(input['ownerMatched']) ?? _ownerMatched;
+    _checkedTaxArrears =
+        _boolValue(input['checkedTaxArrears']) ?? _checkedTaxArrears;
+    _canJoinGuaranteeInsurance =
+        _boolValue(input['canJoinGuaranteeInsurance']) ??
+            _canJoinGuaranteeInsurance;
+    _willReportMoveIn =
+        _boolValue(input['willReportMoveIn']) ?? _willReportMoveIn;
+    _willGetFixedDate =
+        _boolValue(input['willGetFixedDate']) ?? _willGetFixedDate;
+  }
+
+  void _setMoney(TextEditingController controller, Object? value) {
+    final amount = _intValue(value);
+    if (amount == null || amount <= 0) return;
+    controller.text = MoneyFormatter.format(amount);
+  }
+
+  int? _intValue(Object? value) {
+    if (value is int) return value;
+    if (value is double) return value.round();
+    if (value is String) return int.tryParse(value.replaceAll(',', ''));
+    return null;
+  }
+
+  bool? _boolValue(Object? value) {
+    if (value is bool) return value;
+    if (value is String) return bool.tryParse(value);
+    return null;
+  }
 
   @override
   void dispose() {

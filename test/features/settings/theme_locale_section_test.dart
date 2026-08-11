@@ -6,6 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
 import 'package:house_money_calculator/core/settings/locale_notifier.dart';
 import 'package:house_money_calculator/core/settings/theme_mode_notifier.dart';
+import 'package:house_money_calculator/core/theme/app_palette.dart';
+import 'package:house_money_calculator/core/theme/app_theme.dart';
 import 'package:house_money_calculator/features/settings/theme_locale_section.dart';
 import 'package:house_money_calculator/l10n/gen/app_localizations.dart';
 
@@ -43,6 +45,8 @@ Widget wrap(Widget child) => ProviderScope(
         locale: const Locale('ko'),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: kSupportedLocales,
+        theme: AppTheme.light,
+        darkTheme: AppTheme.dark,
         home: Scaffold(body: child),
       ),
     );
@@ -73,6 +77,35 @@ void main() {
     expect(find.text('시스템 설정 따름'), findsNWidgets(2));
   });
 
+  testWidgets('다크모드에서 현재 테마와 언어 값은 본문색으로 표시한다', (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          themeModeNotifierProvider.overrideWith(FakeThemeModeNotifier.new),
+          localeNotifierProvider.overrideWith(FakeLocaleNotifier.new),
+        ],
+        child: MaterialApp(
+          locale: const Locale('ko'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: kSupportedLocales,
+          theme: AppTheme.light,
+          darkTheme: AppTheme.dark,
+          themeMode: ThemeMode.dark,
+          home: const Scaffold(body: ThemeLocaleSection()),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final values = tester.widgetList<Text>(find.text('시스템 설정 따름'));
+
+    expect(values, hasLength(2));
+    for (final value in values) {
+      expect(value.style?.color, AppPalette.dark.textPrimary);
+      expect(value.style?.fontWeight, FontWeight.w500);
+    }
+  });
+
   testWidgets('다크를 선택하면 테마 모드가 dark로 바뀐다', (tester) async {
     await tester.pumpWidget(wrap(const ThemeLocaleSection()));
     await tester.pumpAndSettle();
@@ -94,7 +127,8 @@ void main() {
     await tester.tap(find.text('English').last);
     await tester.pumpAndSettle();
 
-    expect(containerOf(tester).read(localeNotifierProvider), const Locale('en'));
+    expect(
+        containerOf(tester).read(localeNotifierProvider), const Locale('en'));
   });
 
   testWidgets('시스템 따름을 다시 고르면 로케일이 null로 돌아온다', (tester) async {

@@ -20,7 +20,9 @@ import '../../shared/widgets/primary_button.dart';
 import '../../shared/widgets/result_action_buttons.dart';
 
 class DsrDtiScreen extends ConsumerStatefulWidget {
-  const DsrDtiScreen({super.key});
+  final Map<String, dynamic>? initialInput;
+
+  const DsrDtiScreen({super.key, this.initialInput});
 
   @override
   ConsumerState<DsrDtiScreen> createState() => _DsrDtiScreenState();
@@ -35,6 +37,32 @@ class _DsrDtiScreenState extends ConsumerState<DsrDtiScreen> {
 
   double? _dsr;
   double? _dti;
+
+  @override
+  void initState() {
+    super.initState();
+    _applyInitialInput(widget.initialInput);
+  }
+
+  void _applyInitialInput(Map<String, dynamic>? input) {
+    if (input == null) return;
+    _setMoney(_annualIncome, input['annualIncome']);
+    _setMoney(_housingDebt, input['housingDebt']);
+    _setMoney(_otherDebt, input['otherDebt']);
+  }
+
+  void _setMoney(TextEditingController controller, Object? value) {
+    final amount = _intValue(value);
+    if (amount == null || amount <= 0) return;
+    controller.text = MoneyFormatter.format(amount);
+  }
+
+  int? _intValue(Object? value) {
+    if (value is int) return value;
+    if (value is double) return value.round();
+    if (value is String) return int.tryParse(value.replaceAll(',', ''));
+    return null;
+  }
 
   @override
   void dispose() {

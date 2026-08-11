@@ -24,7 +24,9 @@ import '../../shared/widgets/result_action_buttons.dart';
 import 'contract_renewal_controller.dart';
 
 class ContractRenewalScreen extends ConsumerStatefulWidget {
-  const ContractRenewalScreen({super.key});
+  final Map<String, dynamic>? initialInput;
+
+  const ContractRenewalScreen({super.key, this.initialInput});
 
   @override
   ConsumerState<ContractRenewalScreen> createState() =>
@@ -37,6 +39,37 @@ class _ContractRenewalScreenState extends ConsumerState<ContractRenewalScreen> {
   final _currentDeposit = TextEditingController();
   final _currentMonthlyRent = TextEditingController();
   final _increaseRate = TextEditingController(text: '5.0');
+
+  @override
+  void initState() {
+    super.initState();
+    _applyInitialInput(widget.initialInput);
+  }
+
+  void _applyInitialInput(Map<String, dynamic>? input) {
+    if (input == null) return;
+    _setMoney(_currentDeposit, input['currentDeposit']);
+    _setMoney(_currentMonthlyRent, input['currentMonthlyRent']);
+    _setText(_increaseRate, input['increaseRate']);
+  }
+
+  void _setMoney(TextEditingController controller, Object? value) {
+    final amount = _intValue(value);
+    if (amount == null || amount <= 0) return;
+    controller.text = MoneyFormatter.format(amount);
+  }
+
+  void _setText(TextEditingController controller, Object? value) {
+    if (value == null) return;
+    controller.text = value.toString();
+  }
+
+  int? _intValue(Object? value) {
+    if (value is int) return value;
+    if (value is double) return value.round();
+    if (value is String) return int.tryParse(value.replaceAll(',', ''));
+    return null;
+  }
 
   @override
   void dispose() {

@@ -24,7 +24,9 @@ import '../../shared/widgets/result_action_buttons.dart';
 import 'loan_interest_controller.dart';
 
 class LoanInterestScreen extends ConsumerStatefulWidget {
-  const LoanInterestScreen({super.key});
+  final Map<String, dynamic>? initialInput;
+
+  const LoanInterestScreen({super.key, this.initialInput});
 
   @override
   ConsumerState<LoanInterestScreen> createState() => _LoanInterestScreenState();
@@ -36,6 +38,37 @@ class _LoanInterestScreenState extends ConsumerState<LoanInterestScreen> {
   final _loanAmount = TextEditingController();
   final _interestRate = TextEditingController();
   final _months = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _applyInitialInput(widget.initialInput);
+  }
+
+  void _applyInitialInput(Map<String, dynamic>? input) {
+    if (input == null) return;
+    _setMoney(_loanAmount, input['loanAmount']);
+    _setText(_interestRate, input['interestRate']);
+    _setText(_months, input['months']);
+  }
+
+  void _setMoney(TextEditingController controller, Object? value) {
+    final amount = _intValue(value);
+    if (amount == null || amount <= 0) return;
+    controller.text = MoneyFormatter.format(amount);
+  }
+
+  void _setText(TextEditingController controller, Object? value) {
+    if (value == null) return;
+    controller.text = value.toString();
+  }
+
+  int? _intValue(Object? value) {
+    if (value is int) return value;
+    if (value is double) return value.round();
+    if (value is String) return int.tryParse(value.replaceAll(',', ''));
+    return null;
+  }
 
   @override
   void dispose() {

@@ -112,7 +112,9 @@ class AppRouter {
       ),
       GoRoute(
         path: '/rent-compare',
-        builder: (context, state) => const RentCompareScreen(),
+        builder: (context, state) => RentCompareScreen(
+          initialInput: _historyInput(state.extra),
+        ),
       ),
       GoRoute(
         path: '/scenario-compare',
@@ -120,23 +122,33 @@ class AppRouter {
       ),
       GoRoute(
         path: '/contract-renewal',
-        builder: (context, state) => const ContractRenewalScreen(),
+        builder: (context, state) => ContractRenewalScreen(
+          initialInput: _historyInput(state.extra),
+        ),
       ),
       GoRoute(
         path: '/jeonse-risk',
-        builder: (context, state) => const JeonseRiskScreen(),
+        builder: (context, state) => JeonseRiskScreen(
+          initialInput: _historyInput(state.extra),
+        ),
       ),
       GoRoute(
         path: '/semi-rent',
-        builder: (context, state) => const SemiRentScreen(),
+        builder: (context, state) => SemiRentScreen(
+          initialInput: _historyInput(state.extra),
+        ),
       ),
       GoRoute(
         path: '/loan-interest',
-        builder: (context, state) => const LoanInterestScreen(),
+        builder: (context, state) => LoanInterestScreen(
+          initialInput: _historyInput(state.extra),
+        ),
       ),
       GoRoute(
         path: '/monthly-expense',
-        builder: (context, state) => const MonthlyExpenseScreen(),
+        builder: (context, state) => MonthlyExpenseScreen(
+          initialInput: _historyInput(state.extra),
+        ),
       ),
       GoRoute(
         path: '/history',
@@ -150,19 +162,27 @@ class AppRouter {
       ),
       GoRoute(
         path: '/tax-deduction',
-        builder: (context, state) => const TaxDeductionScreen(),
+        builder: (context, state) => TaxDeductionScreen(
+          initialInput: _historyInput(state.extra),
+        ),
       ),
       GoRoute(
         path: '/dsr-dti',
-        builder: (context, state) => const DsrDtiScreen(),
+        builder: (context, state) => DsrDtiScreen(
+          initialInput: _historyInput(state.extra),
+        ),
       ),
       GoRoute(
         path: '/brokerage-fee',
-        builder: (context, state) => const BrokerageFeeScreen(),
+        builder: (context, state) => BrokerageFeeScreen(
+          initialInput: _historyInput(state.extra),
+        ),
       ),
       GoRoute(
         path: '/acquisition-tax',
-        builder: (context, state) => const AcquisitionTaxScreen(),
+        builder: (context, state) => AcquisitionTaxScreen(
+          initialInput: _historyInput(state.extra),
+        ),
       ),
       GoRoute(
         path: '/settings',
@@ -254,5 +274,11 @@ class AppRouter {
     final route = _pendingRouteAfterUnlock;
     _pendingRouteAfterUnlock = null;
     return route == null || route.isEmpty ? '/' : route;
+  }
+
+  static Map<String, dynamic>? _historyInput(Object? extra) {
+    if (extra is Map<String, dynamic>) return extra;
+    if (extra is Map) return Map<String, dynamic>.from(extra);
+    return null;
   }
 }

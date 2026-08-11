@@ -23,7 +23,9 @@ import '../../shared/widgets/result_action_buttons.dart';
 import 'monthly_expense_controller.dart';
 
 class MonthlyExpenseScreen extends ConsumerStatefulWidget {
-  const MonthlyExpenseScreen({super.key});
+  final Map<String, dynamic>? initialInput;
+
+  const MonthlyExpenseScreen({super.key, this.initialInput});
 
   @override
   ConsumerState<MonthlyExpenseScreen> createState() =>
@@ -40,6 +42,37 @@ class _MonthlyExpenseScreenState extends ConsumerState<MonthlyExpenseScreen> {
   final _subscription = TextEditingController();
   final _food = TextEditingController();
   final _other = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _applyInitialInput(widget.initialInput);
+  }
+
+  void _applyInitialInput(Map<String, dynamic>? input) {
+    if (input == null) return;
+    _setMoney(_housing, input['주거비']);
+    _setMoney(_maintenance, input['관리비']);
+    _setMoney(_communication, input['통신비']);
+    _setMoney(_transportation, input['교통비']);
+    _setMoney(_insurance, input['보험료']);
+    _setMoney(_subscription, input['구독료']);
+    _setMoney(_food, input['식비']);
+    _setMoney(_other, input['기타']);
+  }
+
+  void _setMoney(TextEditingController controller, Object? value) {
+    final amount = _intValue(value);
+    if (amount == null || amount <= 0) return;
+    controller.text = MoneyFormatter.format(amount);
+  }
+
+  int? _intValue(Object? value) {
+    if (value is int) return value;
+    if (value is double) return value.round();
+    if (value is String) return int.tryParse(value.replaceAll(',', ''));
+    return null;
+  }
 
   @override
   void dispose() {

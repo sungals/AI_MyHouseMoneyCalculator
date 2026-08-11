@@ -22,7 +22,9 @@ import '../../shared/widgets/slider_rate_field.dart';
 import 'tax_deduction_controller.dart';
 
 class TaxDeductionScreen extends ConsumerStatefulWidget {
-  const TaxDeductionScreen({super.key});
+  final Map<String, dynamic>? initialInput;
+
+  const TaxDeductionScreen({super.key, this.initialInput});
 
   @override
   ConsumerState<TaxDeductionScreen> createState() => _TaxDeductionScreenState();
@@ -41,6 +43,40 @@ class _TaxDeductionScreenState extends ConsumerState<TaxDeductionScreen> {
   final _fn3 = FocusNode();
 
   double _incomeTaxRate = 15.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _applyInitialInput(widget.initialInput);
+  }
+
+  void _applyInitialInput(Map<String, dynamic>? input) {
+    if (input == null) return;
+    _setMoney(_annualSalary, input['annualSalary']);
+    _setMoney(_monthlyRent, input['monthlyRent']);
+    _setMoney(_annualLoanRepayment, input['annualLoanRepayment']);
+    _incomeTaxRate = _doubleValue(input['incomeTaxRate']) ?? _incomeTaxRate;
+  }
+
+  void _setMoney(TextEditingController controller, Object? value) {
+    final amount = _intValue(value);
+    if (amount == null || amount <= 0) return;
+    controller.text = MoneyFormatter.format(amount);
+  }
+
+  int? _intValue(Object? value) {
+    if (value is int) return value;
+    if (value is double) return value.round();
+    if (value is String) return int.tryParse(value.replaceAll(',', ''));
+    return null;
+  }
+
+  double? _doubleValue(Object? value) {
+    if (value is double) return value;
+    if (value is int) return value.toDouble();
+    if (value is String) return double.tryParse(value);
+    return null;
+  }
 
   @override
   void dispose() {
