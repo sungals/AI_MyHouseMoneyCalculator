@@ -5,12 +5,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:screenshot/screenshot.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_text_styles.dart';
+import '../../core/theme/app_typography.dart';
 import '../../core/utils/calculation_pdf_exporter.dart';
 import '../../core/utils/money_formatter.dart';
 import '../../core/utils/pdf_export_labels_ko.dart';
 import '../../core/utils/share_helper.dart';
 import '../../core/utils/validators.dart';
+import '../../core/utils/validation_error_l10n.dart';
 import '../../data/models/calculation_history.dart';
 import '../../domain/entities/contract_renewal_input.dart';
 import '../../domain/entities/contract_renewal_result.dart';
@@ -208,7 +209,7 @@ ${_summaryText(result)}
                   MoneyInputField(
                     label: '현재 보증금',
                     controller: _currentDeposit,
-                    validator: Validators.requiredAmount,
+                    validator: (v) => Validators.requiredAmountCode(v)?.localize(context),
                     showQuickButtons: true,
                     sliderMax: 2000000000,
                     sliderDivisions: 200,
@@ -217,7 +218,7 @@ ${_summaryText(result)}
                   MoneyInputField(
                     label: '현재 월세',
                     controller: _currentMonthlyRent,
-                    validator: Validators.requiredAmount,
+                    validator: (v) => Validators.requiredAmountCode(v)?.localize(context),
                     showQuickButtons: true,
                     sliderMax: 5000000,
                     sliderDivisions: 100,
@@ -226,7 +227,7 @@ ${_summaryText(result)}
                   PercentInputField(
                     label: '증액 상한율',
                     controller: _increaseRate,
-                    validator: Validators.interestRate,
+                    validator: (v) => Validators.interestRateCode(v)?.localize(context),
                   ),
                 ],
               ),
@@ -276,7 +277,7 @@ class _SectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Text(text, style: AppTextStyles.label),
+        Text(text, style: context.typography.label),
         if (helpTitle != null) ...[
           const SizedBox(width: 4),
           HelpIcon(title: helpTitle!, body: helpBody!),
@@ -317,7 +318,7 @@ class _ResultCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(_summaryText(result), style: AppTextStyles.heading3),
+              Text(_summaryText(result), style: context.typography.heading3),
               const SizedBox(height: 20),
               const Divider(),
               const SizedBox(height: 16),
@@ -378,16 +379,16 @@ class _Row extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: AppTextStyles.bodySecondary),
+        Text(label, style: context.typography.bodySecondary),
         Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(
               value,
-              style: AppTextStyles.body.copyWith(fontWeight: FontWeight.bold),
+              style: context.typography.body.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 2),
-            Text(subValue, style: AppTextStyles.caption),
+            Text(subValue, style: context.typography.caption),
           ],
         ),
       ],

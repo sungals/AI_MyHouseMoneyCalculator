@@ -628,13 +628,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loanInterestHelpTitle => 'How is loan interest calculated?';
 
   @override
-  String get loanInterestHelpBody => 'Works out monthly and total interest for an interest-only loan (simple interest).\n\n• Loan amount: the principal you borrow\n• Annual rate: the yearly interest rate (for example 4.5%)\n• Loan term: how many months you pay interest\n\nMonthly interest = loan amount × annual rate ÷ 12\nTotal interest = monthly interest × loan term\n\nThis is different from an equal principal-and-interest loan,\nwhere you repay principal every month too.';
+  String get loanInterestHelpBody => 'Calculates monthly payments and total interest by repayment method.\n\n• Interest-only: pay interest during the term and repay principal at maturity\n• Equal principal and interest: pay the same combined principal and interest every month\n• Equal principal: repay the same principal each month and calculate interest on the remaining principal\n\nActual loans can differ by bank day-count rules, grace periods, and early repayment terms.';
 
   @override
   String get loanInterestAmountLabel => 'Loan amount';
 
   @override
   String get loanInterestRateLabel => 'Annual rate';
+
+  @override
+  String get loanInterestRepaymentMethodLabel => 'Repayment method';
+
+  @override
+  String get loanInterestMethodInterestOnly => 'Interest-only';
+
+  @override
+  String get loanInterestMethodEqualPrincipalAndInterest => 'Equal principal and interest';
+
+  @override
+  String get loanInterestMethodEqualPrincipal => 'Equal principal';
 
   @override
   String get loanInterestMonthsLabel => 'Loan term';
@@ -660,9 +672,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loanInterestMonthlyInterestLabel => 'Monthly interest';
 
   @override
+  String get loanInterestMonthlyPaymentLabel => 'Monthly payment';
+
+  @override
+  String get loanInterestFirstMonthPaymentLabel => 'First month payment';
+
+  @override
+  String get loanInterestLastMonthPaymentLabel => 'Last month payment';
+
+  @override
   String loanInterestTotalInterestLabel(int months) {
     return 'Total interest over $months months';
   }
+
+  @override
+  String get loanInterestTotalPaymentLabel => 'Total payment';
 
   @override
   String get loanInterestSaved => 'Result saved.';
@@ -678,6 +702,21 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String loanInterestShareLoanAmount(String amount) {
     return 'Loan amount: $amount';
+  }
+
+  @override
+  String loanInterestShareRepaymentMethod(String method) {
+    return 'Repayment method: $method';
+  }
+
+  @override
+  String loanInterestShareMonthlyPayment(String amount) {
+    return 'Monthly payment: $amount';
+  }
+
+  @override
+  String loanInterestShareLastMonthPayment(String amount) {
+    return 'Last month payment: $amount';
   }
 
   @override
@@ -839,4 +878,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notificationNoticeFallbackTitle => 'Notice';
+
+  @override
+  String get validationAmountRequired => 'Please enter an amount.';
+
+  @override
+  String get validationAmountInvalid => 'Please enter a valid amount.';
+
+  @override
+  String get validationRateRequired => 'Please enter an interest rate.';
+
+  @override
+  String validationRateOutOfRange(String maxRate) {
+    return 'Enter a rate between 0 and $maxRate.';
+  }
+
+  @override
+  String get validationMonthsRequired => 'Please enter the stay period.';
+
+  @override
+  String validationMonthsOutOfRange(String minMonths, String maxMonths) {
+    return 'Enter a period between $minMonths and $maxMonths months.';
+  }
+
+  @override
+  String get validationLoanExceedsDeposit => 'The loan cannot exceed the jeonse deposit.';
 }

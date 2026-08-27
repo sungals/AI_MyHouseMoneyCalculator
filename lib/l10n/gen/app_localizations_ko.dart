@@ -628,13 +628,25 @@ class AppLocalizationsKo extends AppLocalizations {
   String get loanInterestHelpTitle => '대출이자 계산이란?';
 
   @override
-  String get loanInterestHelpBody => '단리(이자만 납부) 방식으로 월 이자와 총 이자를 계산합니다.\n\n• 대출금: 은행에서 빌리는 원금\n• 연이율: 연간 적용 이자율 (예: 4.5%)\n• 대출 기간: 이자를 납부할 기간 (개월)\n\n월 이자 = 대출금 × 연이율 ÷ 12\n총 이자 = 월 이자 × 대출 기간\n\n원리금 균등 상환(원금도 함께 갚는 방식)과는\n계산 방법이 다릅니다.';
+  String get loanInterestHelpBody => '선택한 상환 방식에 따라 월 납입액과 총 이자를 계산합니다.\n\n• 만기일시상환: 기간 중 이자만 납부하고 원금은 만기에 상환\n• 원리금균등상환: 매월 같은 금액으로 원금과 이자를 함께 상환\n• 원금균등상환: 매월 같은 원금을 갚고 이자는 남은 원금 기준으로 계산\n\n실제 대출은 은행별 일수 계산, 거치기간, 중도상환 조건에 따라 달라질 수 있습니다.';
 
   @override
   String get loanInterestAmountLabel => '대출금';
 
   @override
   String get loanInterestRateLabel => '연이율';
+
+  @override
+  String get loanInterestRepaymentMethodLabel => '상환 방식';
+
+  @override
+  String get loanInterestMethodInterestOnly => '만기일시상환';
+
+  @override
+  String get loanInterestMethodEqualPrincipalAndInterest => '원리금균등상환';
+
+  @override
+  String get loanInterestMethodEqualPrincipal => '원금균등상환';
 
   @override
   String get loanInterestMonthsLabel => '대출 기간';
@@ -660,9 +672,21 @@ class AppLocalizationsKo extends AppLocalizations {
   String get loanInterestMonthlyInterestLabel => '월 이자';
 
   @override
+  String get loanInterestMonthlyPaymentLabel => '월 납입액';
+
+  @override
+  String get loanInterestFirstMonthPaymentLabel => '첫 달 납입액';
+
+  @override
+  String get loanInterestLastMonthPaymentLabel => '마지막 달 납입액';
+
+  @override
   String loanInterestTotalInterestLabel(int months) {
     return '$months개월 총 이자';
   }
+
+  @override
+  String get loanInterestTotalPaymentLabel => '총 납입액';
 
   @override
   String get loanInterestSaved => '계산 결과가 저장되었습니다.';
@@ -678,6 +702,21 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String loanInterestShareLoanAmount(String amount) {
     return '대출금: $amount';
+  }
+
+  @override
+  String loanInterestShareRepaymentMethod(String method) {
+    return '상환 방식: $method';
+  }
+
+  @override
+  String loanInterestShareMonthlyPayment(String amount) {
+    return '월 납입액: $amount';
+  }
+
+  @override
+  String loanInterestShareLastMonthPayment(String amount) {
+    return '마지막 달 납입액: $amount';
   }
 
   @override
@@ -839,4 +878,29 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get notificationNoticeFallbackTitle => '공지사항';
+
+  @override
+  String get validationAmountRequired => '금액을 입력해 주세요.';
+
+  @override
+  String get validationAmountInvalid => '올바른 금액을 입력해 주세요.';
+
+  @override
+  String get validationRateRequired => '금리를 입력해 주세요.';
+
+  @override
+  String validationRateOutOfRange(String maxRate) {
+    return '금리는 0 이상 $maxRate 이하로 입력해 주세요.';
+  }
+
+  @override
+  String get validationMonthsRequired => '거주 기간을 입력해 주세요.';
+
+  @override
+  String validationMonthsOutOfRange(String minMonths, String maxMonths) {
+    return '거주 기간은 $minMonths~$maxMonths개월로 입력해 주세요.';
+  }
+
+  @override
+  String get validationLoanExceedsDeposit => '대출금은 전세 보증금보다 클 수 없습니다.';
 }

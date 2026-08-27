@@ -11,6 +11,7 @@ import '../../core/utils/calculation_pdf_exporter.dart';
 import '../../core/utils/money_formatter.dart';
 import '../../core/utils/pdf_export_labels_ko.dart';
 import '../../core/utils/validators.dart';
+import '../../core/utils/validation_error_l10n.dart';
 import '../../domain/entities/tax_deduction_input.dart';
 import '../../domain/entities/tax_deduction_result.dart';
 import '../../l10n/gen/app_localizations.dart';
@@ -183,7 +184,7 @@ class _TaxDeductionScreenState extends ConsumerState<TaxDeductionScreen> {
                     controller: _annualSalary,
                     focusNode: _fn1,
                     nextFocusNode: _fn2,
-                    validator: Validators.requiredAmount,
+                    validator: (v) => Validators.requiredAmountCode(v)?.localize(context),
                     showQuickButtons: true,
                     sliderMax: 200000000,
                     sliderDivisions: 200,

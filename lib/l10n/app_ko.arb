@@ -845,7 +845,7 @@
   "@loanInterestHelpTitle": {
     "description": "입력 섹션 도움말 다이얼로그 제목"
   },
-  "loanInterestHelpBody": "단리(이자만 납부) 방식으로 월 이자와 총 이자를 계산합니다.\n\n• 대출금: 은행에서 빌리는 원금\n• 연이율: 연간 적용 이자율 (예: 4.5%)\n• 대출 기간: 이자를 납부할 기간 (개월)\n\n월 이자 = 대출금 × 연이율 ÷ 12\n총 이자 = 월 이자 × 대출 기간\n\n원리금 균등 상환(원금도 함께 갚는 방식)과는\n계산 방법이 다릅니다.",
+  "loanInterestHelpBody": "선택한 상환 방식에 따라 월 납입액과 총 이자를 계산합니다.\n\n• 만기일시상환: 기간 중 이자만 납부하고 원금은 만기에 상환\n• 원리금균등상환: 매월 같은 금액으로 원금과 이자를 함께 상환\n• 원금균등상환: 매월 같은 원금을 갚고 이자는 남은 원금 기준으로 계산\n\n실제 대출은 은행별 일수 계산, 거치기간, 중도상환 조건에 따라 달라질 수 있습니다.",
   "@loanInterestHelpBody": {
     "description": "입력 섹션 도움말 본문. 계산식과 한계 설명"
   },
@@ -856,6 +856,22 @@
   "loanInterestRateLabel": "연이율",
   "@loanInterestRateLabel": {
     "description": "연이율 입력 필드 라벨"
+  },
+  "loanInterestRepaymentMethodLabel": "상환 방식",
+  "@loanInterestRepaymentMethodLabel": {
+    "description": "대출이자 계산 상환 방식 선택 필드 라벨"
+  },
+  "loanInterestMethodInterestOnly": "만기일시상환",
+  "@loanInterestMethodInterestOnly": {
+    "description": "이자만 납부하고 원금을 만기에 상환하는 방식"
+  },
+  "loanInterestMethodEqualPrincipalAndInterest": "원리금균등상환",
+  "@loanInterestMethodEqualPrincipalAndInterest": {
+    "description": "매월 같은 원리금을 상환하는 방식"
+  },
+  "loanInterestMethodEqualPrincipal": "원금균등상환",
+  "@loanInterestMethodEqualPrincipal": {
+    "description": "매월 같은 원금을 상환하는 방식"
   },
   "loanInterestMonthsLabel": "대출 기간",
   "@loanInterestMonthsLabel": {
@@ -890,6 +906,18 @@
   "@loanInterestMonthlyInterestLabel": {
     "description": "결과 카드 월 이자 행 라벨"
   },
+  "loanInterestMonthlyPaymentLabel": "월 납입액",
+  "@loanInterestMonthlyPaymentLabel": {
+    "description": "결과 카드 월 납입액 행 라벨"
+  },
+  "loanInterestFirstMonthPaymentLabel": "첫 달 납입액",
+  "@loanInterestFirstMonthPaymentLabel": {
+    "description": "결과 카드 첫 달 납입액 행 라벨"
+  },
+  "loanInterestLastMonthPaymentLabel": "마지막 달 납입액",
+  "@loanInterestLastMonthPaymentLabel": {
+    "description": "결과 카드 마지막 달 납입액 행 라벨"
+  },
   "loanInterestTotalInterestLabel": "{months}개월 총 이자",
   "@loanInterestTotalInterestLabel": {
     "description": "결과 카드 총 이자 행 라벨",
@@ -898,6 +926,10 @@
         "type": "int"
       }
     }
+  },
+  "loanInterestTotalPaymentLabel": "총 납입액",
+  "@loanInterestTotalPaymentLabel": {
+    "description": "결과 카드 총 납입액 행 라벨"
   },
   "loanInterestSaved": "계산 결과가 저장되었습니다.",
   "@loanInterestSaved": {
@@ -919,6 +951,33 @@
   "loanInterestShareLoanAmount": "대출금: {amount}",
   "@loanInterestShareLoanAmount": {
     "description": "공유 본문 대출금 줄",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "loanInterestShareRepaymentMethod": "상환 방식: {method}",
+  "@loanInterestShareRepaymentMethod": {
+    "description": "공유 본문 상환 방식 줄",
+    "placeholders": {
+      "method": {
+        "type": "String"
+      }
+    }
+  },
+  "loanInterestShareMonthlyPayment": "월 납입액: {amount}",
+  "@loanInterestShareMonthlyPayment": {
+    "description": "공유 본문 월 납입액 줄",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "loanInterestShareLastMonthPayment": "마지막 달 납입액: {amount}",
+  "@loanInterestShareLastMonthPayment": {
+    "description": "공유 본문 마지막 달 납입액 줄",
     "placeholders": {
       "amount": {
         "type": "String"
@@ -1152,5 +1211,46 @@
   "notificationNoticeFallbackTitle": "공지사항",
   "@notificationNoticeFallbackTitle": {
     "description": "원격 푸시에 제목이 없을 때 쓰는 기본 제목"
+  },
+  "validationAmountRequired": "금액을 입력해 주세요.",
+  "@validationAmountRequired": {
+    "description": "금액 필수 입력 검증 실패"
+  },
+  "validationAmountInvalid": "올바른 금액을 입력해 주세요.",
+  "@validationAmountInvalid": {
+    "description": "금액 형식/음수 검증 실패"
+  },
+  "validationRateRequired": "금리를 입력해 주세요.",
+  "@validationRateRequired": {
+    "description": "금리 필수 입력 검증 실패"
+  },
+  "validationRateOutOfRange": "금리는 0 이상 {maxRate} 이하로 입력해 주세요.",
+  "@validationRateOutOfRange": {
+    "description": "금리 범위 검증 실패",
+    "placeholders": {
+      "maxRate": {
+        "type": "String"
+      }
+    }
+  },
+  "validationMonthsRequired": "거주 기간을 입력해 주세요.",
+  "@validationMonthsRequired": {
+    "description": "거주 기간 필수 입력 검증 실패"
+  },
+  "validationMonthsOutOfRange": "거주 기간은 {minMonths}~{maxMonths}개월로 입력해 주세요.",
+  "@validationMonthsOutOfRange": {
+    "description": "거주 기간 범위 검증 실패",
+    "placeholders": {
+      "minMonths": {
+        "type": "String"
+      },
+      "maxMonths": {
+        "type": "String"
+      }
+    }
+  },
+  "validationLoanExceedsDeposit": "대출금은 전세 보증금보다 클 수 없습니다.",
+  "@validationLoanExceedsDeposit": {
+    "description": "대출금이 보증금을 초과할 때 검증 실패"
   }
 }

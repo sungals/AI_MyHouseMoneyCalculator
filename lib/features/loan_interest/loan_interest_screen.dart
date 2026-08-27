@@ -11,10 +11,12 @@ import '../../core/utils/money_formatter.dart';
 import '../../core/utils/pdf_export_labels_ko.dart';
 import '../../core/utils/share_helper.dart';
 import '../../core/utils/validators.dart';
+import '../../core/utils/validation_error_l10n.dart';
 import '../../l10n/gen/app_localizations.dart';
 import '../../providers/calculation_history_provider.dart';
 import '../../data/models/calculation_history.dart';
 import '../../domain/entities/loan_interest_input.dart';
+import '../../domain/entities/loan_interest_result.dart';
 import '../../shared/widgets/disclaimer_box.dart';
 import '../../shared/widgets/help_icon.dart';
 import '../../shared/widgets/money_input_field.dart';
@@ -38,6 +40,8 @@ class _LoanInterestScreenState extends ConsumerState<LoanInterestScreen> {
   final _loanAmount = TextEditingController();
   final _interestRate = TextEditingController();
   final _months = TextEditingController();
+  LoanInterestRepaymentMethod _repaymentMethod =
+      LoanInterestRepaymentMethod.interestOnly;
 
   @override
   void initState() {
@@ -50,6 +54,7 @@ class _LoanInterestScreenState extends ConsumerState<LoanInterestScreen> {
     _setMoney(_loanAmount, input['loanAmount']);
     _setText(_interestRate, input['interestRate']);
     _setText(_months, input['months']);
+    _repaymentMethod = _methodFromInput(input['repaymentMethod']);
   }
 
   void _setMoney(TextEditingController controller, Object? value) {
@@ -70,6 +75,16 @@ class _LoanInterestScreenState extends ConsumerState<LoanInterestScreen> {
     return null;
   }
 
+  LoanInterestRepaymentMethod _methodFromInput(Object? value) {
+    if (value is LoanInterestRepaymentMethod) return value;
+    if (value is String) {
+      for (final method in LoanInterestRepaymentMethod.values) {
+        if (method.name == value) return method;
+      }
+    }
+    return LoanInterestRepaymentMethod.interestOnly;
+  }
+
   @override
   void dispose() {
     _loanAmount.dispose();
@@ -85,6 +100,7 @@ class _LoanInterestScreenState extends ConsumerState<LoanInterestScreen> {
       loanAmount: MoneyFormatter.parse(_loanAmount.text),
       interestRate: double.parse(_interestRate.text),
       months: int.parse(_months.text),
+      repaymentMethod: _repaymentMethod,
     );
 
     ref.read(loanInterestControllerProvider.notifier).calculate(input);
@@ -106,15 +122,20 @@ class _LoanInterestScreenState extends ConsumerState<LoanInterestScreen> {
       // 표시하므로 로케일과 무관하게 한국어 표기를 유지한다.
       title: CalculationType.loanInterest.label,
       summary: '$_koMonthlyInterestLabel '
-          '${MoneyFormatter.formatWithWon(result.monthlyInterest)}',
+          '${MoneyFormatter.formatWithWon(result.monthlyPayment)}',
       input: {
         'loanAmount': result.loanAmount,
         'interestRate': double.tryParse(_interestRate.text) ?? 0,
         'months': result.months,
+        'repaymentMethod': result.repaymentMethod.name,
       },
       result: {
         'monthlyInterest': result.monthlyInterest,
+        'monthlyPayment': result.monthlyPayment,
+        'firstMonthPayment': result.firstMonthPayment,
+        'lastMonthPayment': result.lastMonthPayment,
         'totalInterest': result.totalInterest,
+        'totalPayment': result.totalPayment,
       },
       createdAt: DateTime.now(),
     );
@@ -139,6 +160,16 @@ class _LoanInterestScreenState extends ConsumerState<LoanInterestScreen> {
       l10n.loanInterestShareLoanAmount(
         MoneyFormatter.formatWithWon(result.loanAmount),
       ),
+      l10n.loanInterestShareRepaymentMethod(
+        _repaymentMethodLabel(l10n, result.repaymentMethod),
+      ),
+      l10n.loanInterestShareMonthlyPayment(
+        MoneyFormatter.formatWithWon(result.monthlyPayment),
+      ),
+      if (result.repaymentMethod == LoanInterestRepaymentMethod.equalPrincipal)
+        l10n.loanInterestShareLastMonthPayment(
+          MoneyFormatter.formatWithWon(result.lastMonthPayment),
+        ),
       l10n.loanInterestShareMonthlyInterest(
         MoneyFormatter.formatWithWon(result.monthlyInterest),
       ),
@@ -181,12 +212,22 @@ class _LoanInterestScreenState extends ConsumerState<LoanInterestScreen> {
         l10n.loanInterestRateLabel: '${_interestRate.text}%',
         l10n.loanInterestMonthsLabel:
             l10n.loanInterestMonthsValue(result.months),
+        l10n.loanInterestRepaymentMethodLabel:
+            _repaymentMethodLabel(l10n, result.repaymentMethod),
       },
       result: {
+        _monthlyPaymentLabel(l10n, result):
+            MoneyFormatter.formatWithWon(result.monthlyPayment),
+        if (result.repaymentMethod ==
+            LoanInterestRepaymentMethod.equalPrincipal)
+          l10n.loanInterestLastMonthPaymentLabel:
+              MoneyFormatter.formatWithWon(result.lastMonthPayment),
         l10n.loanInterestMonthlyInterestLabel:
             MoneyFormatter.formatWithWon(result.monthlyInterest),
         l10n.loanInterestTotalInterestLabel(result.months):
             MoneyFormatter.formatWithWon(result.totalInterest),
+        l10n.loanInterestTotalPaymentLabel:
+            MoneyFormatter.formatWithWon(result.totalPayment),
       },
     );
   }
@@ -226,7 +267,7 @@ class _LoanInterestScreenState extends ConsumerState<LoanInterestScreen> {
                   MoneyInputField(
                     label: l10n.loanInterestAmountLabel,
                     controller: _loanAmount,
-                    validator: Validators.requiredAmount,
+                    validator: (v) => Validators.requiredAmountCode(v)?.localize(context),
                     sliderMax: 2000000000,
                     sliderDivisions: 200,
                   ),
@@ -234,14 +275,33 @@ class _LoanInterestScreenState extends ConsumerState<LoanInterestScreen> {
                   PercentInputField(
                     label: l10n.loanInterestRateLabel,
                     controller: _interestRate,
-                    validator: Validators.interestRate,
+                    validator: (v) => Validators.interestRateCode(v)?.localize(context),
+                  ),
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<LoanInterestRepaymentMethod>(
+                    value: _repaymentMethod,
+                    decoration: InputDecoration(
+                      labelText: l10n.loanInterestRepaymentMethodLabel,
+                    ),
+                    items: LoanInterestRepaymentMethod.values
+                        .map(
+                          (method) => DropdownMenuItem(
+                            value: method,
+                            child: Text(_repaymentMethodLabel(l10n, method)),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (value) {
+                      if (value == null) return;
+                      setState(() => _repaymentMethod = value);
+                    },
                   ),
                   const SizedBox(height: 12),
                   TextFormField(
                     controller: _months,
                     keyboardType: TextInputType.number,
                     textInputAction: TextInputAction.done,
-                    validator: Validators.months,
+                    validator: (v) => Validators.monthsCode(v)?.localize(context),
                     decoration: InputDecoration(
                       labelText: l10n.loanInterestMonthsLabel,
                       hintText: l10n.loanInterestMonthsHint,
@@ -273,11 +333,39 @@ class _LoanInterestScreenState extends ConsumerState<LoanInterestScreen> {
                           style: typography.bodySecondary),
                       const SizedBox(height: 16),
                       _ResultRow(
-                        label: l10n.loanInterestMonthlyInterestLabel,
+                        label: l10n.loanInterestRepaymentMethodLabel,
+                        value: _repaymentMethodLabel(
+                          l10n,
+                          result.repaymentMethod,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      _ResultRow(
+                        label: _monthlyPaymentLabel(l10n, result),
                         value: MoneyFormatter.formatWithWon(
-                            result.monthlyInterest),
+                          result.monthlyPayment,
+                        ),
                         isBold: true,
                         valueColor: palette.primary,
+                      ),
+                      const SizedBox(height: 10),
+                      if (result.repaymentMethod ==
+                          LoanInterestRepaymentMethod.equalPrincipal) ...[
+                        _ResultRow(
+                          label: l10n.loanInterestLastMonthPaymentLabel,
+                          value: MoneyFormatter.formatWithWon(
+                            result.lastMonthPayment,
+                          ),
+                          isBold: true,
+                          valueColor: palette.primary,
+                        ),
+                        const SizedBox(height: 10),
+                      ],
+                      _ResultRow(
+                        label: l10n.loanInterestMonthlyInterestLabel,
+                        value: MoneyFormatter.formatWithWon(
+                          result.monthlyInterest,
+                        ),
                       ),
                       const SizedBox(height: 10),
                       _ResultRow(
@@ -287,6 +375,13 @@ class _LoanInterestScreenState extends ConsumerState<LoanInterestScreen> {
                             MoneyFormatter.formatWithWon(result.totalInterest),
                         isBold: true,
                         valueColor: palette.danger,
+                      ),
+                      const SizedBox(height: 10),
+                      _ResultRow(
+                        label: l10n.loanInterestTotalPaymentLabel,
+                        value:
+                            MoneyFormatter.formatWithWon(result.totalPayment),
+                        isBold: true,
                       ),
                     ],
                   ),
@@ -314,6 +409,34 @@ class _LoanInterestScreenState extends ConsumerState<LoanInterestScreen> {
 
 /// 이력 요약에 저장되는 한국어 라벨. 계약서 §10에 따라 지역화하지 않는다.
 const String _koMonthlyInterestLabel = '월 이자';
+
+String _repaymentMethodLabel(
+  AppLocalizations l10n,
+  LoanInterestRepaymentMethod method,
+) {
+  return switch (method) {
+    LoanInterestRepaymentMethod.interestOnly =>
+      l10n.loanInterestMethodInterestOnly,
+    LoanInterestRepaymentMethod.equalPrincipalAndInterest =>
+      l10n.loanInterestMethodEqualPrincipalAndInterest,
+    LoanInterestRepaymentMethod.equalPrincipal =>
+      l10n.loanInterestMethodEqualPrincipal,
+  };
+}
+
+String _monthlyPaymentLabel(
+  AppLocalizations l10n,
+  LoanInterestResult result,
+) {
+  return switch (result.repaymentMethod) {
+    LoanInterestRepaymentMethod.interestOnly =>
+      l10n.loanInterestMonthlyInterestLabel,
+    LoanInterestRepaymentMethod.equalPrincipalAndInterest =>
+      l10n.loanInterestMonthlyPaymentLabel,
+    LoanInterestRepaymentMethod.equalPrincipal =>
+      l10n.loanInterestFirstMonthPaymentLabel,
+  };
+}
 
 class _SectionTitle extends StatelessWidget {
   final String text;
@@ -363,13 +486,19 @@ class _ResultRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: typography.bodySecondary),
-        Text(
-          value,
-          style: typography.body.copyWith(
-            fontSize: 18,
-            fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-            color: valueColor ?? palette.textPrimary,
+        Expanded(
+          child: Text(label, style: typography.bodySecondary),
+        ),
+        const SizedBox(width: 12),
+        Flexible(
+          child: Text(
+            value,
+            textAlign: TextAlign.end,
+            style: typography.body.copyWith(
+              fontSize: 18,
+              fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+              color: valueColor ?? palette.textPrimary,
+            ),
           ),
         ),
       ],

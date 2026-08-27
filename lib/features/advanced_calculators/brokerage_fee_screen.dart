@@ -10,6 +10,7 @@ import '../../core/utils/calculation_pdf_exporter.dart';
 import '../../core/utils/money_formatter.dart';
 import '../../core/utils/pdf_export_labels_ko.dart';
 import '../../core/utils/validators.dart';
+import '../../core/utils/validation_error_l10n.dart';
 import '../../data/models/calculation_history.dart';
 import '../../domain/calculators/brokerage_fee_calculator.dart';
 import '../../domain/entities/brokerage_fee_input.dart';
@@ -178,7 +179,7 @@ class _BrokerageFeeScreenState extends ConsumerState<BrokerageFeeScreen> {
               MoneyInputField(
                 label: _type == 'sale' ? '매매가' : '거래금액',
                 controller: _price,
-                validator: Validators.requiredAmount,
+                validator: (v) => Validators.requiredAmountCode(v)?.localize(context),
                 sliderMax: 3000000000,
                 sliderDivisions: 300,
               ),

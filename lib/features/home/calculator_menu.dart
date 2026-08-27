@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_text_styles.dart';
+import '../../core/theme/app_typography.dart';
 
 class CalculatorMenuItem {
   final String title;
@@ -184,9 +184,9 @@ class CalculatorMenuCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(item.title, style: AppTextStyles.heading3),
+                    Text(item.title, style: context.typography.heading3),
                     const SizedBox(height: 4),
-                    Text(item.description, style: AppTextStyles.bodySecondary),
+                    Text(item.description, style: context.typography.bodySecondary),
                   ],
                 ),
               ),

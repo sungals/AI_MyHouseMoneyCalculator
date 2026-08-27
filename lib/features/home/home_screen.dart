@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_text_styles.dart';
+import '../../core/theme/app_typography.dart';
 import 'calculator_menu.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -24,15 +24,15 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 '자주 쓰는 계산을\n빠르게 시작하세요',
-                style: AppTextStyles.heading1,
+                style: context.typography.heading1,
               ),
               const SizedBox(height: 8),
               Text(
                 '전체 기능은 하단의 주거, 금융 탭에서 분류별로 볼 수 있어요.',
-                style: AppTextStyles.bodySecondary,
+                style: context.typography.bodySecondary,
               ),
               const SizedBox(height: 24),
-              Text('추천 계산', style: AppTextStyles.label),
+              Text('추천 계산', style: context.typography.label),
               const SizedBox(height: 12),
               for (final item in CalculatorMenus.featured) ...[
                 CalculatorMenuCard(

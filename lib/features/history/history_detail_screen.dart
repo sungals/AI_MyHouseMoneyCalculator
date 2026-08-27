@@ -10,7 +10,7 @@ import 'package:printing/printing.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_text_styles.dart';
+import '../../core/theme/app_typography.dart';
 import '../../core/utils/money_formatter.dart';
 import '../../core/utils/share_helper.dart';
 import '../../data/models/calculation_history.dart';
@@ -262,6 +262,9 @@ class _HistoryDetailScreenState extends ConsumerState<HistoryDetailScreen> {
       'one': '1주택',
       'two': '2주택',
       'threePlus': '3주택 이상',
+      'interestOnly': '만기일시상환',
+      'equalPrincipalAndInterest': '원리금균등상환',
+      'equalPrincipal': '원금균등상환',
     };
     return valueLabels[text] ?? text;
   }
@@ -286,8 +289,13 @@ class _HistoryDetailScreenState extends ConsumerState<HistoryDetailScreen> {
       'fairMonthlyRent': '적정 월세',
       'actualMonthlyRent': '실제 월세',
       'loanAmount': '대출금',
+      'repaymentMethod': '상환 방식',
       'monthlyInterest': '월 이자',
+      'monthlyPayment': '월 납입액',
+      'firstMonthPayment': '첫 달 납입액',
+      'lastMonthPayment': '마지막 달 납입액',
       'totalInterest': '총 이자',
+      'totalPayment': '총 납입액',
       'totalMonthly': '월 합계',
       'totalAnnual': '연간 합계',
       'annualIncome': '연소득',
@@ -383,7 +391,7 @@ class _HistoryDetailScreenState extends ConsumerState<HistoryDetailScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 8),
-            Text(dateStr, style: AppTextStyles.caption),
+            Text(dateStr, style: context.typography.caption),
             const SizedBox(height: 16),
             Container(
               width: double.infinity,
@@ -396,9 +404,9 @@ class _HistoryDetailScreenState extends ConsumerState<HistoryDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('결과 요약', style: AppTextStyles.label),
+                  Text('결과 요약', style: context.typography.label),
                   const SizedBox(height: 8),
-                  Text(item.summary, style: AppTextStyles.body),
+                  Text(item.summary, style: context.typography.body),
                   const SizedBox(height: 16),
                   SizedBox(
                     width: double.infinity,
@@ -423,7 +431,7 @@ class _HistoryDetailScreenState extends ConsumerState<HistoryDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('메모', style: AppTextStyles.label),
+                  Text('메모', style: context.typography.label),
                   const SizedBox(height: 12),
                   TextField(
                     controller: _memoController,
@@ -463,7 +471,7 @@ class _HistoryDetailScreenState extends ConsumerState<HistoryDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('계산 결과', style: AppTextStyles.label),
+                  Text('계산 결과', style: context.typography.label),
                   const SizedBox(height: 12),
                   ...item.result.entries.map((e) => Padding(
                         padding: const EdgeInsets.only(bottom: 8),
@@ -473,12 +481,12 @@ class _HistoryDetailScreenState extends ConsumerState<HistoryDetailScreen> {
                             Expanded(
                               child: Text(
                                 _labelForKey(e.key),
-                                style: AppTextStyles.bodySecondary,
+                                style: context.typography.bodySecondary,
                               ),
                             ),
                             const SizedBox(width: 12),
                             Text(_formatValue(e.value),
-                                style: AppTextStyles.body),
+                                style: context.typography.body),
                           ],
                         ),
                       )),

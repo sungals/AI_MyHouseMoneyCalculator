@@ -10,6 +10,7 @@ import '../../core/utils/calculation_pdf_exporter.dart';
 import '../../core/utils/money_formatter.dart';
 import '../../core/utils/pdf_export_labels_ko.dart';
 import '../../core/utils/validators.dart';
+import '../../core/utils/validation_error_l10n.dart';
 import '../../data/models/calculation_history.dart';
 import '../../domain/calculators/acquisition_tax_calculator.dart';
 import '../../domain/entities/acquisition_tax_input.dart';
@@ -191,7 +192,7 @@ class _AcquisitionTaxScreenState extends ConsumerState<AcquisitionTaxScreen> {
               MoneyInputField(
                 label: '주택 취득가액',
                 controller: _price,
-                validator: Validators.requiredAmount,
+                validator: (v) => Validators.requiredAmountCode(v)?.localize(context),
                 sliderMax: 3000000000,
                 sliderDivisions: 300,
               ),

@@ -7,7 +7,7 @@ import 'package:flutter_widget_from_html/flutter_widget_from_html.dart'
 import 'package:intl/intl.dart';
 
 import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_text_styles.dart';
+import '../../core/theme/app_typography.dart';
 import '../../providers/notice_provider.dart';
 
 class AdminNoticeFormScreen extends ConsumerStatefulWidget {
@@ -230,7 +230,7 @@ class _AdminNoticeFormScreenState extends ConsumerState<AdminNoticeFormScreen>
                         const Icon(Icons.calendar_today_outlined,
                             size: 18, color: AppColors.primary),
                         const SizedBox(width: 8),
-                        Text(dateFmt, style: AppTextStyles.body),
+                        Text(dateFmt, style: context.typography.body),
                       ],
                     ),
                   ),
@@ -239,7 +239,7 @@ class _AdminNoticeFormScreenState extends ConsumerState<AdminNoticeFormScreen>
               const SizedBox(width: 12),
               Row(
                 children: [
-                  Text('공개', style: AppTextStyles.body),
+                  Text('공개', style: context.typography.body),
                   Switch(
                     value: _isPublished,
                     onChanged: (v) => setState(() => _isPublished = v),
@@ -263,12 +263,12 @@ class _AdminNoticeFormScreenState extends ConsumerState<AdminNoticeFormScreen>
       children: [
         Text(
           _titleCtrl.text.isEmpty ? '(제목 없음)' : _titleCtrl.text,
-          style: AppTextStyles.heading2,
+          style: context.typography.heading2,
         ),
         const SizedBox(height: 8),
         Text(
           DateFormat('yyyy.MM.dd HH:mm').format(_publishedAt),
-          style: AppTextStyles.caption,
+          style: context.typography.caption,
         ),
         const SizedBox(height: 20),
         Container(
@@ -279,10 +279,10 @@ class _AdminNoticeFormScreenState extends ConsumerState<AdminNoticeFormScreen>
             border: Border.all(color: AppColors.cardBorder),
           ),
           child: html.isEmpty
-              ? Text('(HTML 내용 없음)', style: AppTextStyles.bodySecondary)
+              ? Text('(HTML 내용 없음)', style: context.typography.bodySecondary)
               : HtmlWidget(
                   html,
-                  textStyle: AppTextStyles.body.copyWith(height: 1.6),
+                  textStyle: context.typography.body.copyWith(height: 1.6),
                 ),
         ),
       ],
@@ -292,7 +292,7 @@ class _AdminNoticeFormScreenState extends ConsumerState<AdminNoticeFormScreen>
   Widget _sectionLabel(String text) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
-      child: Text(text, style: AppTextStyles.label),
+      child: Text(text, style: context.typography.label),
     );
   }
 

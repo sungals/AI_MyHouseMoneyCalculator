@@ -203,9 +203,13 @@
   "loanInterestTitle": "Loan interest",
   "loanInterestSectionTitle": "Loan terms",
   "loanInterestHelpTitle": "How is loan interest calculated?",
-  "loanInterestHelpBody": "Works out monthly and total interest for an interest-only loan (simple interest).\n\n• Loan amount: the principal you borrow\n• Annual rate: the yearly interest rate (for example 4.5%)\n• Loan term: how many months you pay interest\n\nMonthly interest = loan amount × annual rate ÷ 12\nTotal interest = monthly interest × loan term\n\nThis is different from an equal principal-and-interest loan,\nwhere you repay principal every month too.",
+  "loanInterestHelpBody": "Calculates monthly payments and total interest by repayment method.\n\n• Interest-only: pay interest during the term and repay principal at maturity\n• Equal principal and interest: pay the same combined principal and interest every month\n• Equal principal: repay the same principal each month and calculate interest on the remaining principal\n\nActual loans can differ by bank day-count rules, grace periods, and early repayment terms.",
   "loanInterestAmountLabel": "Loan amount",
   "loanInterestRateLabel": "Annual rate",
+  "loanInterestRepaymentMethodLabel": "Repayment method",
+  "loanInterestMethodInterestOnly": "Interest-only",
+  "loanInterestMethodEqualPrincipalAndInterest": "Equal principal and interest",
+  "loanInterestMethodEqualPrincipal": "Equal principal",
   "loanInterestMonthsLabel": "Loan term",
   "loanInterestMonthsHint": "e.g. 24",
   "loanInterestMonthsSuffix": "months",
@@ -213,11 +217,18 @@
   "loanInterestCalculate": "Calculate",
   "loanInterestResultTitle": "Result",
   "loanInterestMonthlyInterestLabel": "Monthly interest",
+  "loanInterestMonthlyPaymentLabel": "Monthly payment",
+  "loanInterestFirstMonthPaymentLabel": "First month payment",
+  "loanInterestLastMonthPaymentLabel": "Last month payment",
   "loanInterestTotalInterestLabel": "Total interest over {months} months",
+  "loanInterestTotalPaymentLabel": "Total payment",
   "loanInterestSaved": "Result saved.",
   "loanInterestShareSubject": "Loan interest result",
   "loanInterestShareHeader": "[{appName}] Loan interest result",
   "loanInterestShareLoanAmount": "Loan amount: {amount}",
+  "loanInterestShareRepaymentMethod": "Repayment method: {method}",
+  "loanInterestShareMonthlyPayment": "Monthly payment: {amount}",
+  "loanInterestShareLastMonthPayment": "Last month payment: {amount}",
   "loanInterestShareMonthlyInterest": "Monthly interest: {amount}",
   "loanInterestShareTotalInterest": "Total interest over {months} months: {amount}",
   "loanInterestShareDisclaimer": "* This result is for reference only. Check with a professional before you sign.",
@@ -267,5 +278,29 @@
   "sharedOfflineBanner": "You are offline",
   "notificationNoticeChannelName": "Notices",
   "notificationNoticeChannelDescription": "New notice alerts",
-  "notificationNoticeFallbackTitle": "Notice"
+  "notificationNoticeFallbackTitle": "Notice",
+  "validationAmountRequired": "Please enter an amount.",
+  "validationAmountInvalid": "Please enter a valid amount.",
+  "validationRateRequired": "Please enter an interest rate.",
+  "validationRateOutOfRange": "Enter a rate between 0 and {maxRate}.",
+  "@validationRateOutOfRange": {
+    "placeholders": {
+      "maxRate": {
+        "type": "String"
+      }
+    }
+  },
+  "validationMonthsRequired": "Please enter the stay period.",
+  "validationMonthsOutOfRange": "Enter a period between {minMonths} and {maxMonths} months.",
+  "@validationMonthsOutOfRange": {
+    "placeholders": {
+      "minMonths": {
+        "type": "String"
+      },
+      "maxMonths": {
+        "type": "String"
+      }
+    }
+  },
+  "validationLoanExceedsDeposit": "The loan cannot exceed the jeonse deposit."
 }

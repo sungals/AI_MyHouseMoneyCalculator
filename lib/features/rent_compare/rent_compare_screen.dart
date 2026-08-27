@@ -13,6 +13,7 @@ import '../../core/utils/money_formatter.dart';
 import '../../core/utils/pdf_export_labels_ko.dart';
 import '../../core/utils/share_helper.dart';
 import '../../core/utils/validators.dart';
+import '../../core/utils/validation_error_l10n.dart';
 import '../../providers/calculation_history_provider.dart';
 import '../../data/models/calculation_history.dart';
 import '../../domain/entities/rent_compare_input.dart';
@@ -127,10 +128,10 @@ class _RentCompareScreenState extends ConsumerState<RentCompareScreen> {
     final deposit = MoneyFormatter.parse(_jeonseDeposit.text);
     final loan = MoneyFormatter.parse(_jeonseLoan.text);
 
-    final loanError = Validators.loanNotExceedDeposit(loan, deposit);
+    final loanError = Validators.loanNotExceedDepositCode(loan, deposit);
     if (loanError != null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(loanError), backgroundColor: AppColors.danger),
+        SnackBar(content: Text(loanError.localize(context)), backgroundColor: AppColors.danger),
       );
       return;
     }
@@ -288,7 +289,7 @@ class _RentCompareScreenState extends ConsumerState<RentCompareScreen> {
                     controller: _jeonseDeposit,
                     focusNode: _fn1,
                     nextFocusNode: _fn2,
-                    validator: Validators.requiredAmount,
+                    validator: (v) => Validators.requiredAmountCode(v)?.localize(context),
                     showQuickButtons: true,
                     sliderMax: 2000000000,
                     sliderDivisions: 200,
@@ -299,7 +300,7 @@ class _RentCompareScreenState extends ConsumerState<RentCompareScreen> {
                     controller: _jeonseLoan,
                     focusNode: _fn2,
                     nextFocusNode: _fn3,
-                    validator: Validators.requiredAmount,
+                    validator: (v) => Validators.requiredAmountCode(v)?.localize(context),
                     showQuickButtons: true,
                     sliderMax: 2000000000,
                     sliderDivisions: 200,
@@ -310,7 +311,7 @@ class _RentCompareScreenState extends ConsumerState<RentCompareScreen> {
                     controller: _interestRate,
                     focusNode: _fn3,
                     nextFocusNode: _fn4,
-                    validator: Validators.interestRate,
+                    validator: (v) => Validators.interestRateCode(v)?.localize(context),
                   ),
                   const SizedBox(height: 20),
                   SliderRateField(
@@ -337,7 +338,7 @@ class _RentCompareScreenState extends ConsumerState<RentCompareScreen> {
                     controller: _rentDeposit,
                     focusNode: _fn4,
                     nextFocusNode: _fn5,
-                    validator: Validators.requiredAmount,
+                    validator: (v) => Validators.requiredAmountCode(v)?.localize(context),
                     showQuickButtons: true,
                     sliderMax: 500000000,
                     sliderDivisions: 100,
@@ -348,7 +349,7 @@ class _RentCompareScreenState extends ConsumerState<RentCompareScreen> {
                     controller: _monthlyRent,
                     focusNode: _fn5,
                     nextFocusNode: _fn6,
-                    validator: Validators.requiredAmount,
+                    validator: (v) => Validators.requiredAmountCode(v)?.localize(context),
                     showQuickButtons: true,
                     sliderMax: 3000000,
                     sliderDivisions: 60,
@@ -359,7 +360,7 @@ class _RentCompareScreenState extends ConsumerState<RentCompareScreen> {
                     controller: _maintenance,
                     focusNode: _fn6,
                     nextFocusNode: _fn7,
-                    validator: Validators.requiredAmount,
+                    validator: (v) => Validators.requiredAmountCode(v)?.localize(context),
                     sliderMax: 1000000,
                     sliderDivisions: 100,
                   ),
@@ -378,7 +379,7 @@ class _RentCompareScreenState extends ConsumerState<RentCompareScreen> {
                     focusNode: _fn7,
                     keyboardType: TextInputType.number,
                     textInputAction: TextInputAction.done,
-                    validator: Validators.months,
+                    validator: (v) => Validators.monthsCode(v)?.localize(context),
                     decoration: const InputDecoration(
                       labelText: '거주 기간',
                       hintText: '예: 24',

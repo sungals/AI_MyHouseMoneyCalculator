@@ -19,5 +19,29 @@
   "sharedOfflineBanner": "You are offline",
   "notificationNoticeChannelName": "Notices",
   "notificationNoticeChannelDescription": "New notice alerts",
-  "notificationNoticeFallbackTitle": "Notice"
+  "notificationNoticeFallbackTitle": "Notice",
+  "validationAmountRequired": "Please enter an amount.",
+  "validationAmountInvalid": "Please enter a valid amount.",
+  "validationRateRequired": "Please enter an interest rate.",
+  "validationRateOutOfRange": "Enter a rate between 0 and {maxRate}.",
+  "@validationRateOutOfRange": {
+    "placeholders": {
+      "maxRate": {
+        "type": "String"
+      }
+    }
+  },
+  "validationMonthsRequired": "Please enter the stay period.",
+  "validationMonthsOutOfRange": "Enter a period between {minMonths} and {maxMonths} months.",
+  "@validationMonthsOutOfRange": {
+    "placeholders": {
+      "minMonths": {
+        "type": "String"
+      },
+      "maxMonths": {
+        "type": "String"
+      }
+    }
+  },
+  "validationLoanExceedsDeposit": "The loan cannot exceed the jeonse deposit."
 }

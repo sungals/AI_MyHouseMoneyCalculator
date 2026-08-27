@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_text_styles.dart';
+import '../../core/theme/app_typography.dart';
 import '../../data/models/notice.dart';
 import '../../providers/notice_provider.dart';
 
@@ -122,14 +122,14 @@ class _NoticeAdminTile extends StatelessWidget {
             Expanded(
               child: Text(
                 notice.title,
-                style: AppTextStyles.body,
+                style: context.typography.body,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
         ),
-        subtitle: Text(date, style: AppTextStyles.caption),
+        subtitle: Text(date, style: context.typography.caption),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [

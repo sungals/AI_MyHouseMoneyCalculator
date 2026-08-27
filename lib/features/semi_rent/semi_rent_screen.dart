@@ -10,6 +10,7 @@ import '../../core/utils/money_formatter.dart';
 import '../../core/utils/pdf_export_labels_ko.dart';
 import '../../core/utils/share_helper.dart';
 import '../../core/utils/validators.dart';
+import '../../core/utils/validation_error_l10n.dart';
 import '../../providers/calculation_history_provider.dart';
 import '../../data/models/calculation_history.dart';
 import '../../domain/entities/semi_rent_input.dart';
@@ -234,7 +235,7 @@ ${_summaryText(result)}
                   MoneyInputField(
                     label: '기준 전세 보증금',
                     controller: _baseDeposit,
-                    validator: Validators.requiredAmount,
+                    validator: (v) => Validators.requiredAmountCode(v)?.localize(context),
                     sliderMax: 2000000000,
                     sliderDivisions: 200,
                   ),
@@ -242,7 +243,7 @@ ${_summaryText(result)}
                   MoneyInputField(
                     label: '전환 후 보증금',
                     controller: _convertedDeposit,
-                    validator: Validators.requiredAmount,
+                    validator: (v) => Validators.requiredAmountCode(v)?.localize(context),
                     sliderMax: 2000000000,
                     sliderDivisions: 200,
                   ),
@@ -260,7 +261,7 @@ ${_summaryText(result)}
                   MoneyInputField(
                     label: '월세',
                     controller: _monthlyRent,
-                    validator: Validators.requiredAmount,
+                    validator: (v) => Validators.requiredAmountCode(v)?.localize(context),
                     sliderMax: 3000000,
                     sliderDivisions: 60,
                   ),
@@ -268,13 +269,13 @@ ${_summaryText(result)}
                   PercentInputField(
                     label: '전월세 전환율',
                     controller: _conversionRate,
-                    validator: Validators.interestRate,
+                    validator: (v) => Validators.interestRateCode(v)?.localize(context),
                   ),
                   const SizedBox(height: 12),
                   MoneyInputField(
                     label: '관리비',
                     controller: _maintenance,
-                    validator: Validators.requiredAmount,
+                    validator: (v) => Validators.requiredAmountCode(v)?.localize(context),
                     sliderMax: 1000000,
                     sliderDivisions: 100,
                   ),
@@ -292,7 +293,7 @@ ${_summaryText(result)}
                     controller: _months,
                     keyboardType: TextInputType.number,
                     textInputAction: TextInputAction.done,
-                    validator: Validators.months,
+                    validator: (v) => Validators.monthsCode(v)?.localize(context),
                     decoration: const InputDecoration(
                       labelText: '거주 기간',
                       hintText: '예: 24',

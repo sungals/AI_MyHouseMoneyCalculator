@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_text_styles.dart';
+import '../../core/theme/app_typography.dart';
 import '../../data/models/calculation_history.dart';
 import '../../providers/calculation_history_provider.dart';
 
@@ -112,7 +112,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                     Expanded(
                       child: Text(
                         '서버 동기화가 지연되고 있습니다. 로컬 저장은 완료되었습니다.',
-                        style: AppTextStyles.caption,
+                        style: context.typography.caption,
                       ),
                     ),
                     TextButton(
@@ -141,7 +141,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                                 size: 48, color: AppColors.textSecondary),
                             SizedBox(height: 12),
                             Text('저장된 계산이 없어요.',
-                                style: AppTextStyles.bodySecondary),
+                                style: context.typography.bodySecondary),
                           ],
                         ),
                       )
@@ -204,7 +204,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                                 ? Center(
                                     child: Text(
                                       '조건에 맞는 저장 기록이 없습니다.',
-                                      style: AppTextStyles.bodySecondary,
+                                      style: context.typography.bodySecondary,
                                     ),
                                   )
                                 : ListView.separated(
@@ -280,7 +280,7 @@ class _HistoryCard extends StatelessWidget {
                       children: [
                         Expanded(
                           child:
-                              Text(item.title, style: AppTextStyles.heading3),
+                              Text(item.title, style: context.typography.heading3),
                         ),
                         Container(
                           padding: const EdgeInsets.symmetric(
@@ -304,20 +304,20 @@ class _HistoryCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(item.summary,
-                        style: AppTextStyles.bodySecondary,
+                        style: context.typography.bodySecondary,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis),
                     if (item.memo.trim().isNotEmpty) ...[
                       const SizedBox(height: 6),
                       Text(
                         item.memo,
-                        style: AppTextStyles.caption,
+                        style: context.typography.caption,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],
                     const SizedBox(height: 6),
-                    Text(dateStr, style: AppTextStyles.caption),
+                    Text(dateStr, style: context.typography.caption),
                   ],
                 ),
               ),

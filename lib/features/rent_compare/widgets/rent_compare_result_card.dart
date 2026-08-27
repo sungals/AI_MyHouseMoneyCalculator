@@ -2,7 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import '../../../core/extensions/number_format_extension.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_text_styles.dart';
+import '../../../core/theme/app_typography.dart';
 import '../../../domain/entities/rent_compare_result.dart';
 import '../../../shared/widgets/disclaimer_box.dart';
 import '../../../shared/widgets/result_action_buttons.dart';
@@ -65,7 +65,7 @@ class RentCompareResultCard extends StatelessWidget {
                     const SizedBox(width: 6),
                     Text(
                       winnerLabel,
-                      style: AppTextStyles.label.copyWith(
+                      style: context.typography.label.copyWith(
                         color: diffColor,
                         fontWeight: FontWeight.w700,
                       ),
@@ -76,12 +76,12 @@ class RentCompareResultCard extends StatelessWidget {
               const SizedBox(height: 12),
               Text(
                 rentCompareRecommendationText(result),
-                style: AppTextStyles.heading2.copyWith(color: diffColor),
+                style: context.typography.heading2.copyWith(color: diffColor),
               ),
               const SizedBox(height: 6),
               Text(
                 '전세와 월세의 실질 월 비용을 같은 기준으로 비교했어요.',
-                style: AppTextStyles.bodySecondary,
+                style: context.typography.bodySecondary,
               ),
               const SizedBox(height: 20),
               LayoutBuilder(
@@ -141,7 +141,7 @@ class RentCompareResultCard extends StatelessWidget {
               const SizedBox(height: 20),
               const Divider(),
               const SizedBox(height: 16),
-              Text('비용 상세', style: AppTextStyles.label),
+              Text('비용 상세', style: context.typography.label),
               const SizedBox(height: 12),
               _Row(
                 label: '전세 월 비용',
@@ -232,7 +232,7 @@ class _CostBarChart extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('월 비용 비교 그래프', style: AppTextStyles.label),
+          Text('월 비용 비교 그래프', style: context.typography.label),
           const SizedBox(height: 8),
           SizedBox(
             height: 180,
@@ -281,7 +281,7 @@ class _CostBarChart extends StatelessWidget {
                         return Padding(
                           padding: const EdgeInsets.only(top: 8),
                           child:
-                              Text(labels[idx], style: AppTextStyles.caption),
+                              Text(labels[idx], style: context.typography.caption),
                         );
                       },
                     ),
@@ -354,7 +354,7 @@ class _CompareCostCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: AppTextStyles.heading3.copyWith(color: color),
+                  style: context.typography.heading3.copyWith(color: color),
                 ),
               ),
               if (isWinner)
@@ -381,13 +381,13 @@ class _CompareCostCard extends StatelessWidget {
           const SizedBox(height: 14),
           Text(
             amount.wonFormat,
-            style: AppTextStyles.resultAmount.copyWith(
+            style: context.typography.resultAmount.copyWith(
               color: color,
               fontSize: 24,
             ),
           ),
           const SizedBox(height: 6),
-          Text(helper, style: AppTextStyles.caption),
+          Text(helper, style: context.typography.caption),
         ],
       ),
     );
@@ -421,7 +421,7 @@ class _DifferenceBanner extends StatelessWidget {
           Expanded(
             child: Text(
               '월 ${monthlyDifference.wonFormat} 차이, 전체 기간 ${totalDifference.wonFormat} 차이',
-              style: AppTextStyles.body.copyWith(
+              style: context.typography.body.copyWith(
                 color: color,
                 fontWeight: FontWeight.w700,
               ),
@@ -451,15 +451,15 @@ class _Row extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: AppTextStyles.bodySecondary),
+        Text(label, style: context.typography.bodySecondary),
         Text(
           value,
           style: isBold
-              ? AppTextStyles.body.copyWith(
+              ? context.typography.body.copyWith(
                   fontWeight: FontWeight.bold,
                   color: valueColor ?? AppColors.textPrimary,
                 )
-              : AppTextStyles.body.copyWith(
+              : context.typography.body.copyWith(
                   color: valueColor ?? AppColors.textPrimary,
                 ),
         ),

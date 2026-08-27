@@ -4,12 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:screenshot/screenshot.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_text_styles.dart';
+import '../../core/theme/app_typography.dart';
 import '../../core/utils/calculation_pdf_exporter.dart';
 import '../../core/utils/money_formatter.dart';
 import '../../core/utils/pdf_export_labels_ko.dart';
 import '../../core/utils/share_helper.dart';
 import '../../core/utils/validators.dart';
+import '../../core/utils/validation_error_l10n.dart';
 import '../../domain/calculators/rent_compare_calculator.dart';
 import '../../domain/entities/rent_compare_input.dart';
 import '../../domain/entities/rent_compare_result.dart';
@@ -67,10 +68,10 @@ class _ScenarioCompareScreenState extends State<ScenarioCompareScreen> {
 
     final deposit = MoneyFormatter.parse(_jeonseDeposit.text);
     final loan = MoneyFormatter.parse(_jeonseLoan.text);
-    final loanError = Validators.loanNotExceedDeposit(loan, deposit);
+    final loanError = Validators.loanNotExceedDepositCode(loan, deposit);
     if (loanError != null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(loanError), backgroundColor: AppColors.danger),
+        SnackBar(content: Text(loanError.localize(context)), backgroundColor: AppColors.danger),
       );
       return;
     }
@@ -174,7 +175,7 @@ class _ScenarioCompareScreenState extends State<ScenarioCompareScreen> {
             const SizedBox(height: 8),
             Text(
               '전세대출 금리를 A/B/C로 나눠 월 비용을 비교합니다.',
-              style: AppTextStyles.bodySecondary,
+              style: context.typography.bodySecondary,
             ),
             const SizedBox(height: 20),
             Form(
@@ -182,12 +183,12 @@ class _ScenarioCompareScreenState extends State<ScenarioCompareScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('공통 조건', style: AppTextStyles.label),
+                  Text('공통 조건', style: context.typography.label),
                   const SizedBox(height: 12),
                   MoneyInputField(
                     label: '전세 보증금',
                     controller: _jeonseDeposit,
-                    validator: Validators.requiredAmount,
+                    validator: (v) => Validators.requiredAmountCode(v)?.localize(context),
                     showQuickButtons: true,
                     sliderMax: 2000000000,
                     sliderDivisions: 200,
@@ -196,7 +197,7 @@ class _ScenarioCompareScreenState extends State<ScenarioCompareScreen> {
                   MoneyInputField(
                     label: '전세대출 금액',
                     controller: _jeonseLoan,
-                    validator: Validators.requiredAmount,
+                    validator: (v) => Validators.requiredAmountCode(v)?.localize(context),
                     showQuickButtons: true,
                     sliderMax: 2000000000,
                     sliderDivisions: 200,
@@ -205,7 +206,7 @@ class _ScenarioCompareScreenState extends State<ScenarioCompareScreen> {
                   MoneyInputField(
                     label: '월세 보증금',
                     controller: _rentDeposit,
-                    validator: Validators.requiredAmount,
+                    validator: (v) => Validators.requiredAmountCode(v)?.localize(context),
                     showQuickButtons: true,
                     sliderMax: 500000000,
                     sliderDivisions: 100,
@@ -214,7 +215,7 @@ class _ScenarioCompareScreenState extends State<ScenarioCompareScreen> {
                   MoneyInputField(
                     label: '월세',
                     controller: _monthlyRent,
-                    validator: Validators.requiredAmount,
+                    validator: (v) => Validators.requiredAmountCode(v)?.localize(context),
                     showQuickButtons: true,
                     sliderMax: 3000000,
                     sliderDivisions: 60,
@@ -223,7 +224,7 @@ class _ScenarioCompareScreenState extends State<ScenarioCompareScreen> {
                   MoneyInputField(
                     label: '관리비',
                     controller: _maintenance,
-                    validator: Validators.requiredAmount,
+                    validator: (v) => Validators.requiredAmountCode(v)?.localize(context),
                     sliderMax: 1000000,
                     sliderDivisions: 100,
                   ),
@@ -231,7 +232,7 @@ class _ScenarioCompareScreenState extends State<ScenarioCompareScreen> {
                   TextFormField(
                     controller: _months,
                     keyboardType: TextInputType.number,
-                    validator: Validators.months,
+                    validator: (v) => Validators.monthsCode(v)?.localize(context),
                     decoration: const InputDecoration(
                       labelText: '거주 기간',
                       suffixText: '개월',
@@ -248,7 +249,7 @@ class _ScenarioCompareScreenState extends State<ScenarioCompareScreen> {
                         setState(() => _depositInterestRate = value),
                   ),
                   const SizedBox(height: 24),
-                  Text('비교할 전세대출 금리', style: AppTextStyles.label),
+                  Text('비교할 전세대출 금리', style: context.typography.label),
                   const SizedBox(height: 12),
                   Row(
                     children: [
@@ -256,7 +257,7 @@ class _ScenarioCompareScreenState extends State<ScenarioCompareScreen> {
                         child: PercentInputField(
                           label: 'A안',
                           controller: _rateA,
-                          validator: Validators.interestRate,
+                          validator: (v) => Validators.interestRateCode(v)?.localize(context),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -264,7 +265,7 @@ class _ScenarioCompareScreenState extends State<ScenarioCompareScreen> {
                         child: PercentInputField(
                           label: 'B안',
                           controller: _rateB,
-                          validator: Validators.interestRate,
+                          validator: (v) => Validators.interestRateCode(v)?.localize(context),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -272,7 +273,7 @@ class _ScenarioCompareScreenState extends State<ScenarioCompareScreen> {
                         child: PercentInputField(
                           label: 'C안',
                           controller: _rateC,
-                          validator: Validators.interestRate,
+                          validator: (v) => Validators.interestRateCode(v)?.localize(context),
                         ),
                       ),
                     ],
@@ -367,12 +368,12 @@ class _ScenarioCard extends StatelessWidget {
         children: [
           Text(
             '${scenario.label} ${scenario.interestRate.toStringAsFixed(2)}%',
-            style: AppTextStyles.heading3,
+            style: context.typography.heading3,
           ),
           const SizedBox(height: 10),
           Text(
             rentCompareRecommendationText(result),
-            style: AppTextStyles.body.copyWith(
+            style: context.typography.body.copyWith(
               color: color,
               fontWeight: FontWeight.w600,
             ),
@@ -415,11 +416,11 @@ class _Row extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Flexible(child: Text(label, style: AppTextStyles.caption)),
+        Flexible(child: Text(label, style: context.typography.caption)),
         const SizedBox(width: 8),
         Text(
           value,
-          style: AppTextStyles.caption.copyWith(
+          style: context.typography.caption.copyWith(
             color: valueColor ?? AppColors.textPrimary,
             fontWeight: FontWeight.w600,
           ),

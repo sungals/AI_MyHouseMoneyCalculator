@@ -1316,7 +1316,7 @@ abstract class AppLocalizations {
   /// 입력 섹션 도움말 본문. 계산식과 한계 설명
   ///
   /// In ko, this message translates to:
-  /// **'단리(이자만 납부) 방식으로 월 이자와 총 이자를 계산합니다.\n\n• 대출금: 은행에서 빌리는 원금\n• 연이율: 연간 적용 이자율 (예: 4.5%)\n• 대출 기간: 이자를 납부할 기간 (개월)\n\n월 이자 = 대출금 × 연이율 ÷ 12\n총 이자 = 월 이자 × 대출 기간\n\n원리금 균등 상환(원금도 함께 갚는 방식)과는\n계산 방법이 다릅니다.'**
+  /// **'선택한 상환 방식에 따라 월 납입액과 총 이자를 계산합니다.\n\n• 만기일시상환: 기간 중 이자만 납부하고 원금은 만기에 상환\n• 원리금균등상환: 매월 같은 금액으로 원금과 이자를 함께 상환\n• 원금균등상환: 매월 같은 원금을 갚고 이자는 남은 원금 기준으로 계산\n\n실제 대출은 은행별 일수 계산, 거치기간, 중도상환 조건에 따라 달라질 수 있습니다.'**
   String get loanInterestHelpBody;
 
   /// 대출 원금 입력 필드 라벨
@@ -1330,6 +1330,30 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'연이율'**
   String get loanInterestRateLabel;
+
+  /// 대출이자 계산 상환 방식 선택 필드 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'상환 방식'**
+  String get loanInterestRepaymentMethodLabel;
+
+  /// 이자만 납부하고 원금을 만기에 상환하는 방식
+  ///
+  /// In ko, this message translates to:
+  /// **'만기일시상환'**
+  String get loanInterestMethodInterestOnly;
+
+  /// 매월 같은 원리금을 상환하는 방식
+  ///
+  /// In ko, this message translates to:
+  /// **'원리금균등상환'**
+  String get loanInterestMethodEqualPrincipalAndInterest;
+
+  /// 매월 같은 원금을 상환하는 방식
+  ///
+  /// In ko, this message translates to:
+  /// **'원금균등상환'**
+  String get loanInterestMethodEqualPrincipal;
 
   /// 대출 기간 입력 필드 라벨
   ///
@@ -1373,11 +1397,35 @@ abstract class AppLocalizations {
   /// **'월 이자'**
   String get loanInterestMonthlyInterestLabel;
 
+  /// 결과 카드 월 납입액 행 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'월 납입액'**
+  String get loanInterestMonthlyPaymentLabel;
+
+  /// 결과 카드 첫 달 납입액 행 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'첫 달 납입액'**
+  String get loanInterestFirstMonthPaymentLabel;
+
+  /// 결과 카드 마지막 달 납입액 행 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'마지막 달 납입액'**
+  String get loanInterestLastMonthPaymentLabel;
+
   /// 결과 카드 총 이자 행 라벨
   ///
   /// In ko, this message translates to:
   /// **'{months}개월 총 이자'**
   String loanInterestTotalInterestLabel(int months);
+
+  /// 결과 카드 총 납입액 행 라벨
+  ///
+  /// In ko, this message translates to:
+  /// **'총 납입액'**
+  String get loanInterestTotalPaymentLabel;
 
   /// 이력 저장 완료 스낵바
   ///
@@ -1402,6 +1450,24 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'대출금: {amount}'**
   String loanInterestShareLoanAmount(String amount);
+
+  /// 공유 본문 상환 방식 줄
+  ///
+  /// In ko, this message translates to:
+  /// **'상환 방식: {method}'**
+  String loanInterestShareRepaymentMethod(String method);
+
+  /// 공유 본문 월 납입액 줄
+  ///
+  /// In ko, this message translates to:
+  /// **'월 납입액: {amount}'**
+  String loanInterestShareMonthlyPayment(String amount);
+
+  /// 공유 본문 마지막 달 납입액 줄
+  ///
+  /// In ko, this message translates to:
+  /// **'마지막 달 납입액: {amount}'**
+  String loanInterestShareLastMonthPayment(String amount);
 
   /// 공유 본문 월 이자 줄
   ///
@@ -1702,6 +1768,48 @@ abstract class AppLocalizations {
   /// In ko, this message translates to:
   /// **'공지사항'**
   String get notificationNoticeFallbackTitle;
+
+  /// 금액 필수 입력 검증 실패
+  ///
+  /// In ko, this message translates to:
+  /// **'금액을 입력해 주세요.'**
+  String get validationAmountRequired;
+
+  /// 금액 형식/음수 검증 실패
+  ///
+  /// In ko, this message translates to:
+  /// **'올바른 금액을 입력해 주세요.'**
+  String get validationAmountInvalid;
+
+  /// 금리 필수 입력 검증 실패
+  ///
+  /// In ko, this message translates to:
+  /// **'금리를 입력해 주세요.'**
+  String get validationRateRequired;
+
+  /// 금리 범위 검증 실패
+  ///
+  /// In ko, this message translates to:
+  /// **'금리는 0 이상 {maxRate} 이하로 입력해 주세요.'**
+  String validationRateOutOfRange(String maxRate);
+
+  /// 거주 기간 필수 입력 검증 실패
+  ///
+  /// In ko, this message translates to:
+  /// **'거주 기간을 입력해 주세요.'**
+  String get validationMonthsRequired;
+
+  /// 거주 기간 범위 검증 실패
+  ///
+  /// In ko, this message translates to:
+  /// **'거주 기간은 {minMonths}~{maxMonths}개월로 입력해 주세요.'**
+  String validationMonthsOutOfRange(String minMonths, String maxMonths);
+
+  /// 대출금이 보증금을 초과할 때 검증 실패
+  ///
+  /// In ko, this message translates to:
+  /// **'대출금은 전세 보증금보다 클 수 없습니다.'**
+  String get validationLoanExceedsDeposit;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

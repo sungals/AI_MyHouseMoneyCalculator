@@ -5,12 +5,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:screenshot/screenshot.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_text_styles.dart';
+import '../../core/theme/app_typography.dart';
 import '../../core/utils/calculation_pdf_exporter.dart';
 import '../../core/utils/money_formatter.dart';
 import '../../core/utils/pdf_export_labels_ko.dart';
 import '../../core/utils/share_helper.dart';
 import '../../core/utils/validators.dart';
+import '../../core/utils/validation_error_l10n.dart';
 import '../../data/models/calculation_history.dart';
 import '../../domain/entities/jeonse_risk_input.dart';
 import '../../domain/entities/jeonse_risk_result.dart';
@@ -267,7 +268,7 @@ ${result.actionItems.map((item) => '- ${JeonseRiskLocalizations.actionText(item)
                   MoneyInputField(
                     label: '주택 예상 시세',
                     controller: _marketPrice,
-                    validator: Validators.requiredAmount,
+                    validator: (v) => Validators.requiredAmountCode(v)?.localize(context),
                     showQuickButtons: true,
                     sliderMax: 3000000000,
                     sliderDivisions: 300,
@@ -276,7 +277,7 @@ ${result.actionItems.map((item) => '- ${JeonseRiskLocalizations.actionText(item)
                   MoneyInputField(
                     label: '전세 보증금',
                     controller: _deposit,
-                    validator: Validators.requiredAmount,
+                    validator: (v) => Validators.requiredAmountCode(v)?.localize(context),
                     showQuickButtons: true,
                     sliderMax: 2000000000,
                     sliderDivisions: 200,
@@ -285,7 +286,7 @@ ${result.actionItems.map((item) => '- ${JeonseRiskLocalizations.actionText(item)
                   MoneyInputField(
                     label: '선순위채권/근저당',
                     controller: _seniorDebt,
-                    validator: Validators.requiredAmount,
+                    validator: (v) => Validators.requiredAmountCode(v)?.localize(context),
                     showQuickButtons: true,
                     sliderMax: 2000000000,
                     sliderDivisions: 200,
@@ -376,7 +377,7 @@ class _SectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Text(text, style: AppTextStyles.label),
+        Text(text, style: context.typography.label),
         if (helpTitle != null) ...[
           const SizedBox(width: 4),
           HelpIcon(title: helpTitle!, body: helpBody!),
@@ -403,7 +404,7 @@ class _CheckTile extends StatelessWidget {
       contentPadding: EdgeInsets.zero,
       value: value,
       onChanged: (value) => onChanged(value ?? false),
-      title: Text(title, style: AppTextStyles.body),
+      title: Text(title, style: context.typography.body),
       controlAffinity: ListTileControlAffinity.leading,
     );
   }
@@ -450,7 +451,7 @@ class _ResultCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       JeonseRiskLocalizations.summaryText(result),
-                      style: AppTextStyles.heading2.copyWith(color: color),
+                      style: context.typography.heading2.copyWith(color: color),
                     ),
                   ),
                   _ScoreCircle(score: result.score, color: color),
@@ -459,7 +460,7 @@ class _ResultCard extends StatelessWidget {
               const SizedBox(height: 10),
               Text(
                 JeonseRiskLocalizations.levelDescription(result.level),
-                style: AppTextStyles.bodySecondary,
+                style: context.typography.bodySecondary,
               ),
               const SizedBox(height: 20),
               _RatioBar(
@@ -481,7 +482,7 @@ class _ResultCard extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               if (result.warnings.isNotEmpty) ...[
-                Text('주의 항목', style: AppTextStyles.label),
+                Text('주의 항목', style: context.typography.label),
                 const SizedBox(height: 8),
                 ...result.warnings.map((item) => _Bullet(
                       JeonseRiskLocalizations.warningText(item),
@@ -489,7 +490,7 @@ class _ResultCard extends StatelessWidget {
                     )),
               ],
               const SizedBox(height: 12),
-              Text('권장 조치', style: AppTextStyles.label),
+              Text('권장 조치', style: context.typography.label),
               const SizedBox(height: 8),
               ...result.actionItems.map(
                 (item) => _Bullet(
@@ -499,7 +500,7 @@ class _ResultCard extends StatelessWidget {
               ),
               if (result.checklist.isNotEmpty) ...[
                 const SizedBox(height: 12),
-                Text('추가 확인', style: AppTextStyles.label),
+                Text('추가 확인', style: context.typography.label),
                 const SizedBox(height: 8),
                 ...result.checklist.map((item) => _Bullet(
                       JeonseRiskLocalizations.checkText(item),
@@ -507,7 +508,7 @@ class _ResultCard extends StatelessWidget {
                     )),
               ],
               const SizedBox(height: 12),
-              Text('보호 절차 체크리스트', style: AppTextStyles.label),
+              Text('보호 절차 체크리스트', style: context.typography.label),
               const SizedBox(height: 8),
               ...result.protectionChecklist.map(
                 (item) => _Bullet(
@@ -551,7 +552,7 @@ class _ScoreCircle extends StatelessWidget {
       alignment: Alignment.center,
       child: Text(
         '$score',
-        style: AppTextStyles.heading2.copyWith(color: color),
+        style: context.typography.heading2.copyWith(color: color),
       ),
     );
   }
@@ -577,10 +578,10 @@ class _RatioBar extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(label, style: AppTextStyles.bodySecondary),
+            Text(label, style: context.typography.bodySecondary),
             Text(
               '${value.toStringAsFixed(1)}%',
-              style: AppTextStyles.body.copyWith(fontWeight: FontWeight.bold),
+              style: context.typography.body.copyWith(fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -617,7 +618,7 @@ class _Bullet extends StatelessWidget {
             child: Icon(Icons.circle, size: 6, color: color),
           ),
           const SizedBox(width: 8),
-          Expanded(child: Text(text, style: AppTextStyles.bodySecondary)),
+          Expanded(child: Text(text, style: context.typography.bodySecondary)),
         ],
       ),
     );

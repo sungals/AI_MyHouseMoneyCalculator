@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_text_styles.dart';
+import '../../core/theme/app_typography.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -302,7 +302,7 @@ class _ScenarioPreview extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('월 부담 최저', style: AppTextStyles.caption),
+              Text('월 부담 최저', style: context.typography.caption),
               const SizedBox(height: 4),
               Text(
                 'A안 1,066,667원',
@@ -419,7 +419,7 @@ class _ResultPreview extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('반전세 계산 결과', style: AppTextStyles.caption),
+              Text('반전세 계산 결과', style: context.typography.caption),
               const SizedBox(height: 6),
               Text(
                 '월세 18만원 높음',
@@ -470,7 +470,7 @@ class _PreviewHeader extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 8),
-        Text(title, style: AppTextStyles.heading3),
+        Text(title, style: context.typography.heading3),
       ],
     );
   }
@@ -525,7 +525,7 @@ class _PreviewMenuTile extends StatelessWidget {
                     color: AppColors.textPrimary,
                   ),
                 ),
-                Text(caption, style: AppTextStyles.caption),
+                Text(caption, style: context.typography.caption),
               ],
             ),
           ),
@@ -595,7 +595,7 @@ class _ScenarioBar extends StatelessWidget {
       children: [
         SizedBox(
           width: 22,
-          child: Text(label, style: AppTextStyles.caption),
+          child: Text(label, style: context.typography.caption),
         ),
         Expanded(
           child: ClipRRect(
@@ -645,7 +645,7 @@ class _MetricBox extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: AppTextStyles.caption),
+          Text(label, style: context.typography.caption),
           const SizedBox(height: 4),
           Text(
             value,
@@ -697,7 +697,7 @@ class _RiskScoreBar extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('위험 점수 62점', style: AppTextStyles.caption),
+        Text('위험 점수 62점', style: context.typography.caption),
         const SizedBox(height: 6),
         ClipRRect(
           borderRadius: BorderRadius.circular(999),

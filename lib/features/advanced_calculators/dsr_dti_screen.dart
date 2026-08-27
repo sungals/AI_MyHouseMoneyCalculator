@@ -10,6 +10,7 @@ import '../../core/utils/calculation_pdf_exporter.dart';
 import '../../core/utils/money_formatter.dart';
 import '../../core/utils/pdf_export_labels_ko.dart';
 import '../../core/utils/validators.dart';
+import '../../core/utils/validation_error_l10n.dart';
 import '../../data/models/calculation_history.dart';
 import '../../domain/calculators/dsr_dti_calculator.dart';
 import '../../domain/entities/dsr_dti_input.dart';
@@ -168,7 +169,7 @@ class _DsrDtiScreenState extends ConsumerState<DsrDtiScreen> {
               MoneyInputField(
                 label: '연소득',
                 controller: _annualIncome,
-                validator: Validators.requiredAmount,
+                validator: (v) => Validators.requiredAmountCode(v)?.localize(context),
                 sliderMax: 500000000,
                 sliderDivisions: 100,
               ),
@@ -176,7 +177,7 @@ class _DsrDtiScreenState extends ConsumerState<DsrDtiScreen> {
               MoneyInputField(
                 label: '주택담보대출 연간 원리금',
                 controller: _housingDebt,
-                validator: Validators.requiredAmount,
+                validator: (v) => Validators.requiredAmountCode(v)?.localize(context),
                 sliderMax: 200000000,
                 sliderDivisions: 100,
               ),
@@ -184,7 +185,7 @@ class _DsrDtiScreenState extends ConsumerState<DsrDtiScreen> {
               MoneyInputField(
                 label: '기타대출 연간 원리금',
                 controller: _otherDebt,
-                validator: Validators.requiredAmount,
+                validator: (v) => Validators.requiredAmountCode(v)?.localize(context),
                 sliderMax: 200000000,
                 sliderDivisions: 100,
               ),
